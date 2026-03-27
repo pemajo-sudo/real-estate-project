@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+
+# Database
+db.sqlite3
+
+# Media files
+media/
+
+# VS Code
+.vscode/
+
+# Environment
+env/
+
+# OS files
+.DS_Store
+
+# Images (optional)
+*.png
+*.jpg
+*.jpeg

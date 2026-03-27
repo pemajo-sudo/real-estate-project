@@ -1,0 +1,29 @@
+{% extends "listings/base.html" %}
+
+{% block content %}
+<div class="hero">
+    <h1>Welcome to Shelter & Soul</h1>
+    <p>Where your soul finds its perfect shelter.</p>
+    <a href="{% url 'property_list' %}" class="btn">Explore Properties</a>
+</div>
+
+<h2>Featured Properties</h2>
+
+<div class="card-grid">
+    {% for property in featured_properties %}
+        <div class="card">
+            {% if property.image %}
+                <img src="{{ property.image.url }}" alt="{{ property.name }}">
+            {% endif %}
+            <div class="card-body">
+                <h3>{{ property.name }}</h3>
+                <p><strong>Location:</strong> {{ property.location }}</p>
+                <p><strong>Price:</strong> Rs. {{ property.price }}</p>
+                <a href="{% url 'property_detail' property.pk %}" class="btn">View Details</a>
+            </div>
+        </div>
+    {% empty %}
+        <p>No properties added yet.</p>
+    {% endfor %}
+</div>
+{% endblock %}

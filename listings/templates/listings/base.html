@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shelter & Soul</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #f6f8fb;
+            color: #222;
+        }
+        nav {
+            background: #1f3c88;
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 18px;
+            font-weight: 500;
+        }
+        .brand {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: 30px auto;
+        }
+        .hero {
+            background: linear-gradient(135deg, #1f3c88, #4f7cff);
+            color: white;
+            padding: 60px 30px;
+            border-radius: 16px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .hero h1 {
+            margin-bottom: 10px;
+            font-size: 40px;
+        }
+        .hero p {
+            font-size: 18px;
+            margin: 0;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 18px;
+            background: #1f3c88;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .btn-danger {
+            background: #c0392b;
+        }
+        .btn-secondary {
+            background: #555;
+        }
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+        }
+        .card img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+        }
+        .card-body {
+            padding: 18px;
+        }
+        .card-body h3 {
+            margin-top: 0;
+        }
+        form input, form select, form textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 6px;
+            margin-bottom: 14px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+        .filter-box {
+            background: white;
+            padding: 20px;
+            border-radius: 14px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+            margin-bottom: 25px;
+        }
+        .detail-img {
+            width: 100%;
+            max-height: 420px;
+            object-fit: cover;
+            border-radius: 14px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="brand">Shelter & Soul</div>
+        <div>
+            <a href="{% url 'home' %}">Home</a>
+            <a href="{% url 'property_list' %}">Properties</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'property_create' %}">Add Property</a>
+                <a href="{% url 'logout' %}">Logout</a>
+            {% else %}
+                <a href="{% url 'register' %}">Register</a>
+                <a href="{% url 'login' %}">Login</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+              <div style="background:#d4edda; color:#155724; padding:12px; margin-bottom:15px; border-radius:8px;">
+                  {{ message }}
+              </div>
+            {% endfor %}
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </div>
+    
+</body>
+</html>

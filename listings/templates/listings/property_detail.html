@@ -1,0 +1,20 @@
+{% extends "listings/base.html" %}
+
+{% block content %}
+<h2>{{ property.name }}</h2>
+
+{% if property.image %}
+    <img src="{{ property.image.url }}" alt="{{ property.name }}" class="detail-img">
+{% endif %}
+
+<p><strong>Location:</strong> {{ property.location }}</p>
+<p><strong>Type:</strong> {{ property.property_type }}</p>
+<p><strong>Price:</strong> Rs. {{ property.price }}</p>
+<p><strong>Description:</strong></p>
+<p>{{ property.description }}</p>
+
+{% if user.is_authenticated %}
+    <a href="{% url 'property_update' property.pk %}" class="btn">Edit</a>
+    <a href="{% url 'property_delete' property.pk %}" class="btn btn-danger">Delete</a>
+{% endif %}
+{% endblock %}
