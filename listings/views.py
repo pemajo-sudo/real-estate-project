@@ -3,6 +3,8 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import get_object_or_404, redirect, render
+from .models import Property, Inquiry
+from .forms import InquiryForm
 
 from .forms import CustomUserCreationForm, PropertyForm
 from .models import Property
@@ -122,3 +124,24 @@ def property_delete(request, pk):
         messages.success(request, "Property deleted successfully!")
         return redirect("property_list")
     return render(request, "listings/property_confirm_delete.html", {"property": property_obj})
+
+@login_required
+def send_inquiry(request, pk):
+    property_obj = get_object_or_404(Property, pk=pk)
+
+    if request.method == 'POST':
+        form = InquiryForm(request.POST)
+        if form.is_valid():
+            inquiry = form.save(commit=False)
+            inquiry.user = request.user
+            inquiry.property = property_obj
+            inquiry.save()
+            messages.success(request, "Inquiry sent successfully!")
+            return redirect('property_detail', pk=pk)
+    else:
+        form = InquiryForm()
+
+    return render(request, 'listings/send_inquiry.html', {
+        'form': form,
+        'property': property_obj
+    })
