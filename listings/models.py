@@ -22,3 +22,15 @@ class Property(models.Model):
 
     def __str__(self):
         return self.name
+    
+from django.contrib.auth.models import User
+
+class Inquiry(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    property = models.ForeignKey('Property', on_delete=models.CASCADE)
+    subject = models.CharField(max_length=200)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user} - {self.property}"
