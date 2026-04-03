@@ -3,11 +3,10 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import get_object_or_404, redirect, render
-from .models import Property, Inquiry
 from .forms import InquiryForm
 
 from .forms import CustomUserCreationForm, PropertyForm
-from .models import Property
+from .models import Property, Inquiry
 
 
 def home(request):
