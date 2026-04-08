@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "listings",
+    "django.contrib.humanize",
 ]
 
 MIDDLEWARE = [
@@ -111,5 +112,11 @@ LOGIN_URL = "/login/"
 LOGIN_REDIRECT_URL = "home"
 LOGOUT_REDIRECT_URL = "home"
 
+# Use project-specific cookie names to avoid collisions with other
+# local Django projects running on 127.0.0.1.
+SESSION_COOKIE_NAME = "real_estate_sessionid"
+CSRF_COOKIE_NAME = "real_estate_csrftoken"
+
 # Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+

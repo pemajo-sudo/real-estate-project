@@ -2,10 +2,11 @@ from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .forms import CustomUserCreationForm, PropertyForm
-from .models import Property
+from .forms import CustomUserCreationForm, InquiryForm, PropertyForm
+from .models import Inquiry, Property
 
 
 def home(request):
@@ -80,7 +81,54 @@ def property_list(request):
 
 def property_detail(request, pk):
     property_obj = get_object_or_404(Property, pk=pk)
-    return render(request, "listings/property_detail.html", {"property": property_obj})
+    inquiry_form = InquiryForm()
+    return render(
+        request,
+        "listings/property_detail.html",
+        {"property": property_obj, "inquiry_form": inquiry_form},
+    )
+
+
+def send_inquiry(request, pk):
+    property_obj = get_object_or_404(Property, pk=pk)
+
+    if request.method != "POST":
+        return redirect("property_detail", pk=pk)
+
+    inquiry_form = InquiryForm(request.POST)
+    if inquiry_form.is_valid():
+        inquiry = inquiry_form.save(commit=False)
+        inquiry.property = property_obj
+        if request.user.is_authenticated:
+            inquiry.user = request.user
+        inquiry.save()
+        messages.success(request, "Your inquiry has been sent successfully.")
+        return redirect("property_detail", pk=pk)
+
+    messages.error(request, "Please correct the errors below and try again.")
+    return render(
+        request,
+        "listings/property_detail.html",
+        {"property": property_obj, "inquiry_form": inquiry_form},
+    )
+
+
+@login_required
+def view_inquiries(request):
+    if not request.user.is_staff:
+        raise PermissionDenied("Only admins can view inquiries.")
+
+    inquiries = Inquiry.objects.select_related("property", "user").order_by("-created_at")
+    return render(request, "listings/view_inquiries.html", {"inquiries": inquiries})
+
+
+@login_required
+def inquiry_detail(request, pk):
+    if not request.user.is_staff:
+        raise PermissionDenied("Only admins can view inquiries.")
+
+    inquiry = get_object_or_404(Inquiry.objects.select_related("property", "user"), pk=pk)
+    return render(request, "listings/inquiry_form.html", {"inquiry": inquiry})
 
 
 @login_required

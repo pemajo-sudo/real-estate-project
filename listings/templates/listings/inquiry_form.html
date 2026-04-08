@@ -1,0 +1,20 @@
+{% extends "listings/base.html" %}
+
+{% block content %}
+<h2>Inquiry Details</h2>
+<div class="card">
+    <div class="card-body">
+        <p><strong>Sender:</strong> {{ inquiry.name }}</p>
+        <p><strong>Email:</strong> {{ inquiry.email }}</p>
+        <p><strong>Property:</strong> {{ inquiry.property.name }}</p>
+        <p><strong>Submitted:</strong> {{ inquiry.created_at }}</p>
+        {% if inquiry.user %}
+            <p><strong>Logged-in account:</strong> {{ inquiry.user.username }}</p>
+        {% endif %}
+        <hr>
+        <p><strong>Message:</strong></p>
+        <p>{{ inquiry.message }}</p>
+    </div>
+</div>
+<a href="{% url 'view_inquiries' %}" class="btn btn-secondary">Back to Inquiries</a>
+{% endblock %}

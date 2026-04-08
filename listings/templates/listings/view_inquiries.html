@@ -1,0 +1,23 @@
+{% extends "listings/base.html" %}
+
+{% block content %}
+<h2>Submitted Inquiries</h2>
+
+{% if inquiries %}
+    <div class="card-grid">
+        {% for inquiry in inquiries %}
+            <div class="card">
+                <div class="card-body">
+                    <h3>{{ inquiry.name }}</h3>
+                    <p><strong>Email:</strong> {{ inquiry.email }}</p>
+                    <p><strong>Property:</strong> {{ inquiry.property.name }}</p>
+                    <p><strong>Received:</strong> {{ inquiry.created_at }}</p>
+                    <a href="{% url 'inquiry_detail' inquiry.pk %}" class="btn">View Full Inquiry</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p>No inquiries have been submitted yet.</p>
+{% endif %}
+{% endblock %}

@@ -17,4 +17,14 @@
     <a href="{% url 'property_update' property.pk %}" class="btn">Edit</a>
     <a href="{% url 'property_delete' property.pk %}" class="btn btn-danger">Delete</a>
 {% endif %}
+
+<hr style="margin: 25px 0;">
+<h3>Send an Inquiry About This Property</h3>
+<form method="post" action="{% url 'send_inquiry' property.pk %}">
+    {% csrf_token %}
+    {{ inquiry_form.non_field_errors }}
+    {{ inquiry_form.as_p }}
+    <button type="submit" class="btn">Send Inquiry</button>
+</form>
 {% endblock %}
+
