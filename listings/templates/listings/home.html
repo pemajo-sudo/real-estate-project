@@ -1,4 +1,5 @@
 {% extends "listings/base.html" %}
+{% load humanize %}
 
 
 {% block content %}
@@ -19,7 +20,7 @@
             <div class="card-body">
                 <h3>{{ property.name }}</h3>
                 <p><strong>Location:</strong> {{ property.location }}</p>
-                <p><strong>Price:</strong> Rs. {{ property.price }}</p>
+                <p><strong>Price:</strong> Rs. {{ property.price|intcomma }}</p>
                 <a href="{% url 'property_detail' property.pk %}" class="btn">View Details</a>
             </div>
         </div>

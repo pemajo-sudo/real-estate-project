@@ -1,4 +1,5 @@
 {% extends "listings/base.html" %}
+{% load humanize %}
 
 {% block content %}
 <h2>{{ property.name }}</h2>
@@ -12,7 +13,7 @@
 <p><strong>Address:</strong> {{ property.address }}</p>
 {% endif %}
 <p><strong>Type:</strong> {{ property.property_type }}</p>
-<p><strong>Price:</strong> Rs. {{ property.price }}</p>
+<p><strong>Price:</strong> Rs. {{ property.price|intcomma }}</p>
 <p><strong>Description:</strong></p>
 <p>{{ property.description }}</p>
 

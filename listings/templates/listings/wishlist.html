@@ -1,4 +1,5 @@
 {% extends "listings/base.html" %}
+{% load humanize %}
 
 {% block content %}
 <h2>My Wishlist</h2>
@@ -12,7 +13,7 @@
                 {% endif %}
                 <div class="card-body">
                     <h3>{{ item.property.name }}</h3>
-                    <p><strong>Price:</strong> Rs. {{ item.property.price }}</p>
+                    <p><strong>Price:</strong> Rs. {{ item.property.price|intcomma }}</p>
                     <a href="{% url 'property_detail' item.property.pk %}" class="btn">View Property</a>
                     <form method="post" action="{% url 'remove_from_wishlist' item.property.pk %}">
                         {% csrf_token %}
