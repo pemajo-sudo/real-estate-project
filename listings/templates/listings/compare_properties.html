@@ -1,0 +1,77 @@
+{% extends "listings/base.html" %}
+
+{% block content %}
+<h2>Compare Properties</h2>
+
+{% if compare_count >= 2 %}
+    <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; background: white;">
+            <tr>
+                <th style="text-align: left; border: 1px solid #ddd; padding: 10px;">Feature</th>
+                {% for property in properties %}
+                    <th style="text-align: left; border: 1px solid #ddd; padding: 10px;">
+                        {{ property.name }}
+                        <form method="post" action="{% url 'remove_from_compare' property.pk %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="next" value="{% url 'compare_properties' %}">
+                            <button type="submit" class="btn btn-danger">Remove</button>
+                        </form>
+                    </th>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td style="border: 1px solid #ddd; padding: 10px;"><strong>Image</strong></td>
+                {% for property in properties %}
+                    <td style="border: 1px solid #ddd; padding: 10px;">
+                        {% if property.image %}
+                            <img src="{{ property.image.url }}" alt="{{ property.name }}" style="width: 180px; height: 120px; object-fit: cover; border-radius: 8px;">
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td style="border: 1px solid #ddd; padding: 10px;"><strong>Price</strong></td>
+                {% for property in properties %}
+                    <td style="border: 1px solid #ddd; padding: 10px;">Rs. {{ property.price }}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td style="border: 1px solid #ddd; padding: 10px;"><strong>Location</strong></td>
+                {% for property in properties %}
+                    <td style="border: 1px solid #ddd; padding: 10px;">{{ property.location }}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td style="border: 1px solid #ddd; padding: 10px;"><strong>Number of Rooms</strong></td>
+                {% for property in properties %}
+                    <td style="border: 1px solid #ddd; padding: 10px;">{{ property.number_of_rooms|default:"-" }}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td style="border: 1px solid #ddd; padding: 10px;"><strong>Size</strong></td>
+                {% for property in properties %}
+                    <td style="border: 1px solid #ddd; padding: 10px;">
+                        {% if property.size_sqft %}{{ property.size_sqft }} sqft{% else %}-{% endif %}
+                    </td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td style="border: 1px solid #ddd; padding: 10px;"><strong>Property Type</strong></td>
+                {% for property in properties %}
+                    <td style="border: 1px solid #ddd; padding: 10px;">{{ property.property_type }}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+                <td style="border: 1px solid #ddd; padding: 10px;"><strong>Description</strong></td>
+                {% for property in properties %}
+                    <td style="border: 1px solid #ddd; padding: 10px;">{{ property.description|truncatewords:30 }}</td>
+                {% endfor %}
+            </tr>
+        </table>
+    </div>
+{% else %}
+    <p>Select at least 2 properties to compare. You can compare up to 3 properties.</p>
+{% endif %}
+{% endblock %}
