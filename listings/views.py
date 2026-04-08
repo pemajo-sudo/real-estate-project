@@ -5,7 +5,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import CustomUserCreationForm, InquiryForm, PropertyForm
-from .models import Inquiry, Property, Wishlist
+from .models import Inquiry, Property, VirtualTourScene, Wishlist
 
 COMPARE_SESSION_KEY = "compare_properties"
 MAX_COMPARE_ITEMS = 3
@@ -88,6 +88,46 @@ def property_detail(request, pk):
     inquiry_form = InquiryForm()
     in_wishlist = False
     compared_ids = request.session.get(COMPARE_SESSION_KEY, [])
+    scenes = (
+        VirtualTourScene.objects.filter(property=property_obj)
+        .prefetch_related("hotspots", "hotspots__target_scene")
+        .order_by("sort_order", "id")
+    )
+    tour_config = {}
+    default_scene = ""
+
+    for scene in scenes:
+        panorama_source = scene.get_panorama_source()
+        if not panorama_source:
+            continue
+
+        if not default_scene:
+            default_scene = scene.scene_key
+
+        scene_hotspots = []
+        for hotspot in scene.hotspots.all():
+            hotspot_payload = {
+                "pitch": hotspot.pitch,
+                "yaw": hotspot.yaw,
+                "createTooltipFunc": "hotspotLabelTooltip",
+                "createTooltipArgs": hotspot.label,
+            }
+            if hotspot.target_scene:
+                hotspot_payload["type"] = "scene"
+                hotspot_payload["text"] = hotspot.label
+                hotspot_payload["sceneId"] = hotspot.target_scene.scene_key
+            else:
+                hotspot_payload["type"] = "info"
+                hotspot_payload["text"] = hotspot.label
+            scene_hotspots.append(hotspot_payload)
+
+        tour_config[scene.scene_key] = {
+            "title": scene.title,
+            "type": "equirectangular",
+            "panorama": panorama_source,
+            "hotSpots": scene_hotspots,
+        }
+
     if request.user.is_authenticated:
         in_wishlist = Wishlist.objects.filter(user=request.user, property=property_obj).exists()
     return render(
@@ -99,6 +139,8 @@ def property_detail(request, pk):
             "in_wishlist": in_wishlist,
             "is_compared": property_obj.pk in compared_ids,
             "compare_count": len(compared_ids),
+            "tour_scenes": tour_config,
+            "default_tour_scene": default_scene,
         },
     )
 

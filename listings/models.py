@@ -49,3 +49,46 @@ class Wishlist(models.Model):
 
     def __str__(self):
         return f"{self.user} -> {self.property}"
+
+
+class VirtualTourScene(models.Model):
+    property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name="tour_scenes")
+    title = models.CharField(max_length=120)
+    scene_key = models.SlugField(max_length=80)
+    panorama_image = models.ImageField(upload_to="virtual_tours/", null=True, blank=True)
+    panorama_url = models.URLField(blank=True)
+    sort_order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["sort_order", "id"]
+        constraints = [
+            models.UniqueConstraint(fields=["property", "scene_key"], name="unique_scene_key_per_property")
+        ]
+
+    def __str__(self):
+        return f"{self.property.name} - {self.title}"
+
+    def get_panorama_source(self):
+        if self.panorama_image:
+            return self.panorama_image.url
+        return self.panorama_url
+
+
+class VirtualTourHotspot(models.Model):
+    scene = models.ForeignKey(VirtualTourScene, on_delete=models.CASCADE, related_name="hotspots")
+    pitch = models.FloatField(help_text="Vertical position, from -90 to 90")
+    yaw = models.FloatField(help_text="Horizontal position, from -180 to 180")
+    label = models.CharField(max_length=120)
+    target_scene = models.ForeignKey(
+        VirtualTourScene,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="incoming_hotspots",
+    )
+
+    class Meta:
+        ordering = ["id"]
+
+    def __str__(self):
+        return f"{self.scene.title}: {self.label}"

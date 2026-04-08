@@ -12,6 +12,51 @@
 <p><strong>Price:</strong> Rs. {{ property.price }}</p>
 <p><strong>Description:</strong></p>
 <p>{{ property.description }}</p>
+<p><strong>Rooms:</strong> {{ property.number_of_rooms|default:"-" }}</p>
+<p><strong>Size:</strong> {% if property.size_sqft %}{{ property.size_sqft }} sqft{% else %}-{% endif %}</p>
+
+<hr style="margin: 25px 0;">
+<h3>360 Virtual Tour</h3>
+{% if default_tour_scene %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css">
+    <div id="tour-viewer" style="width: 100%; height: 440px; border-radius: 12px; overflow: hidden;"></div>
+    {{ tour_scenes|json_script:"tour-scenes-data" }}
+    <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
+    <script>
+        (function () {
+            const scenes = JSON.parse(document.getElementById("tour-scenes-data").textContent);
+            function hotspotLabelTooltip(div, text) {
+                div.classList.add("custom-hotspot");
+                div.innerHTML = "i";
+                div.style.width = "24px";
+                div.style.height = "24px";
+                div.style.borderRadius = "50%";
+                div.style.background = "#1f3c88";
+                div.style.color = "#fff";
+                div.style.display = "flex";
+                div.style.alignItems = "center";
+                div.style.justifyContent = "center";
+                div.style.fontWeight = "bold";
+                div.title = text;
+            }
+            window.hotspotLabelTooltip = hotspotLabelTooltip;
+
+            pannellum.viewer("tour-viewer", {
+                default: {
+                    firstScene: "{{ default_tour_scene }}",
+                    sceneFadeDuration: 900,
+                    autoLoad: true
+                },
+                scenes: scenes,
+                showControls: true,
+                compass: true,
+                hfov: 110
+            });
+        })();
+    </script>
+{% else %}
+    <p>Virtual tour is not available for this property yet.</p>
+{% endif %}
 
 {% if user.is_authenticated %}
     <a href="{% url 'property_update' property.pk %}" class="btn">Edit</a>
