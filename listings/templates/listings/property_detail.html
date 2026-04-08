@@ -15,8 +15,6 @@
 <p><strong>Price:</strong> Rs. {{ property.price }}</p>
 <p><strong>Description:</strong></p>
 <p>{{ property.description }}</p>
-<p><strong>Rooms:</strong> {{ property.number_of_rooms|default:"-" }}</p>
-<p><strong>Size:</strong> {% if property.size_sqft %}{{ property.size_sqft }} sqft{% else %}-{% endif %}</p>
 
 <hr style="margin: 25px 0;">
 <h3>360 Virtual Tour</h3>

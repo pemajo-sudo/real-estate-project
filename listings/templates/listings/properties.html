@@ -30,8 +30,6 @@
                 <p><strong>Location:</strong> {{ property.location }}</p>
                 <p><strong>Type:</strong> {{ property.property_type }}</p>
                 <p><strong>Price:</strong> Rs. {{ property.price }}</p>
-                <p><strong>Rooms:</strong> {{ property.number_of_rooms|default:"-" }}</p>
-                <p><strong>Size:</strong> {% if property.size_sqft %}{{ property.size_sqft }} sqft{% else %}-{% endif %}</p>
                 <a href="{% url 'property_detail' property.pk %}" class="btn">View Details</a>
                 {% if property.pk in compared_ids %}
                     <form method="post" action="{% url 'remove_from_compare' property.pk %}">
