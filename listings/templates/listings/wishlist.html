@@ -1,0 +1,28 @@
+{% extends "listings/base.html" %}
+
+{% block content %}
+<h2>My Wishlist</h2>
+
+{% if wishlist_items %}
+    <div class="card-grid">
+        {% for item in wishlist_items %}
+            <div class="card">
+                {% if item.property.image %}
+                    <img src="{{ item.property.image.url }}" alt="{{ item.property.name }}">
+                {% endif %}
+                <div class="card-body">
+                    <h3>{{ item.property.name }}</h3>
+                    <p><strong>Price:</strong> Rs. {{ item.property.price }}</p>
+                    <a href="{% url 'property_detail' item.property.pk %}" class="btn">View Property</a>
+                    <form method="post" action="{% url 'remove_from_wishlist' item.property.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Remove</button>
+                    </form>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p>You have not added any properties to your wishlist yet.</p>
+{% endif %}
+{% endblock %}

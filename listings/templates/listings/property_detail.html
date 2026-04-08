@@ -18,6 +18,37 @@
     <a href="{% url 'property_delete' property.pk %}" class="btn btn-danger">Delete</a>
 {% endif %}
 
+{% if user.is_authenticated %}
+    {% if in_wishlist %}
+        <form method="post" action="{% url 'remove_from_wishlist' property.pk %}" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-secondary">Remove from Wishlist</button>
+        </form>
+    {% else %}
+        <form method="post" action="{% url 'add_to_wishlist' property.pk %}" style="display: inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn">Add to Wishlist</button>
+        </form>
+    {% endif %}
+{% else %}
+    <a href="{% url 'login' %}" class="btn">Login to Add Wishlist</a>
+{% endif %}
+
+{% if is_compared %}
+    <form method="post" action="{% url 'remove_from_compare' property.pk %}" style="display: inline;">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{% url 'property_detail' property.pk %}">
+        <button type="submit" class="btn btn-secondary">Remove Compare</button>
+    </form>
+{% else %}
+    <form method="post" action="{% url 'add_to_compare' property.pk %}" style="display: inline;">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{% url 'property_detail' property.pk %}">
+        <button type="submit" class="btn">Add Compare</button>
+    </form>
+{% endif %}
+<a href="{% url 'compare_properties' %}" class="btn btn-secondary">Open Compare ({{ compare_count }})</a>
+
 <hr style="margin: 25px 0;">
 <h3>Send an Inquiry About This Property</h3>
 <form method="post" action="{% url 'send_inquiry' property.pk %}">

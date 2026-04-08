@@ -18,6 +18,8 @@ class Property(models.Model):
         default="Residential"
     )
     description = models.TextField()
+    number_of_rooms = models.PositiveIntegerField(null=True, blank=True)
+    size_sqft = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     image = models.ImageField(upload_to="property_images/", null=True, blank=True)
 
     def __str__(self):
@@ -33,3 +35,17 @@ class Inquiry(models.Model):
 
     def __str__(self):
         return f"Inquiry from {self.name} on {self.property}"
+
+
+class Wishlist(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="wishlist_items")
+    property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name="wishlisted_by")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["user", "property"], name="unique_user_property_wishlist")
+        ]
+
+    def __str__(self):
+        return f"{self.user} -> {self.property}"

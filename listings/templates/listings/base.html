@@ -120,8 +120,10 @@
         <div>
             <a href="{% url 'home' %}">Home</a>
             <a href="{% url 'property_list' %}">Properties</a>
+            <a href="{% url 'compare_properties' %}">Compare</a>
             {% if user.is_authenticated %}
                 <a href="{% url 'property_create' %}">Add Property</a>
+                <a href="{% url 'wishlist' %}">My Wishlist</a>
                 <a href="{% url 'logout' %}">Logout</a>
             {% else %}
                 <a href="{% url 'register' %}">Register</a>

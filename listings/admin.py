@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Inquiry, Property
+from .models import Inquiry, Property, Wishlist
 
 
 @admin.register(Property)
@@ -14,3 +14,10 @@ class InquiryAdmin(admin.ModelAdmin):
     list_display = ("name", "email", "property", "created_at")
     list_filter = ("created_at", "property")
     search_fields = ("name", "email", "message", "property__name")
+
+
+@admin.register(Wishlist)
+class WishlistAdmin(admin.ModelAdmin):
+    list_display = ("user", "property", "created_at")
+    list_filter = ("created_at",)
+    search_fields = ("user__username", "property__name")

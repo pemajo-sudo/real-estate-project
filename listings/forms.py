@@ -7,7 +7,16 @@ from .models import Inquiry
 class PropertyForm(forms.ModelForm):
     class Meta:
         model = Property
-        fields = ["name", "location", "price", "property_type", "description", "image"]
+        fields = [
+            "name",
+            "location",
+            "price",
+            "property_type",
+            "number_of_rooms",
+            "size_sqft",
+            "description",
+            "image",
+        ]
         widgets = {
             "description": forms.Textarea(attrs={"rows": 4}),
         }
