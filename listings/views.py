@@ -11,6 +11,20 @@ COMPARE_SESSION_KEY = "compare_properties"
 MAX_COMPARE_ITEMS = 3
 
 
+def _youtube_embed_url(url):
+    if not url:
+        return ""
+    if "youtube.com/watch?v=" in url:
+        video_id = url.split("watch?v=")[-1].split("&")[0]
+        return f"https://www.youtube.com/embed/{video_id}"
+    if "youtu.be/" in url:
+        video_id = url.split("youtu.be/")[-1].split("?")[0]
+        return f"https://www.youtube.com/embed/{video_id}"
+    if "youtube.com/embed/" in url:
+        return url
+    return ""
+
+
 def home(request):
     featured_properties = Property.objects.all().order_by("-id")[:4]
     return render(request, "listings/home.html", {"featured_properties": featured_properties})
@@ -130,6 +144,7 @@ def property_detail(request, pk):
 
     if request.user.is_authenticated:
         in_wishlist = Wishlist.objects.filter(user=request.user, property=property_obj).exists()
+    youtube_embed_url = _youtube_embed_url(property_obj.video_url)
     return render(
         request,
         "listings/property_detail.html",
@@ -141,6 +156,7 @@ def property_detail(request, pk):
             "compare_count": len(compared_ids),
             "tour_scenes": tour_config,
             "default_tour_scene": default_scene,
+            "youtube_embed_url": youtube_embed_url,
         },
     )
 

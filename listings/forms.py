@@ -16,6 +16,8 @@ class PropertyForm(forms.ModelForm):
             "size_sqft",
             "description",
             "image",
+            "walkthrough_video",
+            "video_url",
         ]
         widgets = {
             "description": forms.Textarea(attrs={"rows": 4}),

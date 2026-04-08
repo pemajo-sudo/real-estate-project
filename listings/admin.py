@@ -5,8 +5,36 @@ from .models import Inquiry, Property, VirtualTourHotspot, VirtualTourScene, Wis
 
 @admin.register(Property)
 class PropertyAdmin(admin.ModelAdmin):
-    list_display = ("name", "location", "property_type", "price")
+    list_display = ("name", "location", "property_type", "price", "has_video_walkthrough")
     search_fields = ("name", "location", "property_type")
+    fieldsets = (
+        (
+            "Basic Information",
+            {
+                "fields": (
+                    "name",
+                    "location",
+                    "price",
+                    "property_type",
+                    "number_of_rooms",
+                    "size_sqft",
+                    "description",
+                    "image",
+                )
+            },
+        ),
+        (
+            "Video Walkthrough",
+            {
+                "fields": ("walkthrough_video", "video_url"),
+                "description": "Add either an uploaded video file or a YouTube/external video URL.",
+            },
+        ),
+    )
+
+    @admin.display(boolean=True, description="Has Video")
+    def has_video_walkthrough(self, obj):
+        return bool(obj.walkthrough_video or obj.video_url)
 
 
 @admin.register(Inquiry)

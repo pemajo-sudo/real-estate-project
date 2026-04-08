@@ -21,6 +21,8 @@ class Property(models.Model):
     number_of_rooms = models.PositiveIntegerField(null=True, blank=True)
     size_sqft = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     image = models.ImageField(upload_to="property_images/", null=True, blank=True)
+    walkthrough_video = models.FileField(upload_to="property_videos/", null=True, blank=True)
+    video_url = models.URLField(blank=True)
 
     def __str__(self):
         return self.name
