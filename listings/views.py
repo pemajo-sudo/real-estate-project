@@ -4,8 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .forms import CustomUserCreationForm, InquiryForm, PropertyForm
-from .models import Inquiry, Property, VirtualTourScene, Wishlist
+from .forms import CustomUserCreationForm, InquiryForm, PropertyForm, VisitForm
+from .models import Inquiry, Property, VirtualTourScene, Visit, Wishlist
 
 COMPARE_SESSION_KEY = "compare_properties"
 MAX_COMPARE_ITEMS = 3
@@ -182,6 +182,29 @@ def send_inquiry(request, pk):
         request,
         "listings/property_detail.html",
         {"property": property_obj, "inquiry_form": inquiry_form},
+    )
+
+
+@login_required
+def schedule_visit(request, pk):
+    property_obj = get_object_or_404(Property, pk=pk)
+    if request.method == "POST":
+        form = VisitForm(request.POST)
+        if form.is_valid():
+            visit = form.save(commit=False)
+            visit.user = request.user
+            visit.property = property_obj
+            visit.save()
+            messages.success(request, "Visit scheduled successfully.")
+            return redirect("property_detail", pk=pk)
+        messages.error(request, "Please correct the errors below.")
+    else:
+        form = VisitForm()
+
+    return render(
+        request,
+        "listings/schedule_visit.html",
+        {"form": form, "property": property_obj},
     )
 
 

@@ -1,0 +1,14 @@
+{% extends "listings/base.html" %}
+
+{% block content %}
+<h2>Schedule a Visit</h2>
+<p><strong>Property:</strong> {{ property.name }}</p>
+<p><strong>Location:</strong> {{ property.location }}</p>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn">Submit Visit Request</button>
+    <a href="{% url 'property_detail' property.pk %}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}

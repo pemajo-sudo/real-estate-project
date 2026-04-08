@@ -97,3 +97,18 @@ class VirtualTourHotspot(models.Model):
 
     def __str__(self):
         return f"{self.scene.title}: {self.label}"
+
+
+class Visit(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="visits")
+    property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name="visits")
+    visit_date = models.DateField()
+    visit_time = models.TimeField()
+    note = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.user.username} visit for {self.property.name} on {self.visit_date}"

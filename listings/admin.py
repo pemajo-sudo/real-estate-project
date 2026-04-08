@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Inquiry, Property, VirtualTourHotspot, VirtualTourScene, Wishlist
+from .models import Inquiry, Property, VirtualTourHotspot, VirtualTourScene, Visit, Wishlist
 
 
 @admin.register(Property)
@@ -60,6 +60,13 @@ class WishlistAdmin(admin.ModelAdmin):
     list_display = ("user", "property", "created_at")
     list_filter = ("created_at",)
     search_fields = ("user__username", "property__name")
+
+
+@admin.register(Visit)
+class VisitAdmin(admin.ModelAdmin):
+    list_display = ("user", "property", "visit_date", "visit_time", "created_at")
+    list_filter = ("visit_date", "created_at")
+    search_fields = ("user__username", "property__name", "note")
 
 
 class VirtualTourHotspotInline(admin.TabularInline):

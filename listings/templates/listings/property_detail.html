@@ -113,6 +113,7 @@
 {% if user.is_authenticated %}
     <a href="{% url 'property_update' property.pk %}" class="btn">Edit</a>
     <a href="{% url 'property_delete' property.pk %}" class="btn btn-danger">Delete</a>
+    <a href="{% url 'schedule_visit' property.pk %}" class="btn">Schedule a Visit</a>
 {% endif %}
 
 {% if user.is_authenticated %}
@@ -129,6 +130,7 @@
     {% endif %}
 {% else %}
     <a href="{% url 'login' %}" class="btn">Login to Add Wishlist</a>
+    <a href="{% url 'login' %}" class="btn">Login to Schedule a Visit</a>
 {% endif %}
 
 {% if is_compared %}
