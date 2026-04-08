@@ -5,7 +5,7 @@ from .models import Inquiry, Property, VirtualTourHotspot, VirtualTourScene, Wis
 
 @admin.register(Property)
 class PropertyAdmin(admin.ModelAdmin):
-    list_display = ("name", "location", "property_type", "price", "has_video_walkthrough")
+    list_display = ("name", "location", "property_type", "price", "has_map_location", "has_video_walkthrough")
     search_fields = ("name", "location", "property_type")
     fieldsets = (
         (
@@ -30,7 +30,18 @@ class PropertyAdmin(admin.ModelAdmin):
                 "description": "Add either an uploaded video file or a YouTube/external video URL.",
             },
         ),
+        (
+            "Map Location",
+            {
+                "fields": ("address", "latitude", "longitude"),
+                "description": "Add an address and precise coordinates to show an interactive map on the property page.",
+            },
+        ),
     )
+
+    @admin.display(boolean=True, description="Has Map")
+    def has_map_location(self, obj):
+        return obj.latitude is not None and obj.longitude is not None
 
     @admin.display(boolean=True, description="Has Video")
     def has_video_walkthrough(self, obj):

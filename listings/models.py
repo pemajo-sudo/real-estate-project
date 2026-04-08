@@ -23,6 +23,9 @@ class Property(models.Model):
     image = models.ImageField(upload_to="property_images/", null=True, blank=True)
     walkthrough_video = models.FileField(upload_to="property_videos/", null=True, blank=True)
     video_url = models.URLField(blank=True)
+    address = models.CharField(max_length=255, blank=True)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
 
     def __str__(self):
         return self.name
