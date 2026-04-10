@@ -37,6 +37,7 @@
             --radius-lg: 20px;
             --radius-pill: 999px;
             --transition: 0.25s ease;
+            --home-panel-width: 58%;
         }
 
         /* ===== GLOBAL ===== */
@@ -758,10 +759,139 @@
     </style>
 </head>
 
-<body>
+<body> <!-- Custom Styles for Transparent/Split Navbar -->
+    <style>
+        /* ===== GOLD SIGN-UP BUTTON ===== */
+        .btn-gold-signup {
+            background-color: #D4AF37 !important;
+            color: #fff !important;
+            border-radius: 50px;
+            border: none;
+            padding: 0.45rem 1.4rem;
+            font-weight: 700;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .btn-gold-signup:hover {
+            background-color: #c39d2c !important;
+            box-shadow: 0 0 16px rgba(212, 175, 55, 0.6);
+            transform: translateY(-2px);
+        }
+
+        /* ===== HOME NAVBAR — floats over the RIGHT/carousel side ===== */
+        .navbar-home {
+            position: fixed;
+            width: calc(100% - var(--home-panel-width));
+            right: 0;
+            left: auto;
+            top: 0;
+            background: transparent !important;
+            z-index: 1050;
+            transition: background 0.35s ease, width 0.35s ease, box-shadow 0.35s ease, backdrop-filter 0.35s ease;
+            border-bottom: none;
+        }
+
+        /* Hide brand inside navbar when on home (brand lives in the hero panel) */
+        .navbar-home .navbar-brand {
+            display: none !important;
+        }
+
+        .navbar-home .nav-link {
+            color: #fff !important;
+            text-shadow: 0 1px 6px rgba(0, 0, 0, 0.28);
+            font-weight: 500;
+            position: relative;
+            padding-top: 0.55rem;
+            padding-bottom: 0.55rem;
+        }
+
+        .navbar-home .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background: #D4AF37;
+            transition: width 0.28s ease;
+        }
+
+        .navbar-home .nav-link:hover::after,
+        .navbar-home .nav-link.active::after {
+            width: 75%;
+        }
+
+        .navbar-home .container-xl {
+            margin: 0.85rem 1.25rem 0.25rem auto;
+            width: calc(100% - 2.5rem);
+            border-radius: 999px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.26), rgba(255, 255, 255, 0.1));
+            border: 1px solid rgba(255, 255, 255, 0.32);
+            backdrop-filter: blur(12px) saturate(130%);
+            -webkit-backdrop-filter: blur(12px) saturate(130%);
+            box-shadow: 0 12px 28px rgba(9, 31, 56, 0.22);
+            min-height: 62px;
+            padding-top: 0.2rem;
+            padding-bottom: 0.2rem;
+        }
+
+        .navbar-home .navbar-collapse {
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-home .navbar-nav.mx-auto {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            gap: 0.25rem;
+        }
+
+        .navbar-home .navbar-nav.align-items-center {
+            gap: 0.2rem !important;
+        }
+
+        /* On scroll — expand to full width with dark glass background */
+        .navbar-home.navbar-scrolled {
+            width: 100%;
+            left: 0;
+            background: rgba(11, 60, 93, 0.34) !important;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(7px);
+            -webkit-backdrop-filter: blur(7px);
+        }
+
+        .navbar-home.navbar-scrolled .navbar-brand {
+            display: flex !important;
+        }
+
+        /* Mobile — always full width with dark bg */
+        @media (max-width: 991.98px) {
+            .navbar-home {
+                width: 100%;
+                left: 0;
+                background: rgba(11, 60, 93, 0.97) !important;
+            }
+
+            .navbar-home .container-xl {
+                margin: 0.45rem auto;
+                width: calc(100% - 1.2rem);
+                border-radius: var(--radius-md);
+                min-height: auto;
+                background: rgba(11, 60, 93, 0.88);
+                border-color: rgba(255, 255, 255, 0.2);
+            }
+
+            .navbar-home .navbar-brand {
+                display: flex !important;
+            }
+        }
+    </style>
 
     <!-- ===== NAVBAR ===== -->
-    <nav id="mainNavbar" class="navbar navbar-expand-lg navbar-light bg-white sticky-top">
+    <nav id="mainNavbar"
+        class="navbar navbar-expand-lg {% if request.resolver_match.url_name == 'home' %}navbar-home navbar-dark{% else %}navbar-light bg-white sticky-top shadow-sm{% endif %}">
         <div class="container-xl px-4">
 
             <!-- Logo -->
@@ -785,12 +915,12 @@
                             href="{% url 'property_list' %}?type=buy">Buy</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if request.resolver_match.url_name == 'property_list' and request.GET.type == 'sell' %}active{% endif %}"
-                            href="{% url 'property_list' %}?type=sell">Sell</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link {% if request.resolver_match.url_name == 'property_list' and request.GET.type == 'rent' %}active{% endif %}"
                             href="{% url 'property_list' %}?type=rent">Rent</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'property_list' and request.GET.type == 'sell' %}active{% endif %}"
+                            href="{% url 'property_list' %}?type=sell">Sell</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {% if request.resolver_match.url_name == 'find_agent' %}active{% endif %}"
@@ -805,7 +935,7 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#"
                             id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"
-                            style="color: var(--primary); font-weight: 700;">
+                            style="{% if request.resolver_match.url_name != 'home' %}color: var(--primary);{% endif %} font-weight: 700;">
                             <i class="bi bi-person-circle fs-5"></i>
                             <span class="d-none d-lg-inline">My Profile / Home</span>
                         </a>
@@ -842,7 +972,8 @@
                     </li>
                     <!-- Add property -->
                     <li class="nav-item">
-                        <a class="btn btn-outline-primary btn-sm px-3" href="{% url 'property_create' %}">
+                        <a class="btn btn-outline-primary btn-sm px-3 {% if request.resolver_match.url_name == 'home' %}border-white text-white{% endif %}"
+                            href="{% url 'property_create' %}">
                             <i class="bi bi-plus-lg me-1"></i>Add Property
                         </a>
                     </li>
@@ -850,16 +981,14 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'login' %}">Log In</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="btn btn-primary btn-sm px-4" href="{% url 'register' %}">Sign Up</a>
+                    <li class="nav-item ms-2">
+                        <a class="btn btn-gold-signup" href="{% url 'register' %}">Sign Up</a>
                     </li>
                     {% endif %}
                 </ul>
-
             </div>
         </div>
     </nav>
-
     <!-- ===== MAIN CONTENT ===== -->
     <main class="{% block main_class %}container my-5{% endblock %}">
         {% if messages %}
@@ -941,6 +1070,7 @@
             </div>
         </div>
     </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 
