@@ -142,31 +142,25 @@
     }
 
     .panel-brand-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 11px;
-        background: linear-gradient(145deg, #D4AF37, #b98b23);
-        display: flex;
+        display: inline-flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.15rem;
-        color: #fff;
-        box-shadow: 0 5px 16px rgba(212, 175, 55, 0.55);
-        flex-shrink: 0;
-    }
-
-    .panel-brand-name {
-        font-family: 'Playfair Display', serif;
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: #ffffff;
-        letter-spacing: 0.03em;
         line-height: 1;
     }
 
-    .panel-brand-name em {
-        color: #D4AF37;
-        font-style: normal;
+    .panel-brand-icon i {
+        color: #fff;
+        filter: drop-shadow(0 0 8px rgba(212, 175, 55, 1)) drop-shadow(0 0 18px rgba(212, 175, 55, 0.55));
+        font-size: 1.5rem;
+    }
+
+    .panel-brand-name {
+        font-size: 1.45rem;
+        font-weight: 800;
+        color: #ffffff;
+        letter-spacing: -0.01em;
+        line-height: 1;
+        font-family: inherit;
     }
 
     /* ---- Centred text + search ---- */
@@ -175,8 +169,8 @@
         display: flex;
         flex-direction: column;
         justify-content: center;
-        padding: 0 10% 76px 84px;
-        max-width: 640px;
+        padding: 0 10% 76px 140px;
+        max-width: 720px;
         align-items: flex-start;
     }
 
@@ -650,7 +644,7 @@
         }
 
         .panel-body {
-            padding: 0 24px 60px 30px;
+            padding: 0 24px 60px 24px;
             max-width: none;
         }
 
@@ -745,7 +739,7 @@
         {# Brand — top left of panel #}
         <a href="{% url 'home' %}" class="panel-brand">
             <div class="panel-brand-icon"><i class="bi bi-house-heart-fill"></i></div>
-            <div class="panel-brand-name">Shelter <em>&amp;</em> Soul</div>
+            <div class="panel-brand-name">Shelter &amp; Soul</div>
         </a>
 
         {# Centred content #}

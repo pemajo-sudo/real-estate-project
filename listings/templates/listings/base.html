@@ -806,22 +806,18 @@
             transform: translateY(-2px);
         }
 
-        /* ===== HOME NAVBAR — floats over the RIGHT/carousel side ===== */
+        /* ===== HOME NAVBAR ===== */
         .navbar-home {
             position: absolute;
-            width: calc(100% - var(--home-panel-width));
-            right: 0;
-            left: auto;
+            width: 100%;
+            left: 0;
             top: 0;
-            background: transparent !important;
+            background: rgba(11, 60, 93, 0.2) !important;
             z-index: 1050;
             transition: background 0.35s ease, width 0.35s ease, box-shadow 0.35s ease, backdrop-filter 0.35s ease;
-            border-bottom: none;
-        }
-
-        /* Hide brand inside navbar when on home (brand lives in the hero panel) */
-        .navbar-home .navbar-brand {
-            display: none !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
         }
 
         .navbar-home .nav-link {
@@ -829,14 +825,14 @@
             text-shadow: 0 1px 6px rgba(0, 0, 0, 0.28);
             font-weight: 500;
             position: relative;
-            padding-top: 0.55rem;
-            padding-bottom: 0.55rem;
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem;
         }
 
         .navbar-home .nav-link::after {
             content: '';
             position: absolute;
-            bottom: 2px;
+            bottom: 4px;
             left: 50%;
             transform: translateX(-50%);
             width: 0;
@@ -850,54 +846,15 @@
             width: 75%;
         }
 
-        .navbar-home .container-xl {
-            margin: 0.65rem 1.25rem 0.25rem auto;
-            width: calc(100% - 2.5rem);
-            border-radius: 999px;
-            background: linear-gradient(135deg, rgba(46, 52, 63, 0.58), rgba(34, 40, 50, 0.44));
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            backdrop-filter: blur(12px) saturate(120%);
-            -webkit-backdrop-filter: blur(12px) saturate(120%);
-            box-shadow: 0 10px 24px rgba(9, 31, 56, 0.24);
-            min-height: 56px;
-            padding-top: 0.08rem;
-            padding-bottom: 0.08rem;
-        }
-
         .navbar-home .navbar-collapse {
             justify-content: space-between;
             align-items: center;
         }
 
-        .navbar-home .navbar-nav.mx-auto {
-            margin-left: 0 !important;
-            margin-right: 0 !important;
-            gap: 0.25rem;
-        }
-
-        .navbar-home .navbar-nav.align-items-center {
-            gap: 0.2rem !important;
-        }
-
         /* Mobile — always full width with dark bg */
         @media (max-width: 991.98px) {
             .navbar-home {
-                width: 100%;
-                left: 0;
-                background: transparent !important;
-            }
-
-            .navbar-home .container-xl {
-                margin: 0.45rem auto;
-                width: calc(100% - 1.2rem);
-                border-radius: var(--radius-md);
-                min-height: auto;
-                background: rgba(24, 30, 40, 0.8);
-                border-color: rgba(255, 255, 255, 0.16);
-            }
-
-            .navbar-home .navbar-brand {
-                display: flex !important;
+                background: rgba(11, 60, 93, 0.9) !important;
             }
         }
     </style>
@@ -960,11 +917,6 @@
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="{% url 'property_list' %}">
-                                    <i class="bi bi-layout-text-window-reverse"></i> My Posts
-                                </a>
-                            </li>
-                            <li>
                                 <a class="dropdown-item" href="{% url 'wishlist' %}">
                                     <i class="bi bi-heart"></i> Wishlist
                                 </a>
@@ -983,13 +935,6 @@
                                 </a>
                             </li>
                         </ul>
-                    </li>
-                    <!-- Add property -->
-                    <li class="nav-item">
-                        <a class="btn btn-outline-primary btn-sm px-3 {% if request.resolver_match.url_name == 'home' %}border-white text-white{% endif %}"
-                            href="{% url 'property_create' %}">
-                            <i class="bi bi-plus-lg me-1"></i>Add Property
-                        </a>
                     </li>
                     {% else %}
                     <li class="nav-item">

@@ -59,7 +59,6 @@ def login_view(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            messages.success(request, "Login successful.")
             return redirect("home")
         else:
             messages.error(request, "Please enter a correct username and password.")
@@ -70,7 +69,6 @@ def login_view(request):
 
 def logout_view(request):
     logout(request)
-    messages.success(request, "You have been logged out.")
     return redirect("home")
 
 
