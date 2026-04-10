@@ -35,6 +35,18 @@ def find_agent(request):
     return render(request, "listings/find_agent.html")
 
 
+def sell_property(request):
+    """Renders the Sell property lead capture page."""
+    if request.method == "POST":
+        # Form submission simulation without DB saving
+        name = request.POST.get("name")
+        email = request.POST.get("email")
+        # In a full flow we would save a SellLead model here, but we are just handling frontend UI
+        messages.success(request, "Thank you! We have received your query. Our agent will contact you shortly.")
+        return render(request, "listings/sell.html", {"success": True})
+    return render(request, "listings/sell.html")
+
+
 def register(request):
     if request.method == "POST":
         form = CustomUserCreationForm(request.POST)

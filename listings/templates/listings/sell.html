@@ -1,0 +1,200 @@
+{% extends 'listings/base.html' %}
+
+{% block content %}
+<style>
+    /* Sell Page Custom Styles */
+    .sell-hero {
+        background: url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2000&q=80') no-repeat center center/cover;
+        min-height: 480px;
+        position: relative;
+        display: flex;
+        align-items: center;
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        margin-bottom: 3rem;
+    }
+
+    .sell-hero-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(8, 31, 77, 0.9) 0%, rgba(13, 43, 102, 0.75) 100%);
+    }
+
+    .sell-content-wrapper {
+        position: relative;
+        z-index: 2;
+        padding: 4rem 2rem;
+    }
+
+    .sell-header {
+        font-family: 'Playfair Display', serif;
+        font-weight: 800;
+        font-size: clamp(2.5rem, 5vw, 4rem);
+        color: #ffffff;
+        margin-bottom: 1.5rem;
+    }
+
+    .sell-description {
+        font-size: 1.15rem;
+        color: rgba(255, 255, 255, 0.9);
+        max-width: 480px;
+        line-height: 1.6;
+        margin-bottom: 2rem;
+    }
+
+    .sell-form-wrapper {
+        background: #ffffff;
+        border-radius: var(--radius-md);
+        padding: 2.5rem;
+        box-shadow: var(--shadow-lg);
+        position: relative;
+        z-index: 10;
+        margin-top: -300px; /* Overlap hero */
+        margin-bottom: 3rem;
+    }
+
+    @media (max-width: 991.98px) {
+        .sell-form-wrapper {
+            margin-top: 0;
+            box-shadow: var(--shadow-md);
+        }
+    }
+
+    .form-control, .form-select {
+        border-radius: var(--radius-sm);
+        padding: 0.8rem 1rem;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        font-size: 0.95rem;
+        transition: var(--transition);
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--gold);
+        box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.25);
+        background: #fff;
+    }
+
+    .form-label {
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: var(--text);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.4rem;
+    }
+
+    .btn-gold-submit {
+        background: var(--gold);
+        color: #fff;
+        border: none;
+        padding: 1rem;
+        border-radius: var(--radius-pill);
+        font-weight: 700;
+        font-size: 1rem;
+        width: 100%;
+        transition: var(--transition);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .btn-gold-submit:hover {
+        background: var(--gold-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
+    }
+
+    .success-card {
+        background: #f7f9fc;
+        border: 1px solid #e5eaf4;
+        border-radius: var(--radius-md);
+        padding: 3rem 2rem;
+        text-align: center;
+    }
+
+    .success-card i {
+        font-size: 3rem;
+        color: var(--gold);
+        margin-bottom: 1rem;
+    }
+
+</style>
+
+<div class="container my-5">
+    <div class="row g-0">
+        <!-- Left Side: Hero / Description -->
+        <div class="col-lg-6">
+            <div class="sell-hero w-100">
+                <div class="sell-hero-overlay"></div>
+                <div class="sell-content-wrapper">
+                    <h1 class="sell-header">Sell With Us</h1>
+                    <p class="sell-description">
+                        Stay in control of how, when, and where your property is marketed with a strategy tailored to fit your absolute needs. Join our premium network of sellers.
+                    </p>
+                    <div class="d-flex gap-3 text-white">
+                        <i class="bi bi-shield-check fs-4"></i>
+                        <p class="mb-0 pt-1">Trusted Professionals</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: Form -->
+        <div class="col-lg-5 ms-auto">
+            <div class="sell-form-wrapper">
+                {% if success %}
+                <div class="success-card">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <h3 class="mb-3 font-playfair fw-bold">Request Received</h3>
+                    <p class="text-muted mb-4">Thank you for reaching out. One of our premium agents will contact you shortly to build your custom marketing strategy.</p>
+                    <a href="{% url 'home' %}" class="btn btn-outline-primary rounded-pill px-4">Return Home</a>
+                </div>
+                {% else %}
+                <h3 class="font-playfair fw-bold mb-4" style="color: var(--primary);">Begin Your Journey</h3>
+                <form method="POST" action="{% url 'sell' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="name" name="name" required placeholder="Jane Doe">
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="email" name="email" required placeholder="jane@example.com">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="phone" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" required placeholder="(123) 456-7890">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="propertyType" class="form-label">Property Type</label>
+                        <select class="form-select" id="propertyType" name="property_type" required>
+                            <option value="" disabled selected>Select property type...</option>
+                            <option value="Residential">Residential Home</option>
+                            <option value="Apartment">Apartment</option>
+                            <option value="Commercial">Commercial Space</option>
+                            <option value="Land">Land Property</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="location" class="form-label">Property Location</label>
+                        <input type="text" class="form-control" id="location" name="location" required placeholder="City or Neighborhood">
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="message" class="form-label">Additional Details</label>
+                        <textarea class="form-control" id="message" name="message" rows="4" placeholder="Tell us about the unique features of your property..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-gold-submit">Submit Request</button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

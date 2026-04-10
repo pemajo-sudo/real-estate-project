@@ -933,8 +933,8 @@
                             href="{% url 'property_list' %}?type=rent">Rent</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if request.resolver_match.url_name == 'property_list' and request.GET.type == 'sell' %}active{% endif %}"
-                            href="{% url 'property_list' %}?type=sell">Sell</a>
+                        <a class="nav-link {% if request.resolver_match.url_name == 'sell' %}active{% endif %}"
+                            href="{% url 'sell' %}">Sell</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {% if request.resolver_match.url_name == 'find_agent' %}active{% endif %}"
