@@ -41,40 +41,235 @@
 </section>
 
 {# ===== FEATURED PROPERTIES ===== #}
-<div class="container my-5">
+<style>
+    .featured-section {
+        padding: 0.5rem 0 1rem;
+    }
+    .featured-header {
+        margin-bottom: 1.5rem;
+    }
+    .featured-kicker {
+        display: inline-block;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--premium-teal);
+        margin-bottom: 0.5rem;
+    }
+    .featured-title {
+        font-size: clamp(1.45rem, 2.4vw, 2.15rem);
+        font-weight: 800;
+        color: var(--premium-text);
+        margin-bottom: 0.45rem;
+    }
+    .featured-subtitle {
+        color: var(--premium-muted);
+        margin-bottom: 0;
+    }
+    .featured-platform-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.45rem;
+        margin-top: 0.95rem;
+    }
+    .featured-platform-item {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--premium-primary);
+        background: #f4f7fd;
+        border: 1px solid #d7e2f4;
+        border-radius: 999px;
+        padding: 0.32rem 0.7rem;
+    }
+    .featured-card {
+        border: 1px solid #e4eaf6;
+        border-radius: 18px;
+        overflow: hidden;
+        background: #ffffff;
+        box-shadow: 0 10px 22px rgba(16, 33, 63, 0.08);
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .featured-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 18px 32px rgba(10, 26, 52, 0.16);
+    }
+    .featured-media {
+        position: relative;
+        height: 260px;
+        overflow: hidden;
+    }
+    .featured-media img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+    }
+    .featured-card:hover .featured-media img {
+        transform: scale(1.07);
+    }
+    .featured-badge {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        z-index: 2;
+        font-size: 0.74rem;
+        font-weight: 700;
+        border-radius: 999px;
+        padding: 0.3rem 0.68rem;
+        color: #fff;
+    }
+    .featured-badge.featured {
+        background: linear-gradient(145deg, var(--premium-primary), #1c4d93);
+    }
+    .featured-badge.new {
+        background: linear-gradient(145deg, #0f9d8a, #0a7f71);
+    }
+    .featured-badge.hot {
+        background: linear-gradient(145deg, #d3a83f, #b98b23);
+    }
+    .featured-heart {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 1px solid #e5e8ef;
+        background: rgba(255, 255, 255, 0.95);
+        color: #de5b73;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.95rem;
+        box-shadow: 0 5px 12px rgba(16, 33, 63, 0.16);
+    }
+    .featured-card-body {
+        padding: 1.2rem 1.2rem 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.7rem;
+    }
+    .featured-price {
+        color: var(--premium-primary);
+        font-size: 1.35rem;
+        font-weight: 800;
+        line-height: 1.2;
+    }
+    .featured-name {
+        font-size: 1.05rem;
+        font-weight: 700;
+        margin: 0;
+        color: var(--premium-text);
+    }
+    .featured-location {
+        color: var(--premium-muted);
+        margin: 0;
+        font-size: 0.93rem;
+    }
+    .featured-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.6rem;
+        margin-top: 0.15rem;
+        padding-top: 0.65rem;
+        border-top: 1px solid #ecf0f7;
+    }
+    .featured-meta-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        color: #5f6d83;
+        font-size: 0.84rem;
+        font-weight: 600;
+    }
+    .featured-meta-item i {
+        color: var(--premium-teal);
+    }
+    @media (max-width: 767.98px) {
+        .featured-media {
+            height: 230px;
+        }
+        .featured-header {
+            margin-bottom: 1.15rem;
+        }
+        .featured-card-body {
+            padding: 1rem;
+        }
+    }
+</style>
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold mb-0 border-bottom border-primary pb-2 d-inline-block"
-            style="border-color: var(--gold) !important;">
-            Featured Properties
-        </h2>
-        <a href="{% url 'property_list' %}" class="text-decoration-none fw-semibold" style="color: var(--primary);">
-            View All <i class="bi bi-arrow-right"></i>
-        </a>
+<section class="container my-5 featured-section">
+    <div class="featured-header d-flex flex-column flex-md-row align-items-md-end justify-content-between gap-3">
+        <div>
+            <span class="featured-kicker">Curated Collection</span>
+            <h2 class="featured-title">Featured Properties</h2>
+            <p class="featured-subtitle">Handpicked premium homes with exceptional value, crafted for modern living.</p>
+            <div class="featured-platform-nav" aria-label="Primary navigation">
+                <span class="featured-platform-item">Buy</span>
+                <span class="featured-platform-item">Sell</span>
+                <span class="featured-platform-item">Rent</span>
+                <span class="featured-platform-item">Find an Agent</span>
+                <span class="featured-platform-item">My Profile / Home</span>
+                <span class="featured-platform-item">Recent Searches</span>
+                <span class="featured-platform-item">My Posts</span>
+                <span class="featured-platform-item">Wishlist</span>
+                <span class="featured-platform-item">My Inquiries</span>
+                <span class="featured-platform-item">Log In / Sign Up</span>
+            </div>
+        </div>
+        <a href="{% url 'property_list' %}" class="btn btn-outline-primary px-4">View All Listings <i class="bi bi-arrow-right ms-1"></i></a>
     </div>
 
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-2 row-cols-xl-4 g-4">
         {% for property in featured_properties %}
         <div class="col">
-            <div class="card h-100">
-                {% if property.image %}
-                <img src="{{ property.image.url }}" class="card-img-top" alt="{{ property.name }}">
-                {% else %}
-                <div class="card-img-top d-flex align-items-center justify-content-center"
-                    style="height: 220px; background: linear-gradient(135deg, #e8edf8, #d4ddf0);">
-                    <i class="bi bi-house fs-1 text-primary opacity-50"></i>
+            <article class="featured-card h-100">
+                <div class="featured-media">
+                    {% if forloop.first %}
+                    <span class="featured-badge featured">Featured</span>
+                    {% elif forloop.counter == 2 %}
+                    <span class="featured-badge new">New</span>
+                    {% else %}
+                    <span class="featured-badge hot">Hot Deal</span>
+                    {% endif %}
+                    <a href="{% url 'property_detail' property.pk %}" class="featured-heart" aria-label="Save property">
+                        <i class="bi bi-heart-fill"></i>
+                    </a>
+
+                    {% if property.image %}
+                    <img src="{{ property.image.url }}" alt="{{ property.name }}">
+                    {% else %}
+                    <div class="w-100 h-100 d-flex align-items-center justify-content-center"
+                        style="background: linear-gradient(135deg, #eef3fc, #dae4f5);">
+                        <i class="bi bi-house fs-1 text-primary opacity-50"></i>
+                    </div>
+                    {% endif %}
                 </div>
-                {% endif %}
-                <div class="card-body d-flex flex-column">
-                    <h3 class="card-title h5">{{ property.name }}</h3>
-                    <p class="text-muted mb-2">
-                        <i class="bi bi-geo-alt-fill text-primary me-2"></i>{{ property.location }}
-                    </p>
-                    <p class="fw-bold fs-5 text-primary mt-auto mb-3">Rs. {{ property.price|intcomma }}</p>
-                    <a href="{% url 'property_detail' property.pk %}" class="btn btn-outline-primary w-100 mt-auto">View
-                        Details</a>
+
+                <div class="featured-card-body">
+                    <div class="featured-price">Rs. {{ property.price|intcomma }}</div>
+                    <h3 class="featured-name">{{ property.name }}</h3>
+                    <p class="featured-location"><i class="bi bi-geo-alt-fill me-1 text-primary"></i>{{ property.location }}</p>
+
+                    <div class="featured-meta">
+                        <span class="featured-meta-item"><i class="bi bi-door-open"></i>{{ property.number_of_rooms|default:"--" }} Beds</span>
+                        <span class="featured-meta-item">
+                            <i class="bi bi-droplet-half"></i>
+                            {% if property.number_of_rooms and property.number_of_rooms > 1 %}
+                                {{ property.number_of_rooms|add:"-1" }}
+                            {% else %}
+                                --
+                            {% endif %}
+                            Baths
+                        </span>
+                        <span class="featured-meta-item"><i class="bi bi-aspect-ratio"></i>{{ property.size_sqft|floatformat:0|default:"--" }} sqft</span>
+                    </div>
+
+                    <a href="{% url 'property_detail' property.pk %}" class="btn btn-outline-primary w-100 mt-2">View Details</a>
                 </div>
-            </div>
+            </article>
         </div>
         {% empty %}
         <div class="col-12 text-center py-5">
@@ -88,8 +283,7 @@
         </div>
         {% endfor %}
     </div>
-
-</div>
+</section>
 
 {# ===== HERO TAB JS ===== #}
 <script>
