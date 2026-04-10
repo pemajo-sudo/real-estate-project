@@ -526,6 +526,68 @@
     margin-bottom: 1.5rem;
   }
 
+  .listing-map-card {
+    background: #fff;
+    border: 1px solid #e2ebf8;
+    border-radius: 18px;
+    box-shadow: 0 8px 24px rgba(13, 43, 102, 0.09);
+    padding: 1rem;
+    position: sticky;
+    top: 88px;
+  }
+
+  .listing-map-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+  }
+
+  .listing-map-title {
+    margin: 0;
+    color: var(--primary);
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  .listing-map-badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    border-radius: var(--radius-pill);
+    padding: 0.22rem 0.58rem;
+    color: #0b7b6b;
+    background: #eafaf7;
+    border: 1px solid #bfece4;
+  }
+
+  .listing-map-placeholder {
+    min-height: 520px;
+    border-radius: 14px;
+    border: 1.5px dashed #bfd0ec;
+    background:
+      radial-gradient(circle at 20% 18%, rgba(15, 157, 138, 0.11), transparent 42%),
+      radial-gradient(circle at 80% 72%, rgba(199, 163, 74, 0.14), transparent 40%),
+      linear-gradient(135deg, #f8fbff 0%, #edf3fb 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 1rem;
+  }
+
+  .listing-map-placeholder h4 {
+    margin-bottom: 0.35rem;
+    color: var(--primary);
+    font-size: 1.05rem;
+    font-weight: 700;
+  }
+
+  .listing-map-placeholder p {
+    margin: 0;
+    color: #5d6f88;
+    font-size: 0.9rem;
+  }
+
   /* Empty state */
   .listings-empty {
     background: #fff;
@@ -591,6 +653,18 @@
     .type-filter-pills {
       gap: 0.35rem;
     }
+
+    .listing-map-placeholder {
+      min-height: 280px;
+    }
+  }
+
+  @media (max-width: 991.98px) {
+    .listing-map-card {
+      position: static;
+      top: auto;
+      margin-top: 1rem;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -643,7 +717,7 @@
         <select name="property_type" class="form-select">
           <option value="">All Types</option>
           {% for type in property_types %}
-          <option value="{{ type }}" {% if selected_type==type %}selected{% endif %}>{{ type }}</option>
+          <option value="{{ type }}" {% if selected_type == type %}selected{% endif %}>{{ type }}</option>
           {% endfor %}
         </select>
       </div>
@@ -743,11 +817,13 @@
   {% endif %}
 </div>
 
-{# ===== PROPERTY GRID ===== #}
-<div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
-  {% for property in properties %}
-  <div class="col prop-col">
-    <article class="prop-card">
+{# ===== PROPERTY GRID + MAP SPLIT ===== #}
+<div class="row g-4 align-items-start">
+  <div class="col-12 col-xl-8">
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+      {% for property in properties %}
+      <div class="col prop-col">
+        <article class="prop-card">
       {# Image #}
       <div class="prop-media">
         {# Badge #}
@@ -825,20 +901,38 @@
         </form>
         {% endif %}
       </div>
-    </article>
-  </div>
-  {% empty %}
-  <div class="col-12">
-    <div class="listings-empty">
-      <i class="bi bi-search d-block mb-3"></i>
-      <h3>No Properties Found</h3>
-      <p>No listings match your search criteria. Try adjusting your filters or clearing the search.</p>
-      <a href="{% url 'property_list' %}" class="btn btn-outline-primary px-4">
-        <i class="bi bi-arrow-left me-1"></i>Clear Filters
-      </a>
+        </article>
+      </div>
+      {% empty %}
+      <div class="col-12">
+        <div class="listings-empty">
+          <i class="bi bi-search d-block mb-3"></i>
+          <h3>No Properties Found</h3>
+          <p>No listings match your search criteria. Try adjusting your filters or clearing the search.</p>
+          <a href="{% url 'property_list' %}" class="btn btn-outline-primary px-4">
+            <i class="bi bi-arrow-left me-1"></i>Clear Filters
+          </a>
+        </div>
+      </div>
+      {% endfor %}
     </div>
   </div>
-  {% endfor %}
+
+  <aside class="col-12 col-xl-4">
+    <div class="listing-map-card">
+      <div class="listing-map-head">
+        <h3 class="listing-map-title">Map View</h3>
+        <span class="listing-map-badge">Preview</span>
+      </div>
+      <div class="listing-map-placeholder">
+        <div>
+          <i class="bi bi-geo-alt-fill fs-2 text-primary d-block mb-2"></i>
+          <h4>Map View Coming Soon</h4>
+          <p>Listings on the left stay fully functional. This panel is ready for future map integration.</p>
+        </div>
+      </div>
+    </div>
+  </aside>
 </div>
 
 {% endblock %}

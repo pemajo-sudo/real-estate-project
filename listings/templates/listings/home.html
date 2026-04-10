@@ -63,8 +63,8 @@
 
     .c-slide-label {
         position: absolute;
-        left: calc(var(--home-panel-width) + 6%);
-        bottom: 82px;
+        right: 48px;
+        bottom: 74px;
         z-index: 10;
         border-radius: 999px;
         border: 1px solid rgba(255, 255, 255, 0.28);
@@ -83,7 +83,8 @@
     .c-dots {
         position: absolute;
         bottom: 46px;
-        left: calc(var(--home-panel-width) + 6%);
+        right: 48px;
+        left: auto;
         z-index: 10;
         display: flex;
         gap: 10px;
@@ -706,7 +707,7 @@
             <div class="carousel-item c-slide active"
                 style="background-image:url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=2000&q=90')">
                 <div class="c-slide-overlay"></div>
-                <span class="c-slide-label">Residential Homes</span>
+                <span class="c-slide-label">Middle Class Home</span>
             </div>
             <div class="carousel-item c-slide"
                 style="background-image:url('https://images.unsplash.com/photo-1460317442991-0ec209397118?auto=format&fit=crop&w=2000&q=90')">
@@ -728,7 +729,7 @@
         {# Dots #}
         <div class="carousel-indicators c-dots">
             <button type="button" class="c-dot active" data-bs-target="#heroBg" data-bs-slide-to="0" aria-current="true"
-                aria-label="Residential Homes slide"></button>
+                aria-label="Middle Class Home slide"></button>
             <button type="button" class="c-dot" data-bs-target="#heroBg" data-bs-slide-to="1"
                 aria-label="Apartment slide"></button>
             <button type="button" class="c-dot" data-bs-target="#heroBg" data-bs-slide-to="2"
@@ -750,7 +751,7 @@
         {# Centred content #}
         <div class="panel-body">
             <h1 class="hero-title">Find Your Dream Home</h1>
-            <p class="hero-sub">one property at a time.</p>
+            <p class="hero-sub">own your future, one property at a time.</p>
 
             <div class="search-module">
                 <div class="search-tabs">
