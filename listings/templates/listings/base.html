@@ -99,11 +99,45 @@
             padding-bottom: 0.85rem;
         }
 
+        /* Premium glass bar (non-home pages) */
+        #mainNavbar.navbar-glass {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.82), rgba(247, 249, 252, 0.92)) !important;
+            border-bottom: 1px solid rgba(229, 234, 244, 0.95);
+            backdrop-filter: blur(14px) saturate(140%);
+            -webkit-backdrop-filter: blur(14px) saturate(140%);
+            box-shadow: 0 4px 24px rgba(13, 43, 102, 0.08);
+        }
+
         .navbar-brand {
             font-weight: 800;
             font-size: 1.45rem;
             color: var(--primary) !important;
             letter-spacing: -0.01em;
+        }
+
+        /* House icon only — no box; soft gold glow */
+        .navbar-brand-icon-glow {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+
+        .navbar-brand-icon-glow i {
+            color: var(--primary);
+            filter: drop-shadow(0 0 6px rgba(212, 175, 55, 0.95)) drop-shadow(0 0 14px rgba(212, 175, 55, 0.45));
+        }
+
+        .navbar-home .navbar-brand-icon-glow i {
+            color: #fff;
+            filter: drop-shadow(0 0 8px rgba(212, 175, 55, 1)) drop-shadow(0 0 18px rgba(212, 175, 55, 0.55));
+        }
+
+        .navbar-nav .nav-user-name {
+            max-width: 160px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         /* Nav links with animated gold underline */
@@ -870,12 +904,12 @@
 
     <!-- ===== NAVBAR ===== -->
     <nav id="mainNavbar"
-        class="navbar navbar-expand-lg {% if request.resolver_match.url_name == 'home' %}navbar-home navbar-dark{% else %}navbar-light bg-white sticky-top shadow-sm{% endif %}">
+        class="navbar navbar-expand-lg {% if request.resolver_match.url_name == 'home' %}navbar-home navbar-dark{% else %}navbar-light navbar-glass sticky-top{% endif %}">
         <div class="container-xl px-4">
 
-            <!-- Logo -->
+            <!-- Logo: icon + text; icon has gold glow (no rounded box) -->
             <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'home' %}">
-                <i class="bi bi-house-heart-fill fs-4 text-primary"></i>
+                <span class="navbar-brand-icon-glow" aria-hidden="true"><i class="bi bi-house-heart-fill fs-4"></i></span>
                 <span>Shelter &amp; Soul</span>
             </a>
 
@@ -894,12 +928,12 @@
                             href="{% url 'property_list' %}?type=buy">Buy</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if request.resolver_match.url_name == 'property_list' and request.GET.type == 'sell' %}active{% endif %}"
-                            href="{% url 'property_list' %}?type=sell">Sell</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link {% if request.resolver_match.url_name == 'property_list' and request.GET.type == 'rent' %}active{% endif %}"
                             href="{% url 'property_list' %}?type=rent">Rent</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'property_list' and request.GET.type == 'sell' %}active{% endif %}"
+                            href="{% url 'property_list' %}?type=sell">Sell</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {% if request.resolver_match.url_name == 'find_agent' %}active{% endif %}"
@@ -910,14 +944,16 @@
                 <!-- Right: auth/profile -->
                 <ul class="navbar-nav align-items-center gap-1">
                     {% if user.is_authenticated %}
-                    <!-- Profile dropdown -->
+                    <!-- Account name + My Profile dropdown -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle d-flex align-items-center gap-2 fw-bold {% if request.resolver_match.url_name != 'home' %}text-primary{% endif %}"
-                            href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-person-circle fs-5"></i>
-                            <span class="d-none d-lg-inline">My Profile / Home</span>
+                        <a class="nav-link dropdown-toggle d-flex align-items-center gap-2 fw-semibold {% if request.resolver_match.url_name != 'home' %}text-primary{% else %}text-white{% endif %}"
+                            href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"
+                            aria-label="My profile menu">
+                            <i class="bi bi-person-circle fs-5 flex-shrink-0"></i>
+                            <span class="nav-user-name d-none d-md-inline">{{ user.get_full_name|default:user.username }}</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                            <li><h6 class="dropdown-header text-uppercase small text-muted mb-0 py-2">My Profile</h6></li>
                             <li>
                                 <a class="dropdown-item" href="{% url 'property_list' %}">
                                     <i class="bi bi-clock-history"></i> Recent Searches
