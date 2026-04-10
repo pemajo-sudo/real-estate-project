@@ -104,6 +104,25 @@
     border: 1px solid #bfece4;
   }
 
+  .sort-wrap .form-label {
+    margin-bottom: 0.38rem;
+  }
+
+  .sort-wrap .form-select {
+    border-radius: var(--radius-pill);
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--primary);
+    border: 1.5px solid #d7e2f3;
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(13, 43, 102, 0.05);
+  }
+
+  .sort-wrap .form-select:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(199, 163, 74, 0.2);
+  }
+
   .listings-filter-card .form-control:focus,
   .listings-filter-card .form-select:focus {
     border-color: var(--teal);
@@ -664,6 +683,15 @@
           <input type="number" min="0" step="50000" name="price_max" class="form-control" placeholder="Any"
             value="{{ request.GET.price_max }}">
         </div>
+      </div>
+      <div class="col-sm-6 col-lg-3 sort-wrap">
+        <label class="form-label">Sort by</label>
+        <select name="sort" class="form-select">
+          <option value="">Default</option>
+          <option value="price_low" {% if request.GET.sort == "price_low" %}selected{% endif %}>Price: Low to High</option>
+          <option value="price_high" {% if request.GET.sort == "price_high" %}selected{% endif %}>Price: High to Low</option>
+          <option value="newest" {% if request.GET.sort == "newest" %}selected{% endif %}>Newest Listings</option>
+        </select>
       </div>
       <div class="col-sm-6 col-lg-3">
         <div class="d-flex gap-2">

@@ -61,28 +61,22 @@
         background: linear-gradient(to right, rgba(0, 0, 0, 0.09) 54%, rgba(0, 0, 0, 0.02) 100%);
     }
 
-    .c-labels {
+    .c-slide-label {
         position: absolute;
         left: calc(var(--home-panel-width) + 6%);
         bottom: 82px;
         z-index: 10;
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        max-width: 38%;
-    }
-
-    .c-label-chip {
         border-radius: 999px;
         border: 1px solid rgba(255, 255, 255, 0.28);
         background: rgba(21, 42, 68, 0.46);
         color: rgba(255, 255, 255, 0.9);
-        font-size: 0.78rem;
+        font-size: 0.8rem;
         font-weight: 600;
         letter-spacing: 0.03em;
-        padding: 0.28rem 0.72rem;
+        padding: 0.32rem 0.82rem;
         backdrop-filter: blur(6px);
         -webkit-backdrop-filter: blur(6px);
+        pointer-events: none;
     }
 
     /* ---- Dots ---- */
@@ -180,31 +174,19 @@
         display: flex;
         flex-direction: column;
         justify-content: center;
-        padding: 0 10% 70px 52px;
+        padding: 0 10% 76px 84px;
         max-width: 640px;
         align-items: flex-start;
     }
 
-    .hero-kicker {
-        font-family: 'Inter', sans-serif;
-        font-size: clamp(0.8rem, 0.95vw, 0.95rem);
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.16em;
-        color: rgba(255, 255, 255, 0.93);
-        margin: 0 0 0.7rem 0;
-        text-shadow: 0 2px 14px rgba(6, 19, 37, 0.55);
-        animation: panelFadeUp 0.85s ease-out both;
-    }
-
     .hero-title {
         font-family: 'Playfair Display', serif;
-        font-size: clamp(2.1rem, 3.95vw, 3.55rem);
+        font-size: clamp(2.4rem, 4.2vw, 3.8rem);
         font-weight: 800;
-        line-height: 1.14;
+        line-height: 1.12;
         color: #ffffff;
         letter-spacing: 0.01em;
-        margin: 0 0 0.9rem 0;
+        margin: 0 0 1rem 0;
         text-shadow: 0 4px 24px rgba(4, 14, 28, 0.5);
         animation: panelFadeUp 0.85s ease-out 0.08s both;
     }
@@ -224,10 +206,10 @@
     /* Subheading */
     .hero-sub {
         font-family: 'Inter', sans-serif;
-        font-size: clamp(0.95rem, 1.15vw, 1.08rem);
+        font-size: clamp(0.98rem, 1.2vw, 1.12rem);
         font-weight: 400;
         color: rgba(255, 255, 255, 0.88);
-        margin: 0 0 2.2rem 0;
+        margin: 0 0 2.4rem 0;
         letter-spacing: 0.01em;
         text-shadow: 0 3px 14px rgba(5, 17, 35, 0.42);
         animation: panelFadeUp 0.85s ease-out 0.17s both;
@@ -248,10 +230,10 @@
     .search-tabs {
         display: flex;
         gap: 10px;
-        margin-bottom: 14px;
+        margin-bottom: 13px;
         justify-content: flex-start;
         width: 100%;
-        max-width: 640px;
+        max-width: 560px;
     }
 
     .search-type-input {
@@ -264,10 +246,10 @@
         background: #D4AF37;
         color: #fff;
         border: 0;
-        padding: 9px 26px;
+        padding: 8px 22px;
         border-radius: 50px;
         font-weight: 700;
-        font-size: 0.88rem;
+        font-size: 0.84rem;
         cursor: pointer;
         opacity: 0.95;
         font-family: 'Inter', sans-serif;
@@ -292,11 +274,11 @@
         align-items: center;
         background: #ffffff;
         border-radius: 50px;
-        padding: 7px 7px 7px 22px;
-        box-shadow: 0 12px 34px rgba(8, 29, 53, 0.28);
+        padding: 6px 6px 6px 18px;
+        box-shadow: 0 10px 30px rgba(8, 29, 53, 0.24);
         border: none;
         width: 100%;
-        max-width: 640px;
+        max-width: 560px;
     }
 
     .search-bar input {
@@ -318,10 +300,10 @@
         background: #D4AF37;
         color: #fff;
         border: none;
-        padding: 13px 28px;
+        padding: 11px 23px;
         border-radius: 50px;
         font-weight: 700;
-        font-size: 0.95rem;
+        font-size: 0.9rem;
         font-family: 'Inter', sans-serif;
         display: flex;
         align-items: center;
@@ -667,7 +649,7 @@
         }
 
         .panel-body {
-            padding: 0 24px 60px 24px;
+            padding: 0 24px 60px 30px;
             max-width: none;
         }
 
@@ -694,11 +676,9 @@
             bottom: 18px;
         }
 
-        .c-labels {
+        .c-slide-label {
             left: 50%;
             transform: translateX(-50%);
-            max-width: 90%;
-            justify-content: center;
             bottom: 52px;
         }
     }
@@ -726,31 +706,35 @@
             <div class="carousel-item c-slide active"
                 style="background-image:url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=2000&q=90')">
                 <div class="c-slide-overlay"></div>
+                <span class="c-slide-label">Residential Homes</span>
             </div>
             <div class="carousel-item c-slide"
-                style="background-image:url('https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=2000&q=90')">
+                style="background-image:url('https://images.unsplash.com/photo-1460317442991-0ec209397118?auto=format&fit=crop&w=2000&q=90')">
                 <div class="c-slide-overlay"></div>
+                <span class="c-slide-label">Apartment</span>
             </div>
             <div class="carousel-item c-slide"
                 style="background-image:url('https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=2000&q=90')">
                 <div class="c-slide-overlay"></div>
+                <span class="c-slide-label">Commercial Spaces</span>
             </div>
-        </div>
-
-        <div class="c-labels" aria-hidden="true">
-            <span class="c-label-chip">Middle Class Home</span>
-            <span class="c-label-chip">Apartment</span>
-            <span class="c-label-chip">Commercial Spaces</span>
+            <div class="carousel-item c-slide"
+                style="background-image:url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=2000&q=90')">
+                <div class="c-slide-overlay"></div>
+                <span class="c-slide-label">Land</span>
+            </div>
         </div>
 
         {# Dots #}
         <div class="carousel-indicators c-dots">
             <button type="button" class="c-dot active" data-bs-target="#heroBg" data-bs-slide-to="0" aria-current="true"
-                aria-label="Middle Class Home slide"></button>
+                aria-label="Residential Homes slide"></button>
             <button type="button" class="c-dot" data-bs-target="#heroBg" data-bs-slide-to="1"
                 aria-label="Apartment slide"></button>
             <button type="button" class="c-dot" data-bs-target="#heroBg" data-bs-slide-to="2"
-                aria-label="Commercial slide"></button>
+                aria-label="Commercial Spaces slide"></button>
+            <button type="button" class="c-dot" data-bs-target="#heroBg" data-bs-slide-to="3"
+                aria-label="Land slide"></button>
         </div>
     </div>
 
@@ -765,7 +749,6 @@
 
         {# Centred content #}
         <div class="panel-body">
-            <p class="hero-kicker">OWN YOUR FUTURE,</p>
             <h1 class="hero-title">Find Your Dream Home</h1>
             <p class="hero-sub">one property at a time.</p>
 
