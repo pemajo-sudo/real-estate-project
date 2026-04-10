@@ -19,16 +19,15 @@
             curated listings across the country, just for you.
         </p>
 
-        {# Buy / Rent / Sell Tabs #}
-        <div class="search-tabs" id="heroTabs" role="tablist" aria-label="Property type">
-            <button class="search-tab-btn active" data-type="buy" aria-selected="true">Buy</button>
-            <button class="search-tab-btn" data-type="rent" aria-selected="false">Rent</button>
-            <button class="search-tab-btn" data-type="sell" aria-selected="false">Sell</button>
+        {# Buy / Rent / Sell quick links (no custom JS) #}
+        <div class="search-tabs" aria-label="Property type">
+            <a class="search-tab-btn active" href="{% url 'property_list' %}?type=buy">Buy</a>
+            <a class="search-tab-btn" href="{% url 'property_list' %}?type=rent">Rent</a>
+            <a class="search-tab-btn" href="{% url 'property_list' %}?type=sell">Sell</a>
         </div>
 
         {# Glassmorphism Search Bar #}
         <form class="glass-search" id="heroSearchForm" action="{% url 'property_list' %}" method="GET">
-            <input type="hidden" name="type" id="heroTypeInput" value="buy">
             <i class="bi bi-geo-alt-fill glass-search-icon" aria-hidden="true"></i>
             <input type="text" name="q" id="heroSearchInput" placeholder="Enter city, neighborhood or address…"
                 autocomplete="off" aria-label="Search location">
@@ -37,6 +36,156 @@
             </button>
         </form>
 
+    </div>
+</section>
+
+{# ===== PREMIUM ACTION CARDS ===== #}
+<style>
+    .home-actions-section {
+        background: #f6f8fc;
+        border: 1px solid #e5ebf6;
+        border-radius: 22px;
+        padding: 2rem 1.25rem;
+        margin-top: 2.2rem;
+        margin-bottom: 2.4rem;
+    }
+    .home-actions-heading {
+        text-align: center;
+        margin-bottom: 1.45rem;
+    }
+    .home-actions-heading h2 {
+        color: var(--primary);
+        font-weight: 800;
+        margin-bottom: 0.45rem;
+    }
+    .home-actions-heading p {
+        color: var(--muted);
+        margin: 0 auto;
+        max-width: 680px;
+    }
+    .service-card {
+        background: #fff;
+        border: 1px solid #e4eaf6;
+        border-radius: 18px;
+        box-shadow: 0 8px 22px rgba(13, 43, 102, 0.08);
+        text-align: center;
+        padding: 1.35rem 1.1rem 1.2rem;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 0.75rem;
+        transition: transform 0.22s ease, box-shadow 0.22s ease;
+    }
+    .service-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 14px 28px rgba(13, 43, 102, 0.13);
+    }
+    .service-icon {
+        width: 58px;
+        height: 58px;
+        border-radius: 50%;
+        background: linear-gradient(145deg, #f2f6fd, #e5edf9);
+        color: var(--primary);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        margin: 0 auto 0.45rem;
+        border: 1px solid #d8e2f3;
+    }
+    .service-card h3 {
+        font-size: 1.02rem;
+        color: var(--primary);
+        margin-bottom: 0.2rem;
+        font-weight: 700;
+    }
+    .service-card p {
+        color: #5f6f86;
+        font-size: 0.92rem;
+        margin-bottom: 0.65rem;
+    }
+    .btn-action-gold {
+        background: linear-gradient(145deg, var(--gold), #af892f);
+        color: #fff !important;
+        border: none;
+    }
+    .btn-action-teal {
+        background: linear-gradient(145deg, var(--teal), #0b7b6b);
+        color: #fff !important;
+        border: none;
+    }
+    .btn-action-blue {
+        background: linear-gradient(145deg, var(--primary), var(--primary-light));
+        color: #fff !important;
+        border: none;
+    }
+    @media (max-width: 767.98px) {
+        .home-actions-section {
+            padding: 1.35rem 0.9rem;
+            margin-top: 1.5rem;
+            margin-bottom: 1.8rem;
+        }
+    }
+</style>
+
+<section class="container home-actions-section">
+    <div class="home-actions-heading">
+        <h2>Explore Real Estate Services</h2>
+        <p>Move faster with premium tools to buy, sell, rent, and manage your property journey in one place.</p>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-5 g-4">
+        <div class="col">
+            <div class="service-card">
+                <div>
+                    <span class="service-icon"><i class="bi bi-house-door-fill"></i></span>
+                    <h3>Buy a Property</h3>
+                    <p>Discover curated listings and find a home aligned with your lifestyle and budget.</p>
+                </div>
+                <a href="{% url 'property_list' %}?type=buy" class="btn btn-action-blue rounded-pill px-3">Start Buying</a>
+            </div>
+        </div>
+        <div class="col">
+            <div class="service-card">
+                <div>
+                    <span class="service-icon"><i class="bi bi-building-add"></i></span>
+                    <h3>Sell a Property</h3>
+                    <p>Create your listing, reach ready buyers, and present your property with confidence.</p>
+                </div>
+                <a href="{% url 'property_create' %}" class="btn btn-action-gold rounded-pill px-3">List to Sell</a>
+            </div>
+        </div>
+        <div class="col">
+            <div class="service-card">
+                <div>
+                    <span class="service-icon"><i class="bi bi-key-fill"></i></span>
+                    <h3>Rent a Property</h3>
+                    <p>Browse flexible rental options with modern amenities in top neighborhood locations.</p>
+                </div>
+                <a href="{% url 'property_list' %}?type=rent" class="btn btn-action-teal rounded-pill px-3">Find Rentals</a>
+            </div>
+        </div>
+        <div class="col">
+            <div class="service-card">
+                <div>
+                    <span class="service-icon"><i class="bi bi-person-lines-fill"></i></span>
+                    <h3>Find an Agent</h3>
+                    <p>Connect with trusted professionals to guide each step from shortlist to closing.</p>
+                </div>
+                <a href="{% url 'compare_properties' %}" class="btn btn-action-blue rounded-pill px-3">Connect Now</a>
+            </div>
+        </div>
+        <div class="col">
+            <div class="service-card">
+                <div>
+                    <span class="service-icon"><i class="bi bi-heart-fill"></i></span>
+                    <h3>Manage My Profile / Wishlist</h3>
+                    <p>Track recent searches, posts, wishlist, and inquiries from one personalized hub.</p>
+                </div>
+                <a href="{% url 'wishlist' %}" class="btn btn-action-gold rounded-pill px-3">Open Dashboard</a>
+            </div>
+        </div>
     </div>
 </section>
 
@@ -284,25 +433,5 @@
         {% endfor %}
     </div>
 </section>
-
-{# ===== HERO TAB JS ===== #}
-<script>
-    (function () {
-        const tabs = document.querySelectorAll('#heroTabs .search-tab-btn');
-        const typeInput = document.getElementById('heroTypeInput');
-
-        tabs.forEach(function (btn) {
-            btn.addEventListener('click', function () {
-                tabs.forEach(function (b) {
-                    b.classList.remove('active');
-                    b.setAttribute('aria-selected', 'false');
-                });
-                btn.classList.add('active');
-                btn.setAttribute('aria-selected', 'true');
-                typeInput.value = btn.dataset.type;
-            });
-        });
-    })();
-</script>
 
 {% endblock %}
