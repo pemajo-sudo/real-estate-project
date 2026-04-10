@@ -120,7 +120,7 @@
             margin: 0 4px;
             padding: 0.45rem 0.65rem;
             position: relative;
-            transition: color var(--transition);
+            transition: color var(--transition), transform var(--transition);
         }
 
         .navbar-nav .nav-link::after {
@@ -139,6 +139,7 @@
         .navbar-nav .nav-link:hover,
         .navbar-nav .nav-link.active {
             color: var(--primary);
+            transform: translateY(-1px);
         }
 
         .navbar-nav .nav-link:hover::after,
@@ -167,18 +168,19 @@
             padding: 0.45rem 0;
             margin-top: 8px;
             min-width: 200px;
-            animation: dropdownFadeIn 0.2s ease;
+            animation: dropdownFadeIn 0.26s cubic-bezier(0.2, 0.8, 0.2, 1);
+            transform-origin: top right;
         }
 
         @keyframes dropdownFadeIn {
             from {
                 opacity: 0;
-                transform: translateY(-6px);
+                transform: translateY(-8px) scale(0.985);
             }
 
             to {
                 opacity: 1;
-                transform: translateY(0);
+                transform: translateY(0) scale(1);
             }
         }
 
@@ -226,7 +228,7 @@
         .btn {
             border-radius: var(--radius-pill);
             font-weight: 600;
-            transition: all var(--transition);
+            transition: background-color var(--transition), color var(--transition), border-color var(--transition), box-shadow var(--transition), transform var(--transition);
             cursor: pointer;
             text-decoration: none;
         }
@@ -692,6 +694,15 @@
             .footer {
                 padding-top: 36px;
                 margin-top: 48px;
+            }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .navbar-nav .nav-link,
+            .navbar-nav .dropdown-menu,
+            .btn {
+                transition: none !important;
+                animation: none !important;
+                transform: none !important;
             }
         }
 

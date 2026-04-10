@@ -41,6 +41,23 @@
 
 {# ===== PREMIUM ACTION CARDS ===== #}
 <style>
+    @keyframes softFadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(18px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    .hero-premium h1 {
+        animation: softFadeUp 0.7s ease-out both;
+    }
+    .glass-search {
+        animation: softFadeUp 0.85s ease-out both;
+        animation-delay: 0.08s;
+    }
     .home-actions-section {
         background: #f6f8fc;
         border: 1px solid #e5ebf6;
@@ -75,12 +92,18 @@
         flex-direction: column;
         justify-content: space-between;
         gap: 0.75rem;
-        transition: transform 0.22s ease, box-shadow 0.22s ease;
+        transition: transform 0.24s ease, box-shadow 0.24s ease, border-color 0.24s ease;
+        animation: softFadeUp 0.5s ease-out both;
     }
     .service-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 14px 28px rgba(13, 43, 102, 0.13);
+        border-color: #d1deef;
     }
+    .home-actions-section .col:nth-child(1) .service-card { animation-delay: 0.04s; }
+    .home-actions-section .col:nth-child(2) .service-card { animation-delay: 0.08s; }
+    .home-actions-section .col:nth-child(3) .service-card { animation-delay: 0.12s; }
+    .home-actions-section .col:nth-child(4) .service-card { animation-delay: 0.16s; }
     .service-icon {
         width: 58px;
         height: 58px;
@@ -135,7 +158,7 @@
         <p>Move faster with premium tools to buy, sell, rent, and manage your property journey in one place.</p>
     </div>
 
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-5 g-4">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-2 row-cols-xl-4 g-4">
         <div class="col">
             <div class="service-card">
                 <div>
@@ -174,16 +197,6 @@
                     <p>Connect with trusted professionals to guide each step from shortlist to closing.</p>
                 </div>
                 <a href="{% url 'compare_properties' %}" class="btn btn-action-blue rounded-pill px-3">Connect Now</a>
-            </div>
-        </div>
-        <div class="col">
-            <div class="service-card">
-                <div>
-                    <span class="service-icon"><i class="bi bi-heart-fill"></i></span>
-                    <h3>Manage My Profile / Wishlist</h3>
-                    <p>Track recent searches, posts, wishlist, and inquiries from one personalized hub.</p>
-                </div>
-                <a href="{% url 'wishlist' %}" class="btn btn-action-gold rounded-pill px-3">Open Dashboard</a>
             </div>
         </div>
     </div>
@@ -237,12 +250,18 @@
         overflow: hidden;
         background: #ffffff;
         box-shadow: 0 10px 22px rgba(16, 33, 63, 0.08);
-        transition: transform 0.25s ease, box-shadow 0.25s ease;
+        transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+        animation: softFadeUp 0.55s ease-out both;
     }
     .featured-card:hover {
         transform: translateY(-6px);
         box-shadow: 0 18px 32px rgba(10, 26, 52, 0.16);
+        border-color: #d4e1f2;
     }
+    .featured-section .col:nth-child(1) .featured-card { animation-delay: 0.06s; }
+    .featured-section .col:nth-child(2) .featured-card { animation-delay: 0.12s; }
+    .featured-section .col:nth-child(3) .featured-card { animation-delay: 0.18s; }
+    .featured-section .col:nth-child(4) .featured-card { animation-delay: 0.24s; }
     .featured-media {
         position: relative;
         height: 260px;
@@ -345,6 +364,15 @@
         }
         .featured-card-body {
             padding: 1rem;
+        }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .hero-premium h1,
+        .glass-search,
+        .service-card,
+        .featured-card {
+            animation: none !important;
+            transition: none !important;
         }
     }
 </style>
