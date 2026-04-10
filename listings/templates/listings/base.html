@@ -4,153 +4,286 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shelter & Soul</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            background: #f6f8fb;
-            color: #222;
-        }
-        nav {
-            background: #1f3c88;
-            color: white;
-            padding: 15px 30px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fc;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column;
+            min-height: 100vh;
         }
-        nav a {
-            color: white;
-            text-decoration: none;
-            margin-left: 18px;
+        main {
+            flex: 1;
+        }
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: #1f3c88 !important;
+        }
+        .navbar-nav .nav-link {
             font-weight: 500;
+            color: #4a5568;
+            margin: 0 5px;
         }
-        .brand {
-            font-size: 24px;
-            font-weight: bold;
-        }
-        .container {
-            width: 90%;
-            max-width: 1100px;
-            margin: 30px auto;
+        .navbar-nav .nav-link:hover, .navbar-nav .nav-link.active {
+            color: #1f3c88;
         }
         .hero {
             background: linear-gradient(135deg, #1f3c88, #4f7cff);
             color: white;
-            padding: 60px 30px;
+            padding: 80px 30px;
             border-radius: 16px;
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(31, 60, 136, 0.2);
         }
         .hero h1 {
-            margin-bottom: 10px;
-            font-size: 40px;
+            font-weight: 800;
+            font-size: 3rem;
+            margin-bottom: 20px;
         }
         .hero p {
-            font-size: 18px;
-            margin: 0;
-        }
-        .btn {
-            display: inline-block;
-            padding: 10px 18px;
-            background: #1f3c88;
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        .btn-danger {
-            background: #c0392b;
-        }
-        .btn-secondary {
-            background: #555;
-        }
-        .card-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 20px;
+            font-size: 1.25rem;
+            opacity: 0.9;
         }
         .card {
-            background: white;
+            border: none;
             border-radius: 14px;
             overflow: hidden;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        .card img {
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .card img, .card-img-top {
             width: 100%;
             height: 220px;
             object-fit: cover;
         }
-        .card-body {
-            padding: 18px;
-        }
         .card-body h3 {
-            margin-top: 0;
-        }
-        form input, form select, form textarea {
-            width: 100%;
-            padding: 10px;
-            margin-top: 6px;
-            margin-bottom: 14px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            box-sizing: border-box;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 15px;
         }
         .filter-box {
             background: white;
-            padding: 20px;
+            padding: 25px;
             border-radius: 14px;
             box-shadow: 0 4px 14px rgba(0,0,0,0.06);
-            margin-bottom: 25px;
+            margin-bottom: 30px;
         }
-        .detail-img {
+        .btn-primary {
+            background-color: #1f3c88;
+            border-color: #1f3c88;
+        }
+        .btn-primary:hover {
+            background-color: #162b65;
+            border-color: #162b65;
+        }
+        .footer {
+            background-color: #1f3c88;
+            color: white;
+            padding: 50px 0 20px;
+            margin-top: 60px;
+        }
+        .footer a {
+            color: #d1d5db;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        .footer a:hover {
+            color: white;
+            text-decoration: none;
+        }
+        .social-icons a {
+            font-size: 1.5rem;
+            margin-right: 15px;
+            color: white;
+        }
+        /* Global form fallback for Django forms */
+        input[type="text"], input[type="email"], input[type="password"], input[type="number"], select, textarea, input[type="url"], input[type="file"] {
+            display: block;
             width: 100%;
-            max-height: 420px;
-            object-fit: cover;
-            border-radius: 14px;
-            margin-bottom: 20px;
+            padding: 0.375rem 0.75rem;
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.5;
+            color: #495057;
+            background-color: #fff;
+            background-clip: padding-box;
+            border: 1px solid #ced4da;
+            border-radius: 0.375rem;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+            margin-bottom: 1rem;
+        }
+        .btn {
+            display: inline-block;
+            font-weight: 400;
+            text-align: center;
+            vertical-align: middle;
+            border: 1px solid transparent;
+            padding: 0.375rem 0.75rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            border-radius: 0.375rem;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .btn:not(.btn-primary):not(.btn-secondary):not(.btn-danger):not(.btn-light):not(.btn-outline-primary):not(.btn-outline-secondary) {
+            background-color: #1f3c88;
+            color: white;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
         }
     </style>
 </head>
 <body>
-    <nav>
-        <div class="brand">Shelter & Soul</div>
-        <div>
-            <a href="{% url 'home' %}">Home</a>
-            <a href="{% url 'property_list' %}">Properties</a>
-            <a href="{% url 'compare_properties' %}">Compare</a>
-            {% if user.is_authenticated %}
-                <a href="{% url 'property_create' %}">Add Property</a>
-                <a href="{% url 'wishlist' %}">My Wishlist</a>
-                <a href="{% url 'logout' %}">Logout</a>
-            {% else %}
-                <a href="{% url 'register' %}">Register</a>
-                <a href="{% url 'login' %}">Login</a>
-            {% endif %}
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top py-3">
+        <div class="container">
+            <!-- Left: Logo -->
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
+                <i class="bi bi-house-heart-fill me-2 fs-3 text-primary"></i>
+                <span class="text-primary">Shelter & Soul</span>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <!-- Center: Links -->
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'property_list' %}active{% endif %}" href="{% url 'property_list' %}">Listings</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'compare_properties' %}active{% endif %}" href="{% url 'compare_properties' %}">Compare</a>
+                    </li>
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'wishlist' %}active{% endif %}" href="{% url 'wishlist' %}">Wishlist</a>
+                    </li>
+                    {% endif %}
+                </ul>
+                
+                <!-- Right: Auth/Add Property -->
+                <ul class="navbar-nav align-items-center">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item me-3 d-none d-lg-block">
+                            <span class="text-muted small">Hi, {{ user.username }}</span>
+                        </li>
+                        <li class="nav-item me-2">
+                            <a class="btn btn-outline-primary btn-sm rounded-pill px-3" href="{% url 'property_create' %}">
+                                <i class="bi bi-plus-lg me-1"></i> Add Property
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-danger btn-sm rounded-pill px-3" href="{% url 'logout' %}">Logout</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item me-2">
+                            <a class="nav-link" href="{% url 'login' %}">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-primary rounded-pill px-4" href="{% url 'register' %}">Register</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
         </div>
     </nav>
 
-    <div class="container">
+    <!-- Main Content -->
+    <main class="container my-5">
         {% if messages %}
             {% for message in messages %}
-                <div style="
-                  padding: 12px;
-                  margin-bottom: 15px;
-                  border-radius: 8px;
-                  background: #d4edda;
-                  color: #155724;
-                  border: 1px solid #c3e6cb;
-                  font-weight: 500;
-                ">
-                  {{ message }}
+                <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show shadow-sm border-0 rounded-3" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             {% endfor %}
         {% endif %}
 
         {% block content %}{% endblock %}
-    </div>
+    </main>
 
+    <!-- Footer -->
+    <footer class="footer mt-auto">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
+                    <h5 class="text-white d-flex align-items-center mb-3">
+                        <i class="bi bi-house-heart-fill me-2"></i> Shelter & Soul
+                    </h5>
+                    <p class="text-white-50 mb-4">
+                        Where your soul finds its perfect shelter. Discover premium real estate properties tailored to your needs.
+                    </p>
+                    <div class="social-icons">
+                        <a href="#"><i class="bi bi-facebook"></i></a>
+                        <a href="#"><i class="bi bi-twitter-x"></i></a>
+                        <a href="#"><i class="bi bi-instagram"></i></a>
+                        <a href="#"><i class="bi bi-linkedin"></i></a>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6 mb-4 mb-lg-0 ms-lg-auto">
+                    <h5 class="text-white mb-3">Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><i class="bi bi-chevron-right small text-white-50 me-1"></i> <a href="{% url 'home' %}">Home</a></li>
+                        <li class="mb-2"><i class="bi bi-chevron-right small text-white-50 me-1"></i> <a href="{% url 'property_list' %}">Listings</a></li>
+                        <li class="mb-2"><i class="bi bi-chevron-right small text-white-50 me-1"></i> <a href="{% url 'compare_properties' %}">Compare</a></li>
+                        <li class="mb-2"><i class="bi bi-chevron-right small text-white-50 me-1"></i> <a href="{% url 'register' %}">Register</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-4 col-md-12">
+                    <h5 class="text-white mb-3">Contact Us</h5>
+                    <ul class="list-unstyled text-white-50">
+                        <li class="mb-3 d-flex">
+                            <i class="bi bi-geo-alt-fill me-3 mt-1 text-primary"></i> 
+                            <span>123 Real Estate Avenue,<br>Tech District, NY 10001</span>
+                        </li>
+                        <li class="mb-3 d-flex">
+                            <i class="bi bi-envelope-fill me-3 mt-1 text-primary"></i> 
+                            <span>info@shelterandsoul.com</span>
+                        </li>
+                        <li class="mb-3 d-flex">
+                            <i class="bi bi-telephone-fill me-3 mt-1 text-primary"></i> 
+                            <span>+1 (234) 567-8900</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <hr class="border-secondary mt-4 mb-4">
+            
+            <div class="row">
+                <div class="col-md-6 text-center text-md-start text-white-50">
+                    <p class="mb-0">&copy; 2026 Shelter & Soul. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end text-white-50 mt-2 mt-md-0">
+                    <a href="#" class="text-white-50 me-3 small">Privacy Policy</a>
+                    <a href="#" class="text-white-50 small">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

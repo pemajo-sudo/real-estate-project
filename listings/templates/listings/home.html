@@ -3,29 +3,44 @@
 
 
 {% block content %}
-<div class="hero">
+<div class="hero mb-5">
     <h1>Welcome to Shelter & Soul</h1>
-    <p>Where your soul finds its perfect shelter.</p>
-    <a href="{% url 'property_list' %}" class="btn">Start Exploring</a>
+    <p class="lead mb-4">Where your soul finds its perfect shelter. Discover premium real estate properties tailored to your needs.</p>
+    <a href="{% url 'property_list' %}" class="btn btn-light btn-lg rounded-pill px-4 text-primary fw-bold shadow-sm">Start Exploring</a>
 </div>
 
-<h2>Featured Properties</h2>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold mb-0 text-dark border-bottom pb-2 border-primary d-inline-block">Featured Properties</h2>
+    <a href="{% url 'property_list' %}" class="text-decoration-none">View All <i class="bi bi-arrow-right"></i></a>
+</div>
 
-<div class="card-grid">
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
     {% for property in featured_properties %}
-        <div class="card">
-            {% if property.image %}
-                <img src="{{ property.image.url }}" alt="{{ property.name }}">
-            {% endif %}
-            <div class="card-body">
-                <h3>{{ property.name }}</h3>
-                <p><strong>Location:</strong> {{ property.location }}</p>
-                <p><strong>Price:</strong> Rs. {{ property.price|intcomma }}</p>
-                <a href="{% url 'property_detail' property.pk %}" class="btn">View Details</a>
+        <div class="col">
+            <div class="card h-100">
+                {% if property.image %}
+                    <img src="{{ property.image.url }}" class="card-img-top" alt="{{ property.name }}">
+                {% else %}
+                    <div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 220px;">
+                        <i class="bi bi-house fs-1"></i>
+                    </div>
+                {% endif %}
+                <div class="card-body d-flex flex-column">
+                    <h3 class="card-title h5">{{ property.name }}</h3>
+                    <p class="text-muted mb-2"><i class="bi bi-geo-alt-fill text-primary me-2"></i>{{ property.location }}</p>
+                    <p class="fw-bold fs-5 text-primary mt-auto mb-3">Rs. {{ property.price|intcomma }}</p>
+                    <a href="{% url 'property_detail' property.pk %}" class="btn btn-outline-primary w-100 mt-auto rounded-pill">View Details</a>
+                </div>
             </div>
         </div>
     {% empty %}
-        <p>No featured properties available yet. Start by adding your first property.</p>
+        <div class="col-12 text-center py-5">
+            <i class="bi bi-houses text-muted fs-1 d-block mb-3"></i>
+            <p class="lead text-muted">No featured properties available yet. Start by adding your first property.</p>
+            {% if user.is_authenticated %}
+            <a href="{% url 'property_create' %}" class="btn btn-primary mt-2">Add Property</a>
+            {% endif %}
+        </div>
     {% endfor %}
 </div>
 {% endblock %}
