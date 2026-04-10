@@ -76,6 +76,34 @@
     height: auto;
   }
 
+  .filter-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .filter-heading h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--primary);
+  }
+
+  .filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.22rem 0.65rem;
+    border-radius: var(--radius-pill);
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: #0b7b6b;
+    background: #eafaf7;
+    border: 1px solid #bfece4;
+  }
+
   .listings-filter-card .form-control:focus,
   .listings-filter-card .form-select:focus {
     border-color: var(--teal);
@@ -570,6 +598,10 @@
 {# ===== FILTER BAR ===== #}
 <div class="listings-filter-card">
   <form method="get" id="filterForm">
+    <div class="filter-heading">
+      <h3>Refine Listings</h3>
+      <span class="filter-chip"><i class="bi bi-sliders"></i> Premium Filters</span>
+    </div>
     <div class="row g-3 align-items-end">
       <div class="col-sm-6 col-lg-3">
         <label class="form-label">Search</label>
@@ -595,6 +627,43 @@
           <option value="{{ type }}" {% if selected_type==type %}selected{% endif %}>{{ type }}</option>
           {% endfor %}
         </select>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <label class="form-label">Bedrooms</label>
+        <select name="bedrooms" class="form-select">
+          <option value="">Any</option>
+          <option value="1" {% if request.GET.bedrooms == "1" %}selected{% endif %}>1+</option>
+          <option value="2" {% if request.GET.bedrooms == "2" %}selected{% endif %}>2+</option>
+          <option value="3" {% if request.GET.bedrooms == "3" %}selected{% endif %}>3+</option>
+          <option value="4" {% if request.GET.bedrooms == "4" %}selected{% endif %}>4+</option>
+          <option value="5" {% if request.GET.bedrooms == "5" %}selected{% endif %}>5+</option>
+        </select>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <label class="form-label">Bathrooms</label>
+        <select name="bathrooms" class="form-select">
+          <option value="">Any</option>
+          <option value="1" {% if request.GET.bathrooms == "1" %}selected{% endif %}>1+</option>
+          <option value="2" {% if request.GET.bathrooms == "2" %}selected{% endif %}>2+</option>
+          <option value="3" {% if request.GET.bathrooms == "3" %}selected{% endif %}>3+</option>
+          <option value="4" {% if request.GET.bathrooms == "4" %}selected{% endif %}>4+</option>
+        </select>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <label class="form-label">Price Min</label>
+        <div class="input-group">
+          <span class="input-group-text">Rs</span>
+          <input type="number" min="0" step="50000" name="price_min" class="form-control" placeholder="0"
+            value="{{ request.GET.price_min }}">
+        </div>
+      </div>
+      <div class="col-sm-6 col-lg-3">
+        <label class="form-label">Price Max</label>
+        <div class="input-group">
+          <span class="input-group-text">Rs</span>
+          <input type="number" min="0" step="50000" name="price_max" class="form-control" placeholder="Any"
+            value="{{ request.GET.price_max }}">
+        </div>
       </div>
       <div class="col-sm-6 col-lg-3">
         <div class="d-flex gap-2">

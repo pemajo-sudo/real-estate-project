@@ -61,66 +61,35 @@
         background: linear-gradient(to right, rgba(0, 0, 0, 0.09) 54%, rgba(0, 0, 0, 0.02) 100%);
     }
 
-    /* Slide label (bottom-right of right panel) */
-    .c-slide-label {
+    .c-labels {
         position: absolute;
-        bottom: 48px;
-        right: 48px;
-        z-index: 4;
-        color: #fff;
-        font-family: 'Inter', sans-serif;
-        font-size: 1rem;
-        font-weight: 600;
-        letter-spacing: 0.05em;
-        background: rgba(11, 60, 93, 0.52);
-        border: 1px solid rgba(255, 255, 255, 0.18);
-        border-radius: 50px;
-        padding: 7px 22px;
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.2);
-    }
-
-    /* ---- Arrows ---- */
-    .c-arrows {
-        position: absolute;
-        right: 42px;
-        top: 50%;
-        transform: translateY(-50%);
+        left: calc(var(--home-panel-width) + 6%);
+        bottom: 82px;
         z-index: 10;
         display: flex;
-        flex-direction: column;
-        gap: 12px;
+        gap: 8px;
+        flex-wrap: wrap;
+        max-width: 38%;
     }
 
-    .c-arrow {
-        width: 44px;
-        height: 44px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.16);
-        border: 1px solid rgba(255, 255, 255, 0.32);
-        color: #fff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        font-size: 1rem;
+    .c-label-chip {
+        border-radius: 999px;
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        background: rgba(21, 42, 68, 0.46);
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 0.78rem;
+        font-weight: 600;
+        letter-spacing: 0.03em;
+        padding: 0.28rem 0.72rem;
         backdrop-filter: blur(6px);
         -webkit-backdrop-filter: blur(6px);
-        transition: background 0.25s, border-color 0.25s, transform 0.2s;
-    }
-
-    .c-arrow:hover {
-        background: rgba(212, 175, 55, 0.75);
-        border-color: #D4AF37;
-        transform: scale(1.1);
     }
 
     /* ---- Dots ---- */
     .c-dots {
         position: absolute;
-        bottom: 52px;
-        left: calc(var(--home-panel-width) + 7%);
+        bottom: 46px;
+        left: calc(var(--home-panel-width) + 6%);
         z-index: 10;
         display: flex;
         gap: 10px;
@@ -725,12 +694,12 @@
             bottom: 18px;
         }
 
-        .c-arrows {
-            display: none;
-        }
-
-        .c-slide-label {
-            display: none;
+        .c-labels {
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 90%;
+            justify-content: center;
+            bottom: 52px;
         }
     }
 
@@ -757,45 +726,31 @@
             <div class="carousel-item c-slide active"
                 style="background-image:url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=2000&q=90')">
                 <div class="c-slide-overlay"></div>
-                <div class="c-slide-label">Residential Homes</div>
             </div>
             <div class="carousel-item c-slide"
                 style="background-image:url('https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=2000&q=90')">
                 <div class="c-slide-overlay"></div>
-                <div class="c-slide-label">Modern Apartments</div>
             </div>
             <div class="carousel-item c-slide"
                 style="background-image:url('https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=2000&q=90')">
                 <div class="c-slide-overlay"></div>
-                <div class="c-slide-label">Commercial Spaces</div>
-            </div>
-            <div class="carousel-item c-slide"
-                style="background-image:url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=2000&q=90')">
-                <div class="c-slide-overlay"></div>
-                <div class="c-slide-label">Land Properties</div>
             </div>
         </div>
 
-        {# Arrows #}
-        <div class="c-arrows">
-            <button class="c-arrow" type="button" data-bs-target="#heroBg" data-bs-slide="prev" aria-label="Previous slide">
-                <i class="bi bi-chevron-up"></i>
-            </button>
-            <button class="c-arrow" type="button" data-bs-target="#heroBg" data-bs-slide="next" aria-label="Next slide">
-                <i class="bi bi-chevron-down"></i>
-            </button>
+        <div class="c-labels" aria-hidden="true">
+            <span class="c-label-chip">Middle Class Home</span>
+            <span class="c-label-chip">Apartment</span>
+            <span class="c-label-chip">Commercial Spaces</span>
         </div>
 
         {# Dots #}
         <div class="carousel-indicators c-dots">
             <button type="button" class="c-dot active" data-bs-target="#heroBg" data-bs-slide-to="0" aria-current="true"
-                aria-label="Residential slide"></button>
+                aria-label="Middle Class Home slide"></button>
             <button type="button" class="c-dot" data-bs-target="#heroBg" data-bs-slide-to="1"
-                aria-label="Apartments slide"></button>
+                aria-label="Apartment slide"></button>
             <button type="button" class="c-dot" data-bs-target="#heroBg" data-bs-slide-to="2"
                 aria-label="Commercial slide"></button>
-            <button type="button" class="c-dot" data-bs-target="#heroBg" data-bs-slide-to="3"
-                aria-label="Land slide"></button>
         </div>
     </div>
 
