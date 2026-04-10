@@ -696,7 +696,9 @@
                 margin-top: 48px;
             }
         }
+
         @media (prefers-reduced-motion: reduce) {
+
             .navbar-nav .nav-link,
             .navbar-nav .dropdown-menu,
             .btn {
@@ -791,8 +793,8 @@
                             href="{% url 'property_list' %}?type=rent">Rent</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% if request.resolver_match.url_name == 'compare_properties' %}active{% endif %}"
-                            href="{% url 'compare_properties' %}">Find an Agent</a>
+                        <a class="nav-link {% if request.resolver_match.url_name == 'find_agent' %}active{% endif %}"
+                            href="{% url 'find_agent' %}">Find an Agent</a>
                     </li>
                 </ul>
 
@@ -805,14 +807,9 @@
                             id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false"
                             style="color: var(--primary); font-weight: 700;">
                             <i class="bi bi-person-circle fs-5"></i>
-                            <span class="d-none d-lg-inline">{{ user.username }}</span>
+                            <span class="d-none d-lg-inline">My Profile / Home</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                            <li>
-                                <a class="dropdown-item" href="{% url 'home' %}">
-                                    <i class="bi bi-house"></i> Home
-                                </a>
-                            </li>
                             <li>
                                 <a class="dropdown-item" href="{% url 'property_list' %}">
                                     <i class="bi bi-clock-history"></i> Recent Searches

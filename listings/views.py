@@ -30,6 +30,11 @@ def home(request):
     return render(request, "listings/home.html", {"featured_properties": featured_properties})
 
 
+def find_agent(request):
+    """Renders the Find an Agent directory page."""
+    return render(request, "listings/find_agent.html")
+
+
 def register(request):
     if request.method == "POST":
         form = CustomUserCreationForm(request.POST)
