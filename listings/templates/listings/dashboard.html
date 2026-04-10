@@ -1,0 +1,314 @@
+{% extends "listings/base.html" %}
+{% load humanize %}
+
+{% block content %}
+<style>
+    /* Dashboard Specific Styles */
+    .dashboard-container {
+        padding: 3rem 0;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .dashboard-header {
+        margin-bottom: 3rem;
+    }
+
+    .profile-card {
+        background: #fff;
+        border-radius: 20px;
+        padding: 2.5rem;
+        box-shadow: 0 10px 30px rgba(13, 43, 102, 0.08);
+        border: 1px solid #eef2f8;
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+
+    .profile-avatar {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, var(--primary), var(--teal));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: 2rem;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    .profile-info h1 {
+        font-family: 'Playfair Display', serif;
+        font-weight: 800;
+        font-size: 1.8rem;
+        color: var(--primary);
+        margin: 0;
+    }
+
+    .profile-info p {
+        color: var(--muted);
+        margin: 0;
+        font-size: 1rem;
+    }
+
+    /* Grid Sections */
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 2rem;
+    }
+
+    .dashboard-section {
+        background: #fff;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 8px 24px rgba(13, 43, 102, 0.06);
+        border: 1px solid #f1f4f9;
+        display: flex;
+        flex-direction: column;
+        min-height: 400px;
+    }
+
+    .section-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #f0f3f7;
+    }
+
+    .section-title i {
+        font-size: 1.4rem;
+        color: var(--teal);
+    }
+
+    .section-title h2 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--primary);
+        margin: 0;
+    }
+
+    .section-content {
+        flex: 1;
+    }
+
+    /* Lists inside cards */
+    .dash-item-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .dash-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem 0;
+        border-bottom: 1px solid #f8fafc;
+        transition: transform 0.2s;
+    }
+
+    .dash-item:last-child {
+        border-bottom: none;
+    }
+
+    .dash-item:hover {
+        transform: translateX(4px);
+    }
+
+    .dash-item-meta {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .dash-item-name {
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: var(--text);
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .dash-item-name:hover {
+        color: var(--gold);
+    }
+
+    .dash-item-sub {
+        font-size: 0.8rem;
+        color: var(--muted);
+    }
+
+    .empty-state {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: #94a3b8;
+        padding: 2rem 0;
+    }
+
+    .empty-state i {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    .view-all-link {
+        margin-top: auto;
+        padding-top: 1.5rem;
+        text-align: center;
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: var(--gold);
+        text-decoration: none;
+        display: inline-block;
+        transition: opacity 0.2s;
+    }
+
+    .view-all-link:hover {
+        opacity: 0.8;
+        text-decoration: underline;
+    }
+
+</style>
+
+<div class="container dashboard-container">
+    <!-- Profile Header -->
+    <div class="profile-card">
+        <div class="profile-avatar">
+            {{ user.username|first }}
+        </div>
+        <div class="profile-info">
+            <h1>Welcome, {{ user.username }}</h1>
+            <p>Member Since {{ user.date_joined|date:"F Y" }}</p>
+        </div>
+    </div>
+
+    <!-- Dashboard Main Grid -->
+    <div class="dashboard-grid">
+        
+        <!-- Wishlist / Favorites -->
+        <div class="dashboard-section">
+            <div class="section-title">
+                <i class="bi bi-heart-fill"></i>
+                <h2>Wishlist</h2>
+            </div>
+            <div class="section-content">
+                {% if wishlist_items %}
+                <ul class="dash-item-list">
+                    {% for item in wishlist_items %}
+                    <li class="dash-item">
+                        <div class="dash-item-meta">
+                            <a href="{% url 'property_detail' item.property.pk %}" class="dash-item-name">
+                                {{ item.property.name }}
+                            </a>
+                            <span class="dash-item-sub">{{ item.property.location }}</span>
+                        </div>
+                        <span class="badge rounded-pill bg-light text-primary border">Rs. {{ item.property.price|intcomma }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <a href="{% url 'wishlist' %}" class="view-all-link">View Full Wishlist</a>
+                {% else %}
+                <div class="empty-state">
+                    <i class="bi bi-bookmark-plus"></i>
+                    <p>No saved properties yet.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- My Inquiries -->
+        <div class="dashboard-section">
+            <div class="section-title">
+                <i class="bi bi-chat-left-text-fill"></i>
+                <h2>Sent Inquiries</h2>
+            </div>
+            <div class="section-content">
+                {% if inquiries %}
+                <ul class="dash-item-list">
+                    {% for inq in inquiries %}
+                    <li class="dash-item">
+                        <div class="dash-item-meta">
+                            <a href="{% url 'property_detail' inq.property.pk %}" class="dash-item-name">
+                                Inquiry for {{ inq.property.name }}
+                            </a>
+                            <span class="dash-item-sub">On {{ inq.created_at|date:"M d, Y" }}</span>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <a href="{% url 'view_inquiries' %}" class="view-all-link">View All Inquiries</a>
+                {% else %}
+                <div class="empty-state">
+                    <i class="bi bi-chat-dots"></i>
+                    <p>No inquiries sent yet.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- My Posts (Placeholder) -->
+        <div class="dashboard-section">
+            <div class="section-title">
+                <i class="bi bi-house-door-fill"></i>
+                <h2>My Listings</h2>
+            </div>
+            <div class="section-content">
+                {% if my_posts %}
+                <ul class="dash-item-list">
+                    {% for post in my_posts %}
+                    <li class="dash-item">
+                        <div class="dash-item-meta">
+                            <a href="#" class="dash-item-name">{{ post.name }}</a>
+                            <span class="dash-item-sub">Active</span>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <div class="empty-state">
+                    <i class="bi bi-plus-circle"></i>
+                    <p>You haven't posted any properties yet.</p>
+                    <a href="{% url 'sell' %}" class="btn btn-sm btn-outline-primary mt-2">Start Selling</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Recent Searches (Placeholder) -->
+        <div class="dashboard-section">
+            <div class="section-title">
+                <i class="bi bi-clock-history"></i>
+                <h2>Recent Searches</h2>
+            </div>
+            <div class="section-content">
+                {% if recent_searches %}
+                <ul class="dash-item-list">
+                    {% for search in recent_searches %}
+                    <li class="dash-item">
+                        <div class="dash-item-meta">
+                            <a href="#" class="dash-item-name">{{ search.query }}</a>
+                            <span class="dash-item-sub">{{ search.timestamp|timesince }} ago</span>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <div class="empty-state">
+                    <i class="bi bi-search"></i>
+                    <p>No recent search history.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

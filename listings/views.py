@@ -47,6 +47,29 @@ def sell_property(request):
     return render(request, "listings/sell.html")
 
 
+@login_required
+def dashboard_view(request):
+    """Renders the User Dashboard with wishlists, inquiries, etc."""
+    wishlist_items = (
+        Wishlist.objects.filter(user=request.user)
+        .select_related("property")
+        .order_by("-created_at")[:5]
+    )
+    inquiries = Inquiry.objects.filter(user=request.user).order_by("-created_at")[:5]
+    
+    # Placeholders for features not yet in the DB model
+    my_posts = [] # Would fetch from Property.owner if exists
+    recent_searches = [] # Would fetch from SearchLog if exists
+    
+    context = {
+        "wishlist_items": wishlist_items,
+        "inquiries": inquiries,
+        "my_posts": my_posts,
+        "recent_searches": recent_searches,
+    }
+    return render(request, "listings/dashboard.html", context)
+
+
 def register(request):
     if request.method == "POST":
         form = CustomUserCreationForm(request.POST)

@@ -865,9 +865,9 @@
                     {% else %}
                     <span class="featured-badge hot">Hot Deal</span>
                     {% endif %}
-                    <a href="{% url 'property_detail' property.pk %}" class="featured-heart" aria-label="Save">
-                        <i class="bi bi-heart-fill"></i>
-                    </a>
+                    <button type="button" class="featured-heart" aria-label="Save" onclick="toggleHeart(this)">
+                        <i class="bi bi-heart"></i>
+                    </button>
                     {% if property.image %}
                     <img src="{{ property.image.url }}" alt="{{ property.name }}">
                     {% else %}

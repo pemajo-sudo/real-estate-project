@@ -839,11 +839,10 @@
         <span class="prop-badge prop-badge-sell">Commercial</span>
         {% endif %}
 
-        {# Favourite heart #}
-        <a href="{% if user.is_authenticated %}{% url 'add_to_wishlist' property.pk %}{% else %}{% url 'login' %}{% endif %}"
-          class="prop-heart" title="Save to Wishlist">
-          <i class="bi bi-heart-fill"></i>
-        </a>
+        {# Favourite heart (UI Placeholder) #}
+        <button type="button" class="prop-heart" title="Save to Wishlist" onclick="toggleHeart(this)">
+          <i class="bi bi-heart"></i>
+        </button>
 
         {% if property.image %}
         <img src="{{ property.image.url }}" alt="{{ property.name }}">
