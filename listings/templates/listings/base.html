@@ -9,7 +9,7 @@
         content="Find your dream home with Shelter &amp; Soul. Browse premium real estate listings for buying, renting, and selling properties.">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700&family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -109,10 +109,11 @@
         }
 
         .navbar-brand {
+            font-family: 'Playfair Display', serif;
             font-weight: 800;
-            font-size: 1.45rem;
+            font-size: 1.55rem;
             color: var(--primary) !important;
-            letter-spacing: -0.01em;
+            letter-spacing: 0.02em;
         }
 
         /* House icon only — no box; soft gold glow */
@@ -910,7 +911,7 @@
             <!-- Logo: icon + text; icon has gold glow (no rounded box) -->
             <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'home' %}">
                 <span class="navbar-brand-icon-glow" aria-hidden="true"><i class="bi bi-house-heart-fill fs-4"></i></span>
-                <span>Shelter &amp; Soul</span>
+                <span>Shelter <span style="color:#D4AF37;">&amp;</span> Soul</span>
             </a>
 
             <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse"

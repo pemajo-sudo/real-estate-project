@@ -16,8 +16,8 @@
    ============================================================ */
     .split-hero {
         position: relative;
-        height: 82vh;
-        min-height: 540px;
+        height: 75vh;
+        min-height: 480px;
         width: 100%;
         overflow: hidden;
         font-family: 'Inter', sans-serif;
@@ -91,11 +91,11 @@
     }
 
     .c-dot {
-        width: 10px;
-        height: 10px;
+        width: 8px;
+        height: 8px;
         border-radius: 50%;
         border: none;
-        background: rgba(255, 255, 255, 0.45);
+        background: #cbd5e1; /* Light grey */
         cursor: pointer;
         padding: 0;
         margin: 0;
@@ -104,9 +104,9 @@
     }
 
     .c-dot.active {
-        background: #D4AF37;
-        transform: scale(1.45);
-        box-shadow: 0 0 9px rgba(212, 175, 55, 0.7);
+        background: #D4AF37; /* Yellow */
+        transform: scale(1.25);
+        box-shadow: 0 0 8px rgba(212, 175, 55, 0.6);
     }
 
     /* ============================================================
@@ -155,12 +155,12 @@
     }
 
     .panel-brand-name {
-        font-size: 1.45rem;
+        font-family: 'Playfair Display', serif;
+        font-size: 1.55rem;
         font-weight: 800;
         color: #ffffff;
-        letter-spacing: -0.01em;
+        letter-spacing: 0.02em;
         line-height: 1;
-        font-family: inherit;
     }
 
     /* ---- Centred text + search ---- */
@@ -701,35 +701,34 @@
             <div class="carousel-item c-slide active"
                 style="background-image:url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=2000&q=90')">
                 <div class="c-slide-overlay"></div>
-                <span class="c-slide-label">Middle Class Home</span>
             </div>
             <div class="carousel-item c-slide"
                 style="background-image:url('https://images.unsplash.com/photo-1460317442991-0ec209397118?auto=format&fit=crop&w=2000&q=90')">
                 <div class="c-slide-overlay"></div>
-                <span class="c-slide-label">Apartment</span>
             </div>
             <div class="carousel-item c-slide"
-                style="background-image:url('https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=2000&q=90')">
+                style="background-image:url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=2000&q=90')">
                 <div class="c-slide-overlay"></div>
-                <span class="c-slide-label">Commercial Spaces</span>
             </div>
             <div class="carousel-item c-slide"
                 style="background-image:url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=2000&q=90')">
                 <div class="c-slide-overlay"></div>
-                <span class="c-slide-label">Land</span>
             </div>
         </div>
+
+        {# Static Label — Text updates via JS without sliding #}
+        <div id="heroBgLabel" class="c-slide-label">Residential Homes</div>
 
         {# Dots #}
         <div class="carousel-indicators c-dots">
             <button type="button" class="c-dot active" data-bs-target="#heroBg" data-bs-slide-to="0" aria-current="true"
-                aria-label="Middle Class Home slide"></button>
+                aria-label="Residential Homes"></button>
             <button type="button" class="c-dot" data-bs-target="#heroBg" data-bs-slide-to="1"
-                aria-label="Apartment slide"></button>
+                aria-label="Apartments"></button>
             <button type="button" class="c-dot" data-bs-target="#heroBg" data-bs-slide-to="2"
-                aria-label="Commercial Spaces slide"></button>
+                aria-label="Commercial Spaces"></button>
             <button type="button" class="c-dot" data-bs-target="#heroBg" data-bs-slide-to="3"
-                aria-label="Land slide"></button>
+                aria-label="Land Properties"></button>
         </div>
     </div>
 
@@ -739,7 +738,7 @@
         {# Brand — top left of panel #}
         <a href="{% url 'home' %}" class="panel-brand">
             <div class="panel-brand-icon"><i class="bi bi-house-heart-fill"></i></div>
-            <div class="panel-brand-name">Shelter &amp; Soul</div>
+            <div class="panel-brand-name">Shelter <span style="color:#D4AF37;">&amp;</span> Soul</div>
         </a>
 
         {# Centred content #}
@@ -771,6 +770,24 @@
 </section>
 
 {# ========== CAROUSEL JS ========== #}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var heroBg = document.getElementById('heroBg');
+        var label = document.getElementById('heroBgLabel');
+        var labels = [
+            'Residential Homes',
+            'Apartments',
+            'Commercial Spaces',
+            'Land Properties'
+        ];
+        
+        if(heroBg && label) {
+            heroBg.addEventListener('slide.bs.carousel', function (e) {
+                label.textContent = labels[e.to];
+            });
+        }
+    });
+</script>
 {# ========== ACTION CARDS ========== #}
 <section class="container home-actions-section">
     <div class="home-actions-heading">
@@ -828,7 +845,7 @@
     <div class="featured-header d-flex flex-column flex-md-row align-items-md-end justify-content-between gap-3">
         <div>
             <span class="featured-kicker">Curated Collection</span>
-            <h2 class="featured-title">Featured Properties</h2>
+            <h2 class="featured-title">Hot Listings</h2>
             <p class="featured-subtitle">Handpicked premium homes with exceptional value, crafted for modern living.</p>
         </div>
         <a href="{% url 'property_list' %}" class="btn btn-outline-primary px-4">
