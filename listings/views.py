@@ -331,3 +331,9 @@ def property_delete(request, pk):
         messages.success(request, "Property deleted successfully!")
         return redirect("property_list")
     return render(request, "listings/property_confirm_delete.html", {"property": property_obj})
+
+
+@login_required
+def view_inquiries(request):
+    inquiries = Inquiry.objects.filter(user=request.user).order_by("-id")
+    return render(request, "listings/view_inquiries.html", {"inquiries": inquiries})

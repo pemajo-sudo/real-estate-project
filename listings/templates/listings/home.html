@@ -1,46 +1,114 @@
 {% extends "listings/base.html" %}
 {% load humanize %}
 
+{% block main_class %}{% endblock %}
 
 {% block content %}
-<div class="hero mb-5">
-    <h1>Welcome to Shelter & Soul</h1>
-    <p class="lead mb-4">Where your soul finds its perfect shelter. Discover premium real estate properties tailored to your needs.</p>
-    <a href="{% url 'property_list' %}" class="btn btn-light btn-lg rounded-pill px-4 text-primary fw-bold shadow-sm">Start Exploring</a>
-</div>
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="fw-bold mb-0 text-dark border-bottom pb-2 border-primary d-inline-block">Featured Properties</h2>
-    <a href="{% url 'property_list' %}" class="text-decoration-none">View All <i class="bi bi-arrow-right"></i></a>
-</div>
+{# ===== PREMIUM HERO SECTION ===== #}
+<section class="hero-premium">
+    <div class="hero-inner">
 
-<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-    {% for property in featured_properties %}
+        <span class="hero-eyebrow">✦ Premium Real Estate Platform</span>
+
+        <h1>Find Your Dream&nbsp;Home</h1>
+
+        <p class="hero-sub">
+            Luxury properties, exceptional service. Discover a home that speaks to your soul —<br
+                class="d-none d-md-block">
+            curated listings across the country, just for you.
+        </p>
+
+        {# Buy / Rent / Sell Tabs #}
+        <div class="search-tabs" id="heroTabs" role="tablist" aria-label="Property type">
+            <button class="search-tab-btn active" data-type="buy" aria-selected="true">Buy</button>
+            <button class="search-tab-btn" data-type="rent" aria-selected="false">Rent</button>
+            <button class="search-tab-btn" data-type="sell" aria-selected="false">Sell</button>
+        </div>
+
+        {# Glassmorphism Search Bar #}
+        <form class="glass-search" id="heroSearchForm" action="{% url 'property_list' %}" method="GET">
+            <input type="hidden" name="type" id="heroTypeInput" value="buy">
+            <i class="bi bi-geo-alt-fill glass-search-icon" aria-hidden="true"></i>
+            <input type="text" name="q" id="heroSearchInput" placeholder="Enter city, neighborhood or address…"
+                autocomplete="off" aria-label="Search location">
+            <button type="submit" class="btn btn-gold" id="heroSearchBtn">
+                <i class="bi bi-search me-2"></i>Search
+            </button>
+        </form>
+
+    </div>
+</section>
+
+{# ===== FEATURED PROPERTIES ===== #}
+<div class="container my-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold mb-0 border-bottom border-primary pb-2 d-inline-block"
+            style="border-color: var(--gold) !important;">
+            Featured Properties
+        </h2>
+        <a href="{% url 'property_list' %}" class="text-decoration-none fw-semibold" style="color: var(--primary);">
+            View All <i class="bi bi-arrow-right"></i>
+        </a>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for property in featured_properties %}
         <div class="col">
             <div class="card h-100">
                 {% if property.image %}
-                    <img src="{{ property.image.url }}" class="card-img-top" alt="{{ property.name }}">
+                <img src="{{ property.image.url }}" class="card-img-top" alt="{{ property.name }}">
                 {% else %}
-                    <div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 220px;">
-                        <i class="bi bi-house fs-1"></i>
-                    </div>
+                <div class="card-img-top d-flex align-items-center justify-content-center"
+                    style="height: 220px; background: linear-gradient(135deg, #e8edf8, #d4ddf0);">
+                    <i class="bi bi-house fs-1 text-primary opacity-50"></i>
+                </div>
                 {% endif %}
                 <div class="card-body d-flex flex-column">
                     <h3 class="card-title h5">{{ property.name }}</h3>
-                    <p class="text-muted mb-2"><i class="bi bi-geo-alt-fill text-primary me-2"></i>{{ property.location }}</p>
+                    <p class="text-muted mb-2">
+                        <i class="bi bi-geo-alt-fill text-primary me-2"></i>{{ property.location }}
+                    </p>
                     <p class="fw-bold fs-5 text-primary mt-auto mb-3">Rs. {{ property.price|intcomma }}</p>
-                    <a href="{% url 'property_detail' property.pk %}" class="btn btn-outline-primary w-100 mt-auto rounded-pill">View Details</a>
+                    <a href="{% url 'property_detail' property.pk %}" class="btn btn-outline-primary w-100 mt-auto">View
+                        Details</a>
                 </div>
             </div>
         </div>
-    {% empty %}
+        {% empty %}
         <div class="col-12 text-center py-5">
             <i class="bi bi-houses text-muted fs-1 d-block mb-3"></i>
-            <p class="lead text-muted">No featured properties available yet. Start by adding your first property.</p>
+            <p class="lead text-muted">No featured properties available yet. Start by adding your first listing.</p>
             {% if user.is_authenticated %}
-            <a href="{% url 'property_create' %}" class="btn btn-primary mt-2">Add Property</a>
+            <a href="{% url 'property_create' %}" class="btn btn-primary mt-2">
+                <i class="bi bi-plus-lg me-1"></i>Add Property
+            </a>
             {% endif %}
         </div>
-    {% endfor %}
+        {% endfor %}
+    </div>
+
 </div>
+
+{# ===== HERO TAB JS ===== #}
+<script>
+    (function () {
+        const tabs = document.querySelectorAll('#heroTabs .search-tab-btn');
+        const typeInput = document.getElementById('heroTypeInput');
+
+        tabs.forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                tabs.forEach(function (b) {
+                    b.classList.remove('active');
+                    b.setAttribute('aria-selected', 'false');
+                });
+                btn.classList.add('active');
+                btn.setAttribute('aria-selected', 'true');
+                typeInput.value = btn.dataset.type;
+            });
+        });
+    })();
+</script>
+
 {% endblock %}
