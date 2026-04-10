@@ -26,17 +26,17 @@
             --teal: #0f9d8a;
             --bg: #ffffff;
             --surface: #f7f9fc;
-            --text: #1f2a3d;
-            --muted: #6b7280;
-            --border: #e5eaf4;
-            --shadow-sm: 0 4px 14px rgba(13, 43, 102, 0.07);
-            --shadow-md: 0 10px 28px rgba(13, 43, 102, 0.12);
-            --shadow-lg: 0 20px 40px rgba(13, 43, 102, 0.18);
-            --radius-sm: 8px;
-            --radius-md: 14px;
-            --radius-lg: 20px;
+            --text: #17243b;
+            --muted: #64748b;
+            --border: #e2e8f0;
+            --shadow-sm: 0 2px 8px rgba(13, 43, 102, 0.05);
+            --shadow-md: 0 8px 20px rgba(13, 43, 102, 0.08);
+            --shadow-lg: 0 16px 36px rgba(13, 43, 102, 0.12);
+            --radius-sm: 6px;
+            --radius-md: 12px;
+            --radius-lg: 18px;
             --radius-pill: 999px;
-            --transition: 0.25s ease;
+            --transition: 0.2s ease;
             --home-panel-width: 58%;
         }
 
@@ -331,9 +331,39 @@
             color: #fff;
         }
 
-        .btn:not(.btn-primary):not(.btn-secondary):not(.btn-danger):not(.btn-light):not(.btn-outline-primary):not(.btn-outline-secondary):not(.btn-gold):not(.btn-close) {
+        .btn:not(.btn-primary):not(.btn-secondary):not(.btn-danger):not(.btn-light):not(.btn-outline-primary):not(.btn-outline-secondary):not(.btn-gold):not(.btn-close):not(.btn-contact-action):not(.btn-apply-agent) {
             background-color: var(--primary);
             color: white;
+        }
+
+        /* ===== FORMS ===== */
+        .form-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control, .form-select {
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            color: var(--text);
+            background-color: #fff;
+            transition: var(--transition);
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--teal);
+            box-shadow: 0 0 0 4px rgba(15, 157, 138, 0.1);
+            outline: none;
+        }
+
+        .form-control::placeholder {
+            color: #94a3b8;
         }
 
         /* ===== HERO (PREMIUM) ===== */
@@ -572,28 +602,7 @@
         }
 
         /* Global form fallback for Django forms */
-        input[type="text"],
-        input[type="email"],
-        input[type="password"],
-        input[type="number"],
-        select,
-        textarea,
-        input[type="url"],
-        input[type="file"] {
-            display: block;
-            width: 100%;
-            padding: 0.45rem 0.85rem;
-            font-size: 1rem;
-            font-weight: 400;
-            line-height: 1.5;
-            color: var(--text);
-            background-color: #fff;
-            background-clip: padding-box;
-            border: 1px solid #d2dbe9;
-            border-radius: var(--radius-sm);
-            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-            margin-bottom: 1rem;
-        }
+
 
         /* ===== MISC ===== */
         .text-primary {
@@ -791,20 +800,19 @@
     <style>
         /* ===== GOLD SIGN-UP BUTTON ===== */
         .btn-gold-signup {
-            background-color: #D4AF37 !important;
+            background: var(--gold) !important;
             color: #fff !important;
-            border-radius: 50px;
+            border-radius: var(--radius-pill);
             border: none;
             padding: 0.45rem 1.4rem;
             font-weight: 700;
-            font-family: 'Inter', sans-serif;
-            transition: all 0.3s ease;
+            transition: var(--transition);
         }
 
         .btn-gold-signup:hover {
-            background-color: #c39d2c !important;
-            box-shadow: 0 0 16px rgba(212, 175, 55, 0.6);
-            transform: translateY(-2px);
+            background: var(--gold-dark) !important;
+            box-shadow: 0 4px 12px rgba(199, 163, 74, 0.4);
+            transform: translateY(-1px);
         }
 
         /* ===== HOME NAVBAR — floats over the RIGHT/carousel side ===== */
@@ -1008,53 +1016,65 @@
     </main>
 
     <!-- ===== FOOTER ===== -->
-    <footer class="footer mt-auto">
+    <footer class="footer mt-auto py-5 bg-dark text-white">
         <div class="container">
-            <div class="row g-4">
-                <div class="col-lg-4 col-md-6">
-                    <h5 class="text-white d-flex align-items-center gap-2 mb-3">
-                        <i class="bi bi-house-heart-fill"></i> Shelter &amp; Soul
+            <div class="row g-4 d-flex justify-content-between">
+                <!-- Platform Info -->
+                <div class="col-lg-4">
+                    <h5 class="font-playfair fw-bold mb-4 d-flex align-items-center gap-2">
+                        <i class="bi bi-house-heart-fill text-gold"></i> Shelter &amp; Soul
                     </h5>
-                    <p class="text-white-50 mb-4">
-                        Where your soul finds its perfect shelter. Discover premium real estate properties tailored to
-                        your needs.
+                    <p class="text-white-50 small mb-4 pe-lg-5" style="line-height: 1.8;">
+                        Shelter & Soul is a premium real estate platform built for the Sri Lankan market. We combine modern technology with localized expertise to help you find your perfect space.
                     </p>
-                    <div class="social-icons">
-                        <a href="#" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
-                        <a href="#" aria-label="Twitter"><i class="bi bi-twitter-x"></i></a>
-                        <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
-                        <a href="#" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                    <div class="d-flex gap-3">
+                        <a href="#" class="text-white-50"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="text-white-50"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="text-white-50"><i class="bi bi-twitter-x"></i></a>
                     </div>
                 </div>
 
-                <div class="col-lg-3 col-md-6 ms-lg-auto">
-                    <h5 class="text-white mb-3">Quick Links</h5>
-                    <ul class="list-unstyled">
-                        <li class="mb-2"><i class="bi bi-chevron-right small text-white-50 me-1"></i><a
-                                href="{% url 'home' %}">Home</a></li>
-                        <li class="mb-2"><i class="bi bi-chevron-right small text-white-50 me-1"></i><a
-                                href="{% url 'property_list' %}">Listings</a></li>
-                        <li class="mb-2"><i class="bi bi-chevron-right small text-white-50 me-1"></i><a
-                                href="{% url 'compare_properties' %}">Compare</a></li>
-                        <li class="mb-2"><i class="bi bi-chevron-right small text-white-50 me-1"></i><a
-                                href="{% url 'register' %}">Register</a></li>
+                <!-- About Us -->
+                <div class="col-lg-2 col-md-4">
+                    <h6 class="text-uppercase small fw-bold tracking-wider mb-4" style="color: var(--teal);">Explore</h6>
+                    <ul class="list-unstyled small text-white-50">
+                        <li class="mb-2"><a href="{% url 'about' %}" class="text-decoration-none text-white-50 hover-white">About Us</a></li>
+                        <li class="mb-2"><a href="{% url 'property_list' %}" class="text-decoration-none text-white-50 hover-white">All Listings</a></li>
+                        <li class="mb-2"><a href="{% url 'sell' %}" class="text-decoration-none text-white-50 hover-white">Sell With Us</a></li>
+                        <li class="mb-2"><a href="{% url 'find_agent' %}" class="text-decoration-none text-white-50 hover-white">Our Agents</a></li>
                     </ul>
                 </div>
 
-                <div class="col-lg-4 col-md-12">
-                    <h5 class="text-white mb-3">Contact Us</h5>
-                    <ul class="list-unstyled text-white-50">
-                        <li class="mb-3 d-flex gap-3">
-                            <i class="bi bi-geo-alt-fill text-primary mt-1"></i>
-                            <span>123 Real Estate Avenue,<br>Tech District, NY 10001</span>
+                <!-- Why Sell With Us -->
+                <div class="col-lg-3 col-md-4">
+                    <h6 class="text-uppercase small fw-bold tracking-wider mb-4" style="color: var(--gold);">Why Sell With Us?</h6>
+                    <ul class="list-unstyled small text-white-50">
+                        <li class="mb-3 d-flex gap-2">
+                            <i class="bi bi-check2-circle text-gold"></i>
+                            <span>Deep Local Market Insights</span>
+                        </li>
+                        <li class="mb-3 d-flex gap-2">
+                            <i class="bi bi-check2-circle text-gold"></i>
+                            <span>Maximum Global Exposure</span>
+                        </li>
+                        <li class="mb-3 d-flex gap-2">
+                            <i class="bi bi-check2-circle text-gold"></i>
+                            <span>Elite Marketing Packages</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Contact -->
+                <div class="col-lg-3 col-md-4">
+                    <h6 class="text-uppercase small fw-bold tracking-wider mb-4">Connect</h6>
+                    <ul class="list-unstyled small text-white-50">
+                        <li class="mb-3 d-flex gap-3 align-items-start">
+                            <i class="bi bi-geo-alt text-teal"></i>
+                            <span>Main Office, Colombo, Sri Lanka</span>
                         </li>
                         <li class="mb-3 d-flex gap-3">
-                            <i class="bi bi-envelope-fill text-primary mt-1"></i>
-                            <span>info@shelterandsoul.com</span>
-                        </li>
-                        <li class="mb-3 d-flex gap-3">
-                            <i class="bi bi-telephone-fill text-primary mt-1"></i>
-                            <span>+1 (234) 567-8900</span>
+                            <i class="bi bi-envelope text-teal"></i>
+                            <span>contact@shelterandsoul.lk</span>
                         </li>
                     </ul>
                 </div>

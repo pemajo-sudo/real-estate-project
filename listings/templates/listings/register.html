@@ -1,11 +1,101 @@
 {% extends "listings/base.html" %}
 
 {% block content %}
-<h2>Create Your Account</h2>
+<style>
+    .auth-container {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 4rem 1.5rem;
+        background: var(--surface);
+    }
 
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn">Register</button>
-</form>
+    .auth-card {
+        background: #fff;
+        border-radius: var(--radius-lg);
+        width: 100%;
+        max-width: 500px;
+        padding: 3rem;
+        box-shadow: var(--shadow-lg);
+        border: 1px solid var(--border);
+    }
+
+    .auth-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+
+    .auth-header h2 {
+        font-family: 'Playfair Display', serif;
+        font-weight: 800;
+        color: var(--primary);
+        font-size: 2.2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .auth-header p {
+        color: var(--muted);
+        font-size: 0.95rem;
+    }
+
+    .auth-footer {
+        text-align: center;
+        margin-top: 2rem;
+        color: var(--muted);
+        font-size: 0.9rem;
+    }
+
+    .auth-footer a {
+        color: var(--gold);
+        font-weight: 700;
+    }
+
+    /* Style for form as nested inputs might appear */
+    .register-form ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+</style>
+
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h2>Join Our Network</h2>
+            <p>Create your account today and start your journey with us.</p>
+        </div>
+
+        <form method="post" class="register-form">
+            {% csrf_token %}
+            
+            {% for field in form %}
+            <div class="mb-4">
+                <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                <small class="text-muted d-block mt-1">{{ field.help_text|safe }}</small>
+                {% endif %}
+                {% for error in field.errors %}
+                <div class="text-danger small mt-1">{{ error }}</div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+
+            <button type="submit" class="btn btn-primary w-100 py-3 mt-2">Get Started</button>
+        </form>
+
+        <div class="auth-footer">
+            Already have an account? <a href="{% url 'login' %}">Log In</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Add form-control class to all inputs
+    document.querySelectorAll('input:not([type="checkbox"]):not([type="radio"]), select, textarea').forEach(el => {
+        el.classList.add('form-control');
+    });
+</script>
 {% endblock %}

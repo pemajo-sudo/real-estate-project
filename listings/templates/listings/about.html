@@ -1,0 +1,172 @@
+{% extends "listings/base.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+    .about-hero {
+        background: linear-gradient(135deg, rgba(8, 31, 77, 0.9) 0%, rgba(13, 43, 102, 0.7) 100%),
+                    url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
+        height: 60vh;
+        min-height: 400px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: white;
+        margin-bottom: 4rem;
+    }
+
+    .about-hero h1 {
+        font-family: 'Playfair Display', serif;
+        font-weight: 800;
+        font-size: clamp(2.5rem, 5vw, 4rem);
+        margin-bottom: 1rem;
+    }
+
+    .about-hero p {
+        font-size: 1.25rem;
+        max-width: 700px;
+        margin: 0 auto;
+        opacity: 0.9;
+    }
+
+    .about-section {
+        padding: 5rem 0;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .about-title-kicker {
+        color: var(--teal);
+        text-transform: uppercase;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        font-size: 0.85rem;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .about-section h2 {
+        font-family: 'Playfair Display', serif;
+        font-weight: 800;
+        color: var(--primary);
+        font-size: 2.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .about-text {
+        color: #5d6f88;
+        font-size: 1.1rem;
+        line-height: 1.8;
+    }
+
+    .stat-card {
+        background: #fff;
+        border-radius: 20px;
+        padding: 2rem;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(13, 43, 102, 0.05);
+        border: 1px solid #f1f4f9;
+        height: 100%;
+        transition: transform 0.3s;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .stat-number {
+        font-family: 'Playfair Display', serif;
+        font-size: 3rem;
+        font-weight: 800;
+        color: var(--gold);
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .stat-label {
+        font-weight: 700;
+        color: var(--primary);
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.05em;
+    }
+
+    .mission-box {
+        background: linear-gradient(135deg, var(--primary) 0%, #152a44 100%);
+        border-radius: 30px;
+        padding: 4rem;
+        color: white;
+        margin-top: 4rem;
+    }
+
+    .mission-box h2 {
+        color: white;
+    }
+
+    .mission-text {
+        font-size: 1.25rem;
+        font-weight: 300;
+        opacity: 0.95;
+        line-height: 1.7;
+    }
+
+</style>
+
+<div class="about-hero">
+    <div class="container">
+        <h1>Our Vision</h1>
+        <p>Redefining real estate experiences with transparency, luxury, and soul.</p>
+    </div>
+</div>
+
+<div class="container about-section">
+    <div class="row align-items-center g-5">
+        <div class="col-lg-6">
+            <span class="about-title-kicker">Who We Are</span>
+            <h2>Shelter & Soul</h2>
+            <div class="about-text">
+                <p>Founded on the principle that a home is more than just a property, <strong>Shelter & Soul</strong> is dedicated to matching individuals with spaces that resonate with their lifestyle and aspirations.</p>
+                <p>In the vibrant Sri Lankan real estate market, we stand out as a boutique agency that prioritizes long-term relationships over short-term transactions. Our team of seasoned professionals brings decades of local expertise and a passion for architectural excellence.</p>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="row g-4">
+                <div class="col-sm-6">
+                    <div class="stat-card">
+                        <span class="stat-number">1k+</span>
+                        <span class="stat-label">Properties Sold</span>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="stat-card">
+                        <span class="stat-number">50+</span>
+                        <span class="stat-label">Expert Agents</span>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="stat-card">
+                        <span class="stat-number">98%</span>
+                        <span class="stat-label">Client Trust</span>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="stat-card">
+                        <span class="stat-number">15</span>
+                        <span class="stat-label">Years Excellence</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mission-box">
+        <div class="row">
+            <div class="col-lg-10 mx-auto text-center">
+                <h2>Our Mission</h2>
+                <p class="mission-text mb-0">To elevate the real estate industry in Sri Lanka by delivering unmatched professional service, professional staging, and transparent negotiations that empower our clients to own their future, one property at a time.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

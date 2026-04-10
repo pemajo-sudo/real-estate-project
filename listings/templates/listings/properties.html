@@ -55,26 +55,7 @@
     margin-bottom: 2.2rem;
   }
 
-  .listings-filter-card .form-label {
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--muted);
-    margin-bottom: 0.4rem;
-  }
 
-  .listings-filter-card .form-control,
-  .listings-filter-card .form-select {
-    border-radius: var(--radius-sm);
-    border: 1.5px solid #dce6f5;
-    font-size: 0.93rem;
-    padding: 0.55rem 0.85rem;
-    color: var(--text);
-    transition: border-color 0.2s, box-shadow 0.2s;
-    margin-bottom: 0;
-    height: auto;
-  }
 
   .filter-heading {
     display: flex;
@@ -131,15 +112,15 @@
 
   .listings-filter-card .input-group-text {
     background: #f4f8ff;
-    border: 1.5px solid #dce6f5;
+    border: 1px solid var(--border);
     border-right: none;
     color: var(--muted);
-    border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+    border-radius: var(--radius-md) 0 0 var(--radius-md);
   }
 
   .listings-filter-card .input-group .form-control {
     border-left: none;
-    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
   }
 
   .btn-filter-apply {
@@ -865,17 +846,13 @@
           {{ property.location }}
         </p>
         <div class="prop-amenities">
-          <span class="prop-amenity"><i class="bi bi-door-open"></i>{{ property.number_of_rooms|default:"—" }}
-            Beds</span>
+          <span class="prop-amenity"><i class="bi bi-door-open"></i>{{ property.number_of_rooms|default:"—" }} Beds</span>
           <span class="prop-amenity">
             <i class="bi bi-droplet-half"></i>
-            {% if property.number_of_rooms and property.number_of_rooms > 1 %}
-            {{ property.number_of_rooms|add:"-1" }}
-            {% else %}—{% endif %}
+            {% if property.number_of_rooms and property.number_of_rooms > 1 %}{{ property.number_of_rooms|add:"-1" }}{% else %}—{% endif %}
             Baths
           </span>
-          <span class="prop-amenity"><i class="bi bi-aspect-ratio"></i>{{ property.size_sqft|floatformat:0|default:"—"
-            }} sqft</span>
+          <span class="prop-amenity"><i class="bi bi-aspect-ratio"></i>{{ property.size_sqft|floatformat:0|default:"—" }} sqft</span>
         </div>
       </div>
 

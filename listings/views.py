@@ -47,6 +47,11 @@ def sell_property(request):
     return render(request, "listings/sell.html")
 
 
+def about(request):
+    """Renders the professional About Us page."""
+    return render(request, "listings/about.html")
+
+
 @login_required
 def dashboard_view(request):
     """Renders the User Dashboard with wishlists, inquiries, etc."""

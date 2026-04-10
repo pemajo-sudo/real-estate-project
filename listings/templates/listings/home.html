@@ -63,50 +63,49 @@
 
     .c-slide-label {
         position: absolute;
-        right: 48px;
-        bottom: 74px;
+        right: 40px;
+        bottom: 70px;
         z-index: 10;
         border-radius: 999px;
-        border: 1px solid rgba(255, 255, 255, 0.28);
-        background: rgba(21, 42, 68, 0.46);
-        color: rgba(255, 255, 255, 0.9);
-        font-size: 0.8rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        background: rgba(13, 43, 102, 0.4);
+        color: rgba(255, 255, 255, 0.95);
+        font-size: 0.75rem;
         font-weight: 600;
-        letter-spacing: 0.03em;
-        padding: 0.32rem 0.82rem;
-        backdrop-filter: blur(6px);
-        -webkit-backdrop-filter: blur(6px);
+        letter-spacing: 0.04em;
+        padding: 0.25rem 0.75rem;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
         pointer-events: none;
     }
 
     /* ---- Dots ---- */
     .c-dots {
         position: absolute;
-        bottom: 46px;
-        right: 48px;
+        bottom: 40px;
+        right: 40px;
         left: auto;
         z-index: 10;
         display: flex;
-        gap: 10px;
+        gap: 8px;
     }
 
     .c-dot {
-        width: 8px !important;
-        height: 8px !important;
+        width: 6px !important;
+        height: 6px !important;
         border-radius: 50% !important;
         border: none !important;
-        background: #cbd5e1 !important; /* Light grey */
+        background: rgba(255, 255, 255, 0.4) !important;
         cursor: pointer;
         padding: 0 !important;
         margin: 0 !important;
-        text-indent: -9999px;
-        transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+        transition: all 0.3s ease;
     }
 
     .c-dot.active {
-        background: #D4AF37 !important; /* Yellow */
-        transform: scale(1.25) !important;
-        box-shadow: 0 0 8px rgba(212, 175, 55, 0.6) !important;
+        background: var(--gold) !important;
+        transform: scale(1.4) !important;
+        box-shadow: 0 0 10px rgba(199, 163, 74, 0.5) !important;
     }
 
     /* ============================================================
@@ -214,7 +213,7 @@
     .search-module {
         animation: panelFadeUp 0.85s ease-out 0.27s both;
         width: 100%;
-        max-width: 640px;
+        max-width: 480px;
     }
 
     .search-module form {
@@ -269,11 +268,10 @@
         align-items: center;
         background: #ffffff;
         border-radius: 50px;
-        padding: 5px 5px 5px 16px;
-        box-shadow: 0 8px 24px rgba(8, 29, 53, 0.15);
-        border: none;
+        padding: 4px 4px 4px 14px;
+        box-shadow: 0 8px 30px rgba(13, 43, 102, 0.08);
+        border: 1px solid rgba(13, 43, 102, 0.05);
         width: 100%;
-        max-width: 560px;
     }
 
     .search-bar input {
@@ -281,9 +279,9 @@
         border: none;
         outline: none;
         background: transparent;
-        font-family: 'Inter', sans-serif;
-        font-size: 1rem;
-        color: #243447;
+        font-family: inherit;
+        font-size: 0.95rem;
+        color: var(--text);
         min-width: 0;
     }
 
@@ -292,19 +290,18 @@
     }
 
     .search-bar-btn {
-        background: #D4AF37;
+        background: var(--gold);
         color: #fff;
         border: none;
-        padding: 9px 20px;
+        padding: 8px 18px;
         border-radius: 50px;
         font-weight: 700;
-        font-size: 0.9rem;
-        font-family: 'Inter', sans-serif;
+        font-size: 0.85rem;
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 6px;
         cursor: pointer;
-        transition: background 0.25s, box-shadow 0.25s, transform 0.2s;
+        transition: var(--transition);
         white-space: nowrap;
         flex-shrink: 0;
     }
@@ -748,11 +745,14 @@
 
             <div class="search-module">
                 <div class="search-tabs">
-                    <input class="search-type-input" type="radio" name="type" id="typeBuy" value="buy" form="heroSearchForm" checked>
+                    <input class="search-type-input" type="radio" name="type" id="typeBuy" value="buy"
+                        form="heroSearchForm" checked>
                     <label class="search-tab" for="typeBuy">Buy</label>
-                    <input class="search-type-input" type="radio" name="type" id="typeRent" value="rent" form="heroSearchForm">
+                    <input class="search-type-input" type="radio" name="type" id="typeRent" value="rent"
+                        form="heroSearchForm">
                     <label class="search-tab" for="typeRent">Rent</label>
-                    <input class="search-type-input" type="radio" name="type" id="typeSell" value="sell" form="heroSearchForm">
+                    <input class="search-type-input" type="radio" name="type" id="typeSell" value="sell"
+                        form="heroSearchForm">
                     <label class="search-tab" for="typeSell">Sell</label>
                 </div>
                 <form id="heroSearchForm" action="{% url 'property_list' %}" method="GET">
@@ -771,7 +771,7 @@
 
 {# ========== CAROUSEL JS ========== #}
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         var heroBg = document.getElementById('heroBg');
         var label = document.getElementById('heroBgLabel');
         var labels = [
@@ -780,8 +780,8 @@
             'Commercial Spaces',
             'Land Properties'
         ];
-        
-        if(heroBg && label) {
+
+        if (heroBg && label) {
             heroBg.addEventListener('slide.bs.carousel', function (e) {
                 label.textContent = labels[e.to];
             });
@@ -791,7 +791,7 @@
 {# ========== ACTION CARDS ========== #}
 <section class="container home-actions-section">
     <div class="home-actions-heading">
-        <h2>Explore Real Estate Services</h2>
+        <h2>Explore Our Services</h2>
         <p>Move faster with premium tools to buy, sell, rent, and manage your property journey in one place.</p>
     </div>
     <div class="row row-cols-1 row-cols-md-2 row-cols-xl-4 g-4">

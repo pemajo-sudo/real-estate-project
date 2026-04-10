@@ -5,13 +5,12 @@
     /* Sell Page Custom Styles */
     .sell-hero {
         background: url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2000&q=80') no-repeat center center/cover;
-        min-height: 480px;
+        min-height: 100%;
         position: relative;
         display: flex;
         align-items: center;
-        border-radius: var(--radius-lg);
+        border-radius: var(--radius-lg) 0 0 var(--radius-lg);
         overflow: hidden;
-        margin-bottom: 3rem;
     }
 
     .sell-hero-overlay {
@@ -44,14 +43,15 @@
 
     .sell-form-wrapper {
         background: #ffffff;
-        border-radius: var(--radius-md);
-        padding: 2rem;
-        box-shadow: 0 15px 45px rgba(13, 43, 102, 0.1);
-        position: relative;
-        z-index: 10;
-        margin-top: -320px; /* Overlap hero */
-        margin-bottom: 3rem;
+        border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+        padding: 3rem;
+        box-shadow: 0 10px 40px rgba(13, 43, 102, 0.05);
         border: 1px solid #f1f4f9;
+        border-left: none;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }
 
     @media (max-width: 991.98px) {
@@ -61,48 +61,16 @@
         }
     }
 
-    .form-control, .form-select {
-        border-radius: var(--radius-sm);
-        padding: 0.8rem 1rem;
-        border: 1px solid var(--border);
-        background: var(--surface);
-        font-size: 0.95rem;
-        transition: var(--transition);
-    }
 
-    .form-control:focus, .form-select:focus {
-        border-color: var(--gold);
-        box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.25);
-        background: #fff;
-    }
-
-    .form-label {
-        font-weight: 600;
-        font-size: 0.85rem;
-        color: var(--text);
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        margin-bottom: 0.4rem;
-    }
 
     .btn-gold-submit {
-        background: var(--gold);
-        color: #fff;
-        border: none;
         padding: 1rem;
         border-radius: var(--radius-pill);
         font-weight: 700;
         font-size: 1rem;
         width: 100%;
-        transition: var(--transition);
         text-transform: uppercase;
         letter-spacing: 0.05em;
-    }
-
-    .btn-gold-submit:hover {
-        background: var(--gold-dark);
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
     }
 
     .success-card {
@@ -121,11 +89,11 @@
 
 </style>
 
-<div class="container my-5">
-    <div class="row g-0">
+<div class="container my-5 px-lg-0">
+    <div class="row g-0 align-items-stretch" style="min-height: 650px;">
         <!-- Left Side: Hero / Description -->
-        <div class="col-lg-6">
-            <div class="sell-hero w-100">
+        <div class="col-lg-6 d-none d-lg-block">
+            <div class="sell-hero">
                 <div class="sell-hero-overlay"></div>
                 <div class="sell-content-wrapper">
                     <h1 class="sell-header">Sell With Us</h1>
@@ -157,7 +125,7 @@
         </div>
 
         <!-- Right Side: Form -->
-        <div class="col-lg-5 ms-auto">
+        <div class="col-lg-6">
             <div class="sell-form-wrapper">
                 {% if success %}
                 <div class="success-card">
@@ -207,7 +175,7 @@
                         <textarea class="form-control" id="message" name="message" rows="4" placeholder="Tell us about the unique features of your property..."></textarea>
                     </div>
 
-                    <button type="submit" class="btn-gold-submit">Submit Request</button>
+                    <button type="submit" class="btn btn-gold btn-gold-submit">Submit Request</button>
                 </form>
                 {% endif %}
             </div>
