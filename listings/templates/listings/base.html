@@ -626,6 +626,27 @@
             border-color: #d9e2f2;
         }
 
+        /* ===== MOTION EFFECTS ===== */
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .fade-in-up.appear {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .hover-lift {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .hover-lift:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+        }
+
         /* ===== FOOTER ===== */
         .footer {
             background: #061633; /* Darker deep blue for better contrast */
@@ -1055,6 +1076,10 @@
                         <a class="nav-link {% if request.resolver_match.url_name == 'find_agent' %}active{% endif %}"
                             href="{% url 'find_agent' %}">Find an Agent</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}"
+                            href="{% url 'about' %}">About Us</a>
+                    </li>
                 </ul>
 
                 <!-- Right: auth/profile -->
@@ -1205,6 +1230,27 @@
                 icon.classList.add('bi-heart');
             }
         }
+
+        // Intersection Observer for Scroll Animations
+        document.addEventListener("DOMContentLoaded", function() {
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('appear');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+
+            const fadeEls = document.querySelectorAll('.fade-in-up');
+            fadeEls.forEach(el => observer.observe(el));
+        });
     </script>
 </body>
 

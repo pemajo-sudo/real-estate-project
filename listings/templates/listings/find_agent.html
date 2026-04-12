@@ -12,15 +12,13 @@
         margin-bottom: 3rem;
         position: relative;
         overflow: hidden;
+        border-radius: var(--radius-lg);
     }
 
     .agents-header-section::after {
         content: '';
         position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
+        top: 0; left: 0; right: 0; bottom: 0;
         background: radial-gradient(circle at 70% 30%, rgba(199, 163, 74, 0.15) 0%, transparent 60%);
         pointer-events: none;
     }
@@ -52,14 +50,6 @@
         height: 100%;
         display: flex;
         flex-direction: column;
-        transition: var(--transition);
-        box-shadow: var(--shadow-sm);
-    }
-
-    .agent-profile-card:hover {
-        transform: translateY(-5px);
-        box-shadow: var(--shadow-md);
-        border-color: var(--teal);
     }
 
     .agent-header-row {
@@ -102,13 +92,8 @@
         margin-bottom: 1.5rem;
     }
 
-    .stat-item {
-        text-align: center;
-    }
-
-    .stat-item:not(:last-child) {
-        border-right: 1px solid var(--border);
-    }
+    .stat-item { text-align: center; }
+    .stat-item:not(:last-child) { border-right: 1px solid var(--border); }
 
     .stat-value {
         display: block;
@@ -183,10 +168,20 @@
         box-shadow: 0 10px 20px rgba(199, 163, 74, 0.3);
     }
 
+    /* Empty state */
+    .empty-state {
+        text-align: center;
+        padding: 6rem 2rem;
+        background: #fff;
+        border-radius: var(--radius-lg);
+        border: 1px dashed var(--gold);
+        box-shadow: var(--shadow-sm);
+    }
+
 </style>
 
-<div class="agents-header-section">
-    <div class="container">
+<div class="agents-header-section fade-in-up">
+    <div class="container fade-in-up">
         <h1>Connect with Experts</h1>
         <p>Our hand-picked network of Sri Lankan real estate professionals is ready to guide you home.</p>
     </div>
@@ -194,109 +189,147 @@
 
 <div class="container mb-5">
     <div class="row g-4">
-        <!-- Agent Card 1 -->
-        <div class="col-lg-6 col-xl-4">
-            <div class="agent-profile-card">
-                <div class="agent-header-row">
-                    <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=200&q=80" alt="Agent" class="agent-photo">
-                    <div class="agent-identity">
-                        <h3>Malik Jayawardena</h3>
-                        <span class="tagline">Senior Executive Partner</span>
+        {% if agents %}
+            <!-- Dynamic Agents (Future integration for admin-managed agents) -->
+            {% for agent in agents %}
+            <div class="col-lg-6 col-xl-4 fade-in-up">
+                <div class="agent-profile-card hover-lift">
+                    <div class="agent-header-row">
+                        <img src="{{ agent.photo.url|default:'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=200&q=80' }}" alt="Agent" class="agent-photo">
+                        <div class="agent-identity">
+                            <h3>{{ agent.name }}</h3>
+                            <span class="tagline">{{ agent.specialization|default:"Real Estate Agent" }}</span>
+                        </div>
                     </div>
+                    <div class="agent-stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-value">{{ agent.deals_closed|default:"10+" }}</span>
+                            <span class="stat-label">Deals</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">{{ agent.rating|default:"4.8" }}/5</span>
+                            <span class="stat-label">Rating</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">Rs. {{ agent.volume|default:"200M" }}</span>
+                            <span class="stat-label">Volume</span>
+                        </div>
+                    </div>
+                    <p class="agent-bio">
+                        {{ agent.bio|truncatewords:25|default:"An experienced professional ready to help you find your dream property with transparency." }}
+                    </p>
+                    <button class="btn-contact-action">
+                        <i class="bi bi-chat-dots"></i> Contact Agent
+                    </button>
                 </div>
-                <div class="agent-stats-grid">
-                    <div class="stat-item">
-                        <span class="stat-value">85+</span>
-                        <span class="stat-label">Deals</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-value">4.9/5</span>
-                        <span class="stat-label">Rating</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-value">Rs. 1.2B</span>
-                        <span class="stat-label">Volume</span>
-                    </div>
-                </div>
-                <p class="agent-bio">
-                    With over 12 years of experience in the Colombo luxury market, Malik specializes in high-end colonial estate properties and modern penthouse developments.
-                </p>
-                <button class="btn-contact-action">
-                    <i class="bi bi-chat-dots"></i> Contact Agent
-                </button>
             </div>
-        </div>
+            {% endfor %}
+        {% else %}
+            <!-- Fallback Static Partner Agents -->
+            <!-- Agent Card 1 -->
+            <div class="col-lg-6 col-xl-4 fade-in-up" style="transition-delay: 0.1s;">
+                <div class="agent-profile-card hover-lift">
+                    <div class="agent-header-row">
+                        <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=200&q=80" alt="Agent" class="agent-photo">
+                        <div class="agent-identity">
+                            <h3>Malik Jayawardena</h3>
+                            <span class="tagline">Senior Executive Partner</span>
+                        </div>
+                    </div>
+                    <div class="agent-stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-value">85+</span>
+                            <span class="stat-label">Deals</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">4.9/5</span>
+                            <span class="stat-label">Rating</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">Rs. 1.2B</span>
+                            <span class="stat-label">Volume</span>
+                        </div>
+                    </div>
+                    <p class="agent-bio">
+                        With over 12 years of experience in the Colombo luxury market, Malik specializes in high-end colonial estate properties and modern penthouse developments.
+                    </p>
+                    <button class="btn-contact-action">
+                        <i class="bi bi-chat-dots"></i> Contact Agent
+                    </button>
+                </div>
+            </div>
 
-        <!-- Agent Card 2 -->
-        <div class="col-lg-6 col-xl-4">
-            <div class="agent-profile-card">
-                <div class="agent-header-row">
-                    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80" alt="Agent" class="agent-photo">
-                    <div class="agent-identity">
-                        <h3>Aruni Perera</h3>
-                        <span class="tagline">Residential Specialist</span>
+            <!-- Agent Card 2 -->
+            <div class="col-lg-6 col-xl-4 fade-in-up" style="transition-delay: 0.2s;">
+                <div class="agent-profile-card hover-lift">
+                    <div class="agent-header-row">
+                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80" alt="Agent" class="agent-photo">
+                        <div class="agent-identity">
+                            <h3>Aruni Perera</h3>
+                            <span class="tagline">Residential Specialist</span>
+                        </div>
                     </div>
+                    <div class="agent-stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-value">120+</span>
+                            <span class="stat-label">Deals</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">5.0/5</span>
+                            <span class="stat-label">Rating</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">Rs. 850M</span>
+                            <span class="stat-label">Volume</span>
+                        </div>
+                    </div>
+                    <p class="agent-bio">
+                        Aruni is known for her exceptional negotiation skills and deep knowledge of upcoming residential zones in the Greater Colombo area.
+                    </p>
+                    <button class="btn-contact-action">
+                        <i class="bi bi-chat-dots"></i> Contact Agent
+                    </button>
                 </div>
-                <div class="agent-stats-grid">
-                    <div class="stat-item">
-                        <span class="stat-value">120+</span>
-                        <span class="stat-label">Deals</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-value">5.0/5</span>
-                        <span class="stat-label">Rating</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-value">Rs. 850M</span>
-                        <span class="stat-label">Volume</span>
-                    </div>
-                </div>
-                <p class="agent-bio">
-                    Aruni is known for her exceptional negotiation skills and deep knowledge of upcoming residential zones in the Greater Colombo area.
-                </p>
-                <button class="btn-contact-action">
-                    <i class="bi bi-chat-dots"></i> Contact Agent
-                </button>
             </div>
-        </div>
 
-        <!-- Agent Card 3 -->
-        <div class="col-lg-6 col-xl-4">
-            <div class="agent-profile-card">
-                <div class="agent-header-row">
-                    <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=200&q=80" alt="Agent" class="agent-photo">
-                    <div class="agent-identity">
-                        <h3>Sahan Wickrama</h3>
-                        <span class="tagline">Commercial Consultant</span>
+            <!-- Agent Card 3 -->
+            <div class="col-lg-6 col-xl-4 fade-in-up" style="transition-delay: 0.3s;">
+                <div class="agent-profile-card hover-lift">
+                    <div class="agent-header-row">
+                        <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=200&q=80" alt="Agent" class="agent-photo">
+                        <div class="agent-identity">
+                            <h3>Sahan Wickrama</h3>
+                            <span class="tagline">Commercial Consultant</span>
+                        </div>
                     </div>
+                    <div class="agent-stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-value">60+</span>
+                            <span class="stat-label">Deals</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">4.8/5</span>
+                            <span class="stat-label">Rating</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">Rs. 2.1B</span>
+                            <span class="stat-label">Volume</span>
+                        </div>
+                    </div>
+                    <p class="agent-bio">
+                        Sahan focuses exclusively on commercial leasing and land acquisition for hospitality projects, serving clients across the southern coast.
+                    </p>
+                    <button class="btn-contact-action">
+                        <i class="bi bi-chat-dots"></i> Contact Agent
+                    </button>
                 </div>
-                <div class="agent-stats-grid">
-                    <div class="stat-item">
-                        <span class="stat-value">60+</span>
-                        <span class="stat-label">Deals</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-value">4.8/5</span>
-                        <span class="stat-label">Rating</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-value">Rs. 2.1B</span>
-                        <span class="stat-label">Volume</span>
-                    </div>
-                </div>
-                <p class="agent-bio">
-                    Sahan focuses exclusively on commercial leasing and land acquisition for hospitality projects, serving clients across the southern coast.
-                </p>
-                <button class="btn-contact-action">
-                    <i class="bi bi-chat-dots"></i> Contact Agent
-                </button>
             </div>
-        </div>
+        {% endif %}
     </div>
 
     <!-- Application Banner -->
-    <div class="join-section">
-        <h2 class="font-playfair fw-bold mb-3">Join Our Expert Network</h2>
+    <div class="join-section fade-in-up">
+        <h2 class="font-playfair fw-bold mb-3 text-primary">Join Our Expert Network</h2>
         <p class="text-muted">Are you a professional agent looking to elevate your reach? Apply to join the Shelter & Soul partner program.</p>
         <a href="mailto:careers@shelterandsoul.lk" class="btn-apply-agent">Apply to Join as an Agent</a>
     </div>

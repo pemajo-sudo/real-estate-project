@@ -604,6 +604,53 @@
         border-top: 1px solid #ecf0f7;
     }
 
+    /* ===== CUSTOMER TRUST SECTION ===== */
+    .trust-section {
+        background: radial-gradient(circle at 10% 80%, rgba(13, 43, 102, 0.03) 0%, transparent 50%),
+            linear-gradient(135deg, #f7f9fc 0%, #fff 100%);
+        border-top: 1px solid #e7edf8;
+        padding: 5rem 0;
+        margin-top: 4rem;
+        border-radius: var(--radius-lg);
+        box-shadow: inset 0 20px 40px rgba(0, 0, 0, 0.01);
+    }
+
+    .trust-badge-card {
+        background: #fff;
+        border-radius: var(--radius-md);
+        padding: 2rem;
+        text-align: center;
+        border: 1px solid #e7edf8;
+        box-shadow: var(--shadow-sm);
+        height: 100%;
+        transition: transform 0.3s ease;
+    }
+
+    .trust-badge-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .trust-icon {
+        font-size: 2.2rem;
+        color: var(--gold);
+        margin-bottom: 1rem;
+    }
+
+    .trust-rating-overall {
+        font-family: 'Playfair Display', serif;
+        font-size: 3.5rem;
+        font-weight: 800;
+        color: var(--primary);
+        line-height: 1;
+        margin-bottom: 0.5rem;
+    }
+
+    .stars-large {
+        color: var(--gold);
+        font-size: 1.4rem;
+    }
+
     .featured-meta-item {
         display: inline-flex;
         align-items: center;
@@ -880,13 +927,22 @@
                 <div class="featured-card-body">
                     <div class="featured-price">Rs. {{ property.price|intcomma }}</div>
                     <h3 class="featured-name">{{ property.name }}</h3>
-                    <p class="featured-location"><i class="bi bi-geo-alt-fill me-1 text-primary"></i>{{ property.location|default:"Not specified" }}</p>
+                    <p class="featured-location"><i class="bi bi-geo-alt-fill me-1 text-primary"></i>{{
+                        property.location|default:"Not specified" }}</p>
                     <div class="featured-meta">
-                        <span class="featured-meta-item"><i class="bi bi-door-open"></i>{{ property.number_of_rooms|default:"--" }} Beds</span>
+                        <span class="featured-meta-item"><i class="bi bi-door-open"></i>{{
+                            property.number_of_rooms|default:"--" }} Beds</span>
                         <span class="featured-meta-item">
-                            <i class="bi bi-droplet-half"></i>{% if property.number_of_rooms and property.number_of_rooms > 1 %}{{ property.number_of_rooms|add:"-1" }}{% else %}--{% endif %} Baths
+                            <i class="bi bi-droplet-half"></i>
+                            {% if property.number_of_rooms and property.number_of_rooms > 1 %}
+                                {{ property.number_of_rooms|add:"-1" }}
+                            {% else %}
+                                --
+                            {% endif %}
+                            Baths
                         </span>
-                        <span class="featured-meta-item"><i class="bi bi-aspect-ratio"></i>{{ property.size_sqft|floatformat:0|default:"--" }} sqft</span>
+                        <span class="featured-meta-item"><i class="bi bi-aspect-ratio"></i>{{
+                            property.size_sqft|floatformat:0|default:"--" }} sqft</span>
                     </div>
                     <a href="{% url 'property_detail' property.pk %}" class="btn btn-outline-primary w-100 mt-2">View
                         Details</a>
@@ -904,6 +960,67 @@
             {% endif %}
         </div>
         {% endfor %}
+    </div>
+</section>
+
+<!-- ===== CUSTOMER TRUST SECTION ===== -->
+<section class="container trust-section fade-in-up">
+    <div class="row align-items-center g-5">
+        <div class="col-lg-5 fade-in-up">
+            <h2 class="featured-title">Trusted by Thousands</h2>
+            <p class="text-muted mb-4">We are committed to delivering exceptional experiences. From initial consultation
+                to handing over the keys, transparency and trust are our priorities.</p>
+            <div class="trust-badge-card hover-lift">
+                <div class="trust-rating-overall">4.9</div>
+                <div class="stars-large mb-2">
+                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+                        class="bi bi-star-fill"></i><i class="bi bi-star-half"></i>
+                </div>
+                <p class="fw-bold mb-0">Average Rating</p>
+                <small class="text-muted">Based on 1,200+ verified reviews</small>
+            </div>
+        </div>
+        <div class="col-lg-7">
+            <div class="row g-4">
+                <div class="col-md-6 fade-in-up" style="transition-delay: 0.1s;">
+                    <div class="featured-card p-4 hover-lift h-100">
+                        <div class="d-flex text-gold mb-2"><i class="bi bi-star-fill"></i><i
+                                class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+                                class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></div>
+                        <p class="fst-italic text-muted">"Unbelievable service. They completely handled the tricky
+                            negotiation for our new beachfront property. Shelter & Soul really lives up to their name."
+                        </p>
+                        <hr class="my-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center"
+                                style="width: 40px; height: 40px; font-weight: bold;">AK</div>
+                            <div>
+                                <h6 class="mb-0 fw-bold">Amal Kurukulasuriya</h6>
+                                <small class="text-muted">Buyer</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 fade-in-up" style="transition-delay: 0.2s;">
+                    <div class="featured-card p-4 hover-lift h-100">
+                        <div class="d-flex text-gold mb-2"><i class="bi bi-star-fill"></i><i
+                                class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
+                                class="bi bi-star-fill"></i><i class="bi bi-star-half"></i></div>
+                        <p class="fst-italic text-muted">"Our rental yields increased by 20% within the first year of
+                            trusting them with our management portfolio. Highly highly recommended!"</p>
+                        <hr class="my-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="bg-teal text-white rounded-circle d-flex align-items-center justify-content-center"
+                                style="width: 40px; height: 40px; font-weight: bold;">SL</div>
+                            <div>
+                                <h6 class="mb-0 fw-bold">Sarah Liyanage</h6>
+                                <small class="text-muted">Investor</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
