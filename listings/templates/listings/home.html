@@ -927,11 +927,9 @@
                 <div class="featured-card-body">
                     <div class="featured-price">Rs. {{ property.price|intcomma }}</div>
                     <h3 class="featured-name">{{ property.name }}</h3>
-                    <p class="featured-location"><i class="bi bi-geo-alt-fill me-1 text-primary"></i>{{
-                        property.location|default:"Not specified" }}</p>
+                    <p class="featured-location"><i class="bi bi-geo-alt-fill me-1 text-primary"></i>{{ property.location|default:"Not specified" }}</p>
                     <div class="featured-meta">
-                        <span class="featured-meta-item"><i class="bi bi-door-open"></i>{{
-                            property.number_of_rooms|default:"--" }} Beds</span>
+                        <span class="featured-meta-item"><i class="bi bi-door-open"></i>{{ property.number_of_rooms|default:"--" }} Beds</span>
                         <span class="featured-meta-item">
                             <i class="bi bi-droplet-half"></i>
                             {% if property.number_of_rooms and property.number_of_rooms > 1 %}
@@ -941,8 +939,7 @@
                             {% endif %}
                             Baths
                         </span>
-                        <span class="featured-meta-item"><i class="bi bi-aspect-ratio"></i>{{
-                            property.size_sqft|floatformat:0|default:"--" }} sqft</span>
+                        <span class="featured-meta-item"><i class="bi bi-aspect-ratio"></i>{{ property.size_sqft|floatformat:0|default:"--" }} sqft</span>
                     </div>
                     <a href="{% url 'property_detail' property.pk %}" class="btn btn-outline-primary w-100 mt-2">View
                         Details</a>
