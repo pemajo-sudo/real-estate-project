@@ -606,44 +606,28 @@
 
     /* ===== CUSTOMER TRUST SECTION ===== */
     .trust-section {
-        background: radial-gradient(circle at 10% 80%, rgba(13, 43, 102, 0.03) 0%, transparent 50%),
-            linear-gradient(135deg, #f7f9fc 0%, #fff 100%);
-        border-top: 1px solid #e7edf8;
-        padding: 5rem 0;
-        margin-top: 4rem;
-        border-radius: var(--radius-lg);
-        box-shadow: inset 0 20px 40px rgba(0, 0, 0, 0.01);
+        background: linear-gradient(to right, #f8f9fa, #ffffff);
+        border-top: 1px solid #eaebed;
+        border-bottom: 1px solid #eaebed;
+        padding: 6rem 0;
+        margin-top: 5rem;
     }
 
     .trust-badge-card {
-        background: #fff;
-        border-radius: var(--radius-md);
-        padding: 2rem;
+        border-radius: var(--radius-lg);
         text-align: center;
-        border: 1px solid #e7edf8;
-        box-shadow: var(--shadow-sm);
-        height: 100%;
+        box-shadow: 0 15px 35px rgba(13, 43, 102, 0.15);
         transition: transform 0.3s ease;
     }
 
     .trust-badge-card:hover {
         transform: translateY(-5px);
-        box-shadow: var(--shadow-md);
-    }
-
-    .trust-icon {
-        font-size: 2.2rem;
-        color: var(--gold);
-        margin-bottom: 1rem;
     }
 
     .trust-rating-overall {
         font-family: 'Playfair Display', serif;
-        font-size: 3.5rem;
         font-weight: 800;
-        color: var(--primary);
         line-height: 1;
-        margin-bottom: 0.5rem;
     }
 
     .stars-large {
@@ -961,57 +945,52 @@
 </section>
 
 <!-- ===== CUSTOMER TRUST SECTION ===== -->
-<section class="container trust-section fade-in-up">
-    <div class="row align-items-center g-5">
-        <div class="col-lg-5 fade-in-up">
-            <h2 class="featured-title">Trusted by Thousands</h2>
-            <p class="text-muted mb-4">We are committed to delivering exceptional experiences. From initial consultation
-                to handing over the keys, transparency and trust are our priorities.</p>
-            <div class="trust-badge-card hover-lift">
-                <div class="trust-rating-overall">4.9</div>
-                <div class="stars-large mb-2">
-                    <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
-                        class="bi bi-star-fill"></i><i class="bi bi-star-half"></i>
+<section class="trust-section fade-in-up">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <!-- Left Info -->
+            <div class="col-lg-4 text-center text-lg-start fade-in-up">
+                <span class="text-gold fw-bold text-uppercase small" style="letter-spacing: 2px;">Testimonials</span>
+                <h2 class="featured-title mt-2 mb-3">Trusted by Thousands</h2>
+                <p class="text-muted mb-5" style="font-size: 1.05rem; line-height: 1.8;">We are committed to delivering exceptional experiences. From initial consultation to handing over the keys, transparency and trust are our priorities.</p>
+                
+                <div class="trust-badge-card d-inline-block px-5 py-4 w-100 hover-lift" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white;">
+                    <div class="trust-rating-overall text-white mb-2" style="font-size: 4rem;">4.9</div>
+                    <div class="stars-large mb-2 text-gold">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i>
+                    </div>
+                    <p class="fw-bold mb-0 text-white" style="font-size: 1.1rem;">Average Rating</p>
+                    <small style="color: rgba(255,255,255,0.7);">Based on 1,200+ verified reviews</small>
                 </div>
-                <p class="fw-bold mb-0">Average Rating</p>
-                <small class="text-muted">Based on 1,200+ verified reviews</small>
             </div>
-        </div>
-        <div class="col-lg-7">
-            <div class="row g-4">
-                <div class="col-md-6 fade-in-up" style="transition-delay: 0.1s;">
-                    <div class="featured-card p-4 hover-lift h-100">
-                        <div class="d-flex text-gold mb-2"><i class="bi bi-star-fill"></i><i
-                                class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
-                                class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></div>
-                        <p class="fst-italic text-muted">"Unbelievable service. They completely handled the tricky
-                            negotiation for our new beachfront property. Shelter & Soul really lives up to their name."
-                        </p>
-                        <hr class="my-3">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center"
-                                style="width: 40px; height: 40px; font-weight: bold;">AK</div>
-                            <div>
-                                <h6 class="mb-0 fw-bold">Amal Kurukulasuriya</h6>
-                                <small class="text-muted">Buyer</small>
+            
+            <!-- Right Review Cards -->
+            <div class="col-lg-8">
+                <div class="row g-4 pt-4 pt-lg-0">
+                    <div class="col-md-6 fade-in-up" style="transition-delay: 0.1s;">
+                        <div class="featured-card p-4 hover-lift h-100 bg-white" style="border-top: 4px solid var(--gold); border-radius: var(--radius-lg);">
+                            <div class="d-flex text-gold mb-3 fs-5"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i></div>
+                            <p class="text-muted" style="font-size: 1.05rem; line-height: 1.7;">"Unbelievable service. They handled the tricky negotiation for our new beachfront property effortlessly. Shelter & Soul really lives up to their name."</p>
+                            <div class="d-flex align-items-center gap-3 mt-4 pt-3" style="border-top: 1px solid #f1f4f8;">
+                                <div class="text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="background-color: var(--primary); width: 45px; height: 45px; font-weight: 700; font-size: 1.1rem;">AK</div>
+                                <div>
+                                    <h6 class="mb-0 fw-bold text-dark">Amal Kurukulasuriya</h6>
+                                    <small class="text-muted text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 1px;">Buyer</small>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-md-6 fade-in-up" style="transition-delay: 0.2s;">
-                    <div class="featured-card p-4 hover-lift h-100">
-                        <div class="d-flex text-gold mb-2"><i class="bi bi-star-fill"></i><i
-                                class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i
-                                class="bi bi-star-fill"></i><i class="bi bi-star-half"></i></div>
-                        <p class="fst-italic text-muted">"Our rental yields increased by 20% within the first year of
-                            trusting them with our management portfolio. Highly highly recommended!"</p>
-                        <hr class="my-3">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="bg-teal text-white rounded-circle d-flex align-items-center justify-content-center"
-                                style="width: 40px; height: 40px; font-weight: bold;">SL</div>
-                            <div>
-                                <h6 class="mb-0 fw-bold">Sarah Liyanage</h6>
-                                <small class="text-muted">Investor</small>
+                    
+                    <div class="col-md-6 fade-in-up" style="transition-delay: 0.2s;">
+                        <div class="featured-card p-4 hover-lift h-100 bg-white" style="border-top: 4px solid var(--teal); border-radius: var(--radius-lg);">
+                            <div class="d-flex text-gold mb-3 fs-5"><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i></div>
+                            <p class="text-muted" style="font-size: 1.05rem; line-height: 1.7;">"Our rental yields increased by 20% within the first year of trusting them with our management portfolio. Highly recommended for investors."</p>
+                            <div class="d-flex align-items-center gap-3 mt-4 pt-3" style="border-top: 1px solid #f1f4f8;">
+                                <div class="text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="background-color: var(--teal); width: 45px; height: 45px; font-weight: 700; font-size: 1.1rem;">SL</div>
+                                <div>
+                                    <h6 class="mb-0 fw-bold text-dark">Sarah Liyanage</h6>
+                                    <small class="text-muted text-uppercase fw-semibold" style="font-size: 0.75rem; letter-spacing: 1px;">Investor</small>
+                                </div>
                             </div>
                         </div>
                     </div>
