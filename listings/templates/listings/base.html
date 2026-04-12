@@ -1041,21 +1041,37 @@
         @media (min-width: 992px) {
             #navbarNav .navbar-nav {
                 flex-wrap: nowrap !important;
-                gap: 0.5rem;
+                gap: 0.15rem; /* Drastically reduced gap to free up horizontal space */
             }
-            #navbarNav .nav-link,
-            #navbarNav .btn,
+            #navbarNav .nav-link {
+                white-space: nowrap !important;
+                padding-left: 0.5rem !important;
+                padding-right: 0.5rem !important;
+                font-size: 0.9rem; /* Slightly smaller text */
+            }
+            #navbarNav .btn {
+                white-space: nowrap !important;
+                flex-shrink: 0 !important; /* Prevents button compression */
+                padding: 0.45rem 1.1rem; /* Compact button paddings */
+                font-size: 0.9rem;
+            }
             #profileDropdown {
                 white-space: nowrap !important;
+                flex-shrink: 0;
+                font-size: 0.9rem;
+            }
+            .navbar-home .container-xl {
+                padding-right: 2rem !important; /* Proper clearance for the right curve */
+                padding-left: 1rem !important;
             }
         }
     </style>
-
+    
     <!-- ===== NAVBAR ===== -->
     <nav id="mainNavbar"
         class="navbar navbar-expand-lg {% if request.resolver_match.url_name == 'home' %}navbar-home navbar-dark{% else %}navbar-light navbar-glass sticky-top{% endif %}">
         <div class="container-xl px-4">
-
+            
             <!-- Logo: icon + text; icon has gold glow (no rounded box) -->
             <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'home' %}">
                 <span class="navbar-brand-icon-glow" aria-hidden="true"><i class="bi bi-house-heart-fill fs-4"></i></span>
