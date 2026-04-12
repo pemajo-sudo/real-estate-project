@@ -1037,6 +1037,18 @@
                 display: flex !important;
             }
         }
+        /* ===== GLOBAL NAVBAR OVERRIDES TO PREVENT WRAPPING ===== */
+        @media (min-width: 992px) {
+            #navbarNav .navbar-nav {
+                flex-wrap: nowrap !important;
+                gap: 0.5rem;
+            }
+            #navbarNav .nav-link,
+            #navbarNav .btn,
+            #profileDropdown {
+                white-space: nowrap !important;
+            }
+        }
     </style>
 
     <!-- ===== NAVBAR ===== -->
