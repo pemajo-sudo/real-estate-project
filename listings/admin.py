@@ -1,19 +1,12 @@
 from django.contrib import admin
 
-from .models import Inquiry, Property, PropertyImage, VirtualTourHotspot, VirtualTourScene, Visit, Wishlist
-
-
-class PropertyImageInline(admin.TabularInline):
-    model = PropertyImage
-    extra = 1
-    fields = ("image", "sort_order")
+from .models import Inquiry, Property, VirtualTourHotspot, VirtualTourScene, Visit, Wishlist
 
 
 @admin.register(Property)
 class PropertyAdmin(admin.ModelAdmin):
     list_display = ("name", "location", "property_type", "price", "has_map_location", "has_video_walkthrough")
     search_fields = ("name", "location", "property_type")
-    inlines = [PropertyImageInline]
     fieldsets = (
         (
             "Basic Information",
@@ -24,9 +17,9 @@ class PropertyAdmin(admin.ModelAdmin):
                     "price",
                     "property_type",
                     "number_of_rooms",
-                    "number_of_baths",
                     "size_sqft",
                     "description",
+                    "image",
                 )
             },
         ),

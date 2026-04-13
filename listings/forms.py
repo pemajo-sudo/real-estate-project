@@ -6,23 +6,7 @@ from .models import Property
 from .models import Inquiry
 from .models import Visit
 
-
-class MultipleFileInput(forms.FileInput):
-    allow_multiple_selected = True
-
-    def __init__(self, attrs=None):
-        attrs = dict(attrs or ())
-        attrs.setdefault("multiple", True)
-        super().__init__(attrs)
-
-
 class PropertyForm(forms.ModelForm):
-    images = forms.FileField(
-        label="Photos",
-        required=False,
-        widget=MultipleFileInput(attrs={"accept": "image/*"}),
-    )
-
     class Meta:
         model = Property
         fields = [
@@ -34,9 +18,9 @@ class PropertyForm(forms.ModelForm):
             "latitude",
             "longitude",
             "number_of_rooms",
-            "number_of_baths",
             "size_sqft",
             "description",
+            "image",
             "walkthrough_video",
             "video_url",
         ]

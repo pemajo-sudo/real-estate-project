@@ -2,11 +2,10 @@ from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
-from django.db.models import Max
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import CustomUserCreationForm, InquiryForm, PropertyForm, VisitForm
-from .models import Inquiry, Property, PropertyImage, VirtualTourScene, Visit, Wishlist
+from .models import Inquiry, Property, VirtualTourScene, Visit, Wishlist
 
 COMPARE_SESSION_KEY = "compare_properties"
 MAX_COMPARE_ITEMS = 3
@@ -59,7 +58,6 @@ def dashboard_view(request):
     wishlist_items = (
         Wishlist.objects.filter(user=request.user)
         .select_related("property")
-        .prefetch_related("property__images")
         .order_by("-created_at")[:5]
     )
     inquiries = Inquiry.objects.filter(user=request.user).order_by("-created_at")[:5]
@@ -115,7 +113,7 @@ def logout_view(request):
 
 
 def property_list(request):
-    properties = Property.objects.prefetch_related("images").all().order_by("-id")
+    properties = Property.objects.all().order_by("-id")
 
     query = request.GET.get("q")
     location = request.GET.get("location")
@@ -272,7 +270,6 @@ def wishlist_view(request):
     wishlist_items = (
         Wishlist.objects.filter(user=request.user)
         .select_related("property")
-        .prefetch_related("property__images")
         .order_by("-created_at")
     )
     return render(request, "listings/wishlist.html", {"wishlist_items": wishlist_items})
@@ -325,9 +322,7 @@ def remove_from_compare(request, pk):
 
 def compare_properties(request):
     compared_ids = request.session.get(COMPARE_SESSION_KEY, [])
-    compared_properties = list(
-        Property.objects.prefetch_related("images").filter(id__in=compared_ids)
-    )
+    compared_properties = list(Property.objects.filter(id__in=compared_ids))
     order_map = {property_id: index for index, property_id in enumerate(compared_ids)}
     compared_properties.sort(key=lambda property_obj: order_map.get(property_obj.id, 0))
     return render(
@@ -340,29 +335,16 @@ def compare_properties(request):
     )
 
 
-def _save_property_images(property_obj, files):
-    if not files:
-        return
-    last_order = property_obj.images.aggregate(Max("sort_order"))["sort_order__max"]
-    start = (last_order if last_order is not None else -1) + 1
-    for offset, uploaded in enumerate(files):
-        PropertyImage.objects.create(
-            property=property_obj,
-            image=uploaded,
-            sort_order=start + offset,
-        )
-
-
 @login_required
 def property_create(request):
     if request.method == "POST":
         form = PropertyForm(request.POST, request.FILES)
         if form.is_valid():
-            prop = form.save()
-            _save_property_images(prop, request.FILES.getlist("images"))
+            form.save()
             messages.success(request, "Property added successfully!")
             return redirect("property_list")
-        messages.error(request, "Please correct the errors below.")
+        else:
+            messages.error(request, "Please correct the errors below.")
     else:
         form = PropertyForm()
     return render(request, "listings/property_form.html", {"form": form, "title": "Add Property"})
@@ -375,18 +357,13 @@ def property_update(request, pk):
         form = PropertyForm(request.POST, request.FILES, instance=property_obj)
         if form.is_valid():
             form.save()
-            _save_property_images(property_obj, request.FILES.getlist("images"))
             messages.success(request, "Property updated successfully!")
             return redirect("property_detail", pk=property_obj.pk)
         else:
             messages.error(request, "Please correct the errors below.")
     else:
         form = PropertyForm(instance=property_obj)
-    return render(
-        request,
-        "listings/property_form.html",
-        {"form": form, "title": "Edit Property", "property": property_obj},
-    )
+    return render(request, "listings/property_form.html", {"form": form, "title": "Edit Property"})
 
 
 @login_required
