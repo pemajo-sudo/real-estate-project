@@ -157,9 +157,15 @@
                     {% endfor %}
                 </tr>
                 <tr>
-                    <td>Property Size</td>
+                    <td>Bathrooms</td>
                     {% for property in properties %}
-                    <td>{% if property.size_sqft %}{{ property.size_sqft }} sqft{% else %}-{% endif %}</td>
+                    <td>{{ property.number_of_bathrooms|default:"-" }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Size</td>
+                    {% for property in properties %}
+                    <td>{% if property.size_sqft %}{{ property.size_sqft|floatformat:-2 }} {{ property.get_size_unit_display }}{% else %}-{% endif %}</td>
                     {% endfor %}
                 </tr>
                 <tr>

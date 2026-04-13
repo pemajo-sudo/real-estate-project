@@ -37,13 +37,16 @@ class PropertyForm(forms.ModelForm):
             "latitude",
             "longitude",
             "number_of_rooms",
+            "number_of_bathrooms",
             "size_sqft",
+            "size_unit",
             "description",
             "walkthrough_video",
             "video_url",
         ]
         widgets = {
             "description": forms.Textarea(attrs={"rows": 4}),
+            "size_sqft": forms.NumberInput(attrs={"step": "0.01", "min": "0", "placeholder": "e.g. 1200"}),
         }
 
 

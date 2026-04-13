@@ -2,11 +2,12 @@ from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, redirect, render
 from urllib.parse import parse_qs, urlparse
 
 from .forms import CustomUserCreationForm, InquiryForm, PropertyForm, VisitForm
-from .models import Inquiry, Property, PropertyImage, VirtualTourScene, Visit, Wishlist
+from .models import Agent, Inquiry, Property, PropertyImage, VirtualTourScene, Visit, Wishlist
 
 COMPARE_SESSION_KEY = "compare_properties"
 MAX_COMPARE_ITEMS = 3
@@ -42,7 +43,11 @@ def home(request):
 
 def find_agent(request):
     """Renders the Find an Agent directory page."""
-    return render(request, "listings/find_agent.html")
+    search_query = request.GET.get("q", "").strip()
+    agents = Agent.objects.filter(is_active=True).order_by("name")
+    if search_query:
+        agents = agents.filter(name__icontains=search_query)
+    return render(request, "listings/find_agent.html", {"agents": agents, "search_query": search_query})
 
 
 def sell_property(request):
@@ -126,8 +131,9 @@ def property_list(request):
     properties = Property.objects.prefetch_related("images").order_by("-id")
 
     query = request.GET.get("q")
-    location = request.GET.get("location")
+    location = request.GET.get("location", "").strip()
     property_type = request.GET.get("property_type")
+    bathrooms = request.GET.get("bathrooms")
 
     if query:
         properties = properties.filter(name__icontains=query)
@@ -137,6 +143,9 @@ def property_list(request):
 
     if property_type:
         properties = properties.filter(property_type=property_type)
+
+    if bathrooms:
+        properties = properties.filter(number_of_bathrooms__gte=bathrooms)
 
     compared_ids = request.session.get(COMPARE_SESSION_KEY, [])
     context = {
@@ -366,6 +375,9 @@ def property_create(request):
 
 @login_required
 def property_update(request, pk):
+    if not (request.user.is_staff or request.user.is_superuser):
+        raise PermissionDenied("Only admin users can edit properties.")
+
     property_obj = get_object_or_404(Property.objects.prefetch_related("images"), pk=pk)
     if request.method == "POST":
         form = PropertyForm(request.POST, request.FILES, instance=property_obj)
@@ -384,6 +396,9 @@ def property_update(request, pk):
 
 @login_required
 def property_delete(request, pk):
+    if not (request.user.is_staff or request.user.is_superuser):
+        raise PermissionDenied("Only admin users can delete properties.")
+
     property_obj = get_object_or_404(Property, pk=pk)
     if request.method == "POST":
         property_obj.delete()

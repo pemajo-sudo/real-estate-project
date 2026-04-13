@@ -771,24 +771,13 @@
 
         {# Centred content #}
         <div class="panel-body">
-            <h1 class="hero-title">Where Your Soul Finds its Perfect Shelter</h1>
-            <p class="hero-sub">own your future, one property at a time.</p>
+            <h1 class="hero-title">Find Your Dream Home</h1>
+            <p class="hero-sub">Where your soul finds it's perfect shelter</p>
 
             <div class="search-module">
-                <div class="search-tabs">
-                    <input class="search-type-input" type="radio" name="type" id="typeBuy" value="buy"
-                        form="heroSearchForm" checked>
-                    <label class="search-tab" for="typeBuy">Buy</label>
-                    <input class="search-type-input" type="radio" name="type" id="typeRent" value="rent"
-                        form="heroSearchForm">
-                    <label class="search-tab" for="typeRent">Rent</label>
-                    <input class="search-type-input" type="radio" name="type" id="typeSell" value="sell"
-                        form="heroSearchForm">
-                    <label class="search-tab" for="typeSell">Sell</label>
-                </div>
                 <form id="heroSearchForm" action="{% url 'property_list' %}" method="GET">
                     <div class="search-bar">
-                        <input type="text" name="q" placeholder="City, Neighborhood, Address" autocomplete="off">
+                        <input type="text" name="location" placeholder="City, Neighborhood, Address" autocomplete="off">
                         <button type="submit" class="search-bar-btn">
                             <i class="bi bi-search"></i>Search
                         </button>
@@ -916,14 +905,10 @@
                         <span class="featured-meta-item"><i class="bi bi-door-open"></i>{{ property.number_of_rooms|default:"--" }} Beds</span>
                         <span class="featured-meta-item">
                             <i class="bi bi-droplet-half"></i>
-                            {% if property.number_of_rooms and property.number_of_rooms > 1 %}
-                                {{ property.number_of_rooms|add:"-1" }}
-                            {% else %}
-                                --
-                            {% endif %}
+                            {{ property.number_of_bathrooms|default:"--" }}
                             Baths
                         </span>
-                        <span class="featured-meta-item"><i class="bi bi-aspect-ratio"></i>{{ property.size_sqft|floatformat:0|default:"--" }} sqft</span>
+                        <span class="featured-meta-item"><i class="bi bi-aspect-ratio"></i>{% if property.size_sqft %}{{ property.size_sqft|floatformat:-2 }} {{ property.get_size_unit_display }}{% else %}--{% endif %}</span>
                     </div>
                     <a href="{% url 'property_detail' property.pk %}" class="btn btn-outline-primary w-100 mt-2">View
                         Details</a>

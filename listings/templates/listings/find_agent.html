@@ -191,14 +191,33 @@
 </div>
 
 <div class="container mb-5">
+    <form method="get" class="mb-4">
+        <div class="input-group">
+            <input
+                type="text"
+                name="q"
+                value="{{ search_query }}"
+                class="form-control"
+                placeholder="Search Agents"
+                aria-label="Search agents by name"
+            >
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </form>
+
     <div class="row g-4">
         {% if agents %}
-            <!-- Dynamic Agents (Future integration for admin-managed agents) -->
             {% for agent in agents %}
             <div class="col-lg-6 col-xl-4 fade-in-up">
                 <div class="agent-profile-card hover-lift">
                     <div class="agent-header-row">
-                        <img src="{{ agent.photo.url|default:'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=200&q=80' }}" alt="Agent" class="agent-photo">
+                        {% if agent.photo %}
+                        <img src="{{ agent.photo.url }}" alt="{{ agent.name }}" class="agent-photo">
+                        {% elif agent.photo_url %}
+                        <img src="{{ agent.photo_url }}" alt="{{ agent.name }}" class="agent-photo">
+                        {% else %}
+                        <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=200&q=80" alt="{{ agent.name }}" class="agent-photo">
+                        {% endif %}
                         <div class="agent-identity">
                             <h3>{{ agent.name }}</h3>
                             <span class="tagline">{{ agent.specialization|default:"Real Estate Agent" }}</span>
@@ -221,110 +240,22 @@
                     <p class="agent-bio">
                         {{ agent.bio|truncatewords:25|default:"An experienced professional ready to help you find your dream property with transparency." }}
                     </p>
-                    <button type="button" class="btn-contact-action w-100" data-bs-toggle="modal" data-bs-target="#contactAgentModal">
+                    <a href="mailto:{{ agent.email }}" class="btn-contact-action w-100 text-decoration-none">
                         <i class="bi bi-chat-dots"></i> Contact Agent
-                    </button>
+                    </a>
                 </div>
             </div>
             {% endfor %}
         {% else %}
-            <!-- Fallback Static Partner Agents -->
-            <!-- Agent Card 1 -->
-            <div class="col-lg-6 col-xl-4 fade-in-up" style="transition-delay: 0.1s;">
-                <div class="agent-profile-card hover-lift">
-                    <div class="agent-header-row">
-                        <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=200&q=80" alt="Agent" class="agent-photo">
-                        <div class="agent-identity">
-                            <h3>Malik Jayawardena</h3>
-                            <span class="tagline">Senior Executive Partner</span>
-                        </div>
-                    </div>
-                    <div class="agent-stats-grid">
-                        <div class="stat-item">
-                            <span class="stat-value">85+</span>
-                            <span class="stat-label">Deals</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-value">4.9/5</span>
-                            <span class="stat-label">Rating</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-value">Rs. 1.2B</span>
-                            <span class="stat-label">Volume</span>
-                        </div>
-                    </div>
-                    <p class="agent-bio">
-                        With over 12 years of experience in the Colombo luxury market, Malik specializes in high-end colonial estate properties and modern penthouse developments.
-                    </p>
-                    <button class="btn-contact-action">
-                        <i class="bi bi-chat-dots"></i> Contact Agent
-                    </button>
-                </div>
-            </div>
-
-            <!-- Agent Card 2 -->
-            <div class="col-lg-6 col-xl-4 fade-in-up" style="transition-delay: 0.2s;">
-                <div class="agent-profile-card hover-lift">
-                    <div class="agent-header-row">
-                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80" alt="Agent" class="agent-photo">
-                        <div class="agent-identity">
-                            <h3>Aruni Perera</h3>
-                            <span class="tagline">Residential Specialist</span>
-                        </div>
-                    </div>
-                    <div class="agent-stats-grid">
-                        <div class="stat-item">
-                            <span class="stat-value">120+</span>
-                            <span class="stat-label">Deals</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-value">5.0/5</span>
-                            <span class="stat-label">Rating</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-value">Rs. 850M</span>
-                            <span class="stat-label">Volume</span>
-                        </div>
-                    </div>
-                    <p class="agent-bio">
-                        Aruni is known for her exceptional negotiation skills and deep knowledge of upcoming residential zones in the Greater Colombo area.
-                    </p>
-                    <button class="btn-contact-action">
-                        <i class="bi bi-chat-dots"></i> Contact Agent
-                    </button>
-                </div>
-            </div>
-
-            <!-- Agent Card 3 -->
-            <div class="col-lg-6 col-xl-4 fade-in-up" style="transition-delay: 0.3s;">
-                <div class="agent-profile-card hover-lift">
-                    <div class="agent-header-row">
-                        <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=200&q=80" alt="Agent" class="agent-photo">
-                        <div class="agent-identity">
-                            <h3>Sahan Wickrama</h3>
-                            <span class="tagline">Commercial Consultant</span>
-                        </div>
-                    </div>
-                    <div class="agent-stats-grid">
-                        <div class="stat-item">
-                            <span class="stat-value">60+</span>
-                            <span class="stat-label">Deals</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-value">4.8/5</span>
-                            <span class="stat-label">Rating</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-value">Rs. 2.1B</span>
-                            <span class="stat-label">Volume</span>
-                        </div>
-                    </div>
-                    <p class="agent-bio">
-                        Sahan focuses exclusively on commercial leasing and land acquisition for hospitality projects, serving clients across the southern coast.
-                    </p>
-                    <button class="btn-contact-action">
-                        <i class="bi bi-chat-dots"></i> Contact Agent
-                    </button>
+            <div class="col-12">
+                <div class="empty-state">
+                    {% if search_query %}
+                    <h2 class="font-playfair text-primary">No agents found</h2>
+                    <p class="text-muted mb-0">Try another name or clear the search to view all agents.</p>
+                    {% else %}
+                    <h2 class="font-playfair text-primary">No Agents Available</h2>
+                    <p class="text-muted mb-0">Agents can be added from Django Admin and will appear here automatically.</p>
+                    {% endif %}
                 </div>
             </div>
         {% endif %}
@@ -336,34 +267,5 @@
         <p class="text-muted">Are you a professional agent looking to elevate your reach? Apply to join the Shelter & Soul partner program.</p>
         <a href="mailto:careers@shelterandsoul.lk" class="btn-apply-agent">Apply to Join as an Agent</a>
     </div>
-<!-- Contact Agent Modal -->
-<div class="modal fade" id="contactAgentModal" tabindex="-1" aria-labelledby="contactAgentModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg" style="border-radius: var(--radius-lg);">
-            <div class="modal-header border-0 pb-0 px-4 pt-4">
-                <h5 class="modal-title font-playfair fw-bold text-primary" id="contactAgentModalLabel">Drop a Message</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body px-4 pb-4 pt-3">
-                <p class="text-muted text-sm mb-4">Our agents usually respond within 24 hours. Let us know how we can help you.</p>
-                <form>
-                    <div class="mb-3">
-                        <label class="form-label text-sm fw-semibold">Your Name</label>
-                        <input type="text" class="form-control hover-lift" style="border-radius: var(--radius-md);" placeholder="John Doe" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label text-sm fw-semibold">Your Email</label>
-                        <input type="email" class="form-control hover-lift" style="border-radius: var(--radius-md);" placeholder="john@example.com" required>
-                    </div>
-                    <div class="mb-4">
-                        <label class="form-label text-sm fw-semibold">Message</label>
-                        <textarea class="form-control hover-lift" rows="3" style="border-radius: var(--radius-md);" placeholder="I'm interested in viewing a property..." required></textarea>
-                    </div>
-                    <button type="button" class="btn text-white w-100 py-2 hover-lift" style="background-color: var(--primary); border-radius: var(--radius-md); font-weight: 700;" data-bs-dismiss="modal" onclick="alert('Message sent successfully! Our agent will contact you shortly.')">Send Message</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
 
 {% endblock %}

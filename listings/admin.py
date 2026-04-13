@@ -1,6 +1,9 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.models import User
+from django.contrib.admin.sites import NotRegistered
 
-from .models import Inquiry, Property, PropertyImage, VirtualTourHotspot, VirtualTourScene, Visit, Wishlist
+from .models import Agent, Inquiry, Property, PropertyImage, VirtualTourHotspot, VirtualTourScene, Visit, Wishlist
 
 
 class PropertyImageInline(admin.TabularInline):
@@ -23,7 +26,9 @@ class PropertyAdmin(admin.ModelAdmin):
                     "price",
                     "property_type",
                     "number_of_rooms",
+                    "number_of_bathrooms",
                     "size_sqft",
+                    "size_unit",
                     "description",
                 )
             },
@@ -53,11 +58,35 @@ class PropertyAdmin(admin.ModelAdmin):
         return bool(obj.walkthrough_video or obj.video_url)
 
 
+try:
+    admin.site.unregister(User)
+except NotRegistered:
+    pass
+
+
+@admin.register(User)
+class UserAdmin(BaseUserAdmin):
+    list_display = ("username", "email", "is_staff", "is_active", "date_joined", "last_login")
+    ordering = ("-date_joined",)
+
+
 @admin.register(Inquiry)
 class InquiryAdmin(admin.ModelAdmin):
     list_display = ("name", "email", "property", "created_at")
     list_filter = ("created_at", "property")
     search_fields = ("name", "email", "message", "property__name")
+
+
+@admin.register(Agent)
+class AgentAdmin(admin.ModelAdmin):
+    list_display = ("name", "email", "specialization", "is_active")
+    list_filter = ("is_active",)
+    search_fields = ("name", "email", "specialization")
+    fieldsets = (
+        ("Basic Information", {"fields": ("name", "specialization", "email", "is_active")}),
+        ("Profile", {"fields": ("bio", "deals_closed", "rating", "volume")}),
+        ("Images", {"fields": ("photo", "photo_url")}),
+    )
 
 
 @admin.register(Wishlist)

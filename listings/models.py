@@ -8,6 +8,11 @@ class Property(models.Model):
         ("Commercial", "Commercial"),
         ("Land", "Land"),
     ]
+    SIZE_UNITS = [
+        ("sqft", "sqft"),
+        ("acres", "Acres"),
+        ("perch", "Perch"),
+    ]
 
     name = models.CharField(max_length=255)
     location = models.CharField(max_length=255)
@@ -19,7 +24,9 @@ class Property(models.Model):
     )
     description = models.TextField()
     number_of_rooms = models.PositiveIntegerField(null=True, blank=True)
-    size_sqft = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    number_of_bathrooms = models.PositiveIntegerField(null=True, blank=True)
+    size_sqft = models.DecimalField("Size", max_digits=12, decimal_places=2, null=True, blank=True)
+    size_unit = models.CharField(max_length=20, choices=SIZE_UNITS, default="sqft")
     walkthrough_video = models.FileField(upload_to="property_videos/", null=True, blank=True)
     video_url = models.URLField(blank=True)
     address = models.CharField(max_length=255, blank=True)
@@ -44,7 +51,32 @@ class PropertyImage(models.Model):
 
     def __str__(self):
         return f"Image for {self.property.name}"
-    
+
+
+class Agent(models.Model):
+    name = models.CharField(max_length=120)
+    specialization = models.CharField(max_length=120, blank=True)
+    email = models.EmailField()
+    bio = models.TextField(blank=True)
+    deals_closed = models.CharField(max_length=30, blank=True)
+    rating = models.CharField(max_length=20, blank=True)
+    volume = models.CharField(max_length=40, blank=True)
+    photo = models.ImageField(upload_to="agents/", null=True, blank=True)
+    photo_url = models.URLField(blank=True)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["name"]
+
+    def __str__(self):
+        return self.name
+
+    def get_photo_source(self):
+        if self.photo:
+            return self.photo.url
+        return self.photo_url
+
+
 class Inquiry(models.Model):
     property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name="inquiries")
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
