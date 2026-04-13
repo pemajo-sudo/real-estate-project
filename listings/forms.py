@@ -7,6 +7,25 @@ from .models import Inquiry
 from .models import Visit
 
 class PropertyForm(forms.ModelForm):
+    class MultipleFileInput(forms.ClearableFileInput):
+        allow_multiple_selected = True
+
+    class MultipleFileField(forms.FileField):
+        def clean(self, data, initial=None):
+            single_file_clean = super().clean
+            if isinstance(data, (list, tuple)):
+                return [single_file_clean(file_data, initial) for file_data in data]
+            if data:
+                return [single_file_clean(data, initial)]
+            return []
+
+    image_files = MultipleFileField(
+        required=False,
+        widget=MultipleFileInput(),
+        help_text="Upload one or more images.",
+        label="Property Images",
+    )
+
     class Meta:
         model = Property
         fields = [
@@ -20,7 +39,6 @@ class PropertyForm(forms.ModelForm):
             "number_of_rooms",
             "size_sqft",
             "description",
-            "image",
             "walkthrough_video",
             "video_url",
         ]

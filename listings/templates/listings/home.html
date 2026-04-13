@@ -899,8 +899,8 @@
                     <button type="button" class="featured-heart" aria-label="Save" onclick="toggleHeart(this)">
                         <i class="bi bi-heart"></i>
                     </button>
-                    {% if property.image %}
-                    <img src="{{ property.image.url }}" alt="{{ property.name }}">
+                    {% if property.primary_image %}
+                    <img src="{{ property.primary_image.image.url }}" alt="{{ property.name }}">
                     {% else %}
                     <div class="w-100 h-100 d-flex align-items-center justify-content-center"
                         style="background:linear-gradient(135deg,#eef3fc,#dae4f5);">

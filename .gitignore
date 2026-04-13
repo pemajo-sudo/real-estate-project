@@ -2,9 +2,6 @@
 __pycache__/
 *.pyc
 
-# Media files
-media/
-
 # VS Code
 .vscode/
 

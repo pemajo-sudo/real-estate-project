@@ -8,8 +8,8 @@
     <div class="card-grid">
         {% for item in wishlist_items %}
             <div class="card">
-                {% if item.property.image %}
-                    <img src="{{ item.property.image.url }}" alt="{{ item.property.name }}">
+                {% if item.property.primary_image %}
+                    <img src="{{ item.property.primary_image.image.url }}" alt="{{ item.property.name }}">
                 {% endif %}
                 <div class="card-body">
                     <h3>{{ item.property.name }}</h3>

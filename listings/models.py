@@ -20,7 +20,6 @@ class Property(models.Model):
     description = models.TextField()
     number_of_rooms = models.PositiveIntegerField(null=True, blank=True)
     size_sqft = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    image = models.ImageField(upload_to="property_images/", null=True, blank=True)
     walkthrough_video = models.FileField(upload_to="property_videos/", null=True, blank=True)
     video_url = models.URLField(blank=True)
     address = models.CharField(max_length=255, blank=True)
@@ -29,6 +28,22 @@ class Property(models.Model):
 
     def __str__(self):
         return self.name
+
+    @property
+    def primary_image(self):
+        return self.images.first()
+
+
+class PropertyImage(models.Model):
+    property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name="images")
+    image = models.ImageField(upload_to="property_images/")
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["id"]
+
+    def __str__(self):
+        return f"Image for {self.property.name}"
     
 class Inquiry(models.Model):
     property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name="inquiries")

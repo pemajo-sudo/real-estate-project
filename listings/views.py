@@ -3,9 +3,10 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import get_object_or_404, redirect, render
+from urllib.parse import parse_qs, urlparse
 
 from .forms import CustomUserCreationForm, InquiryForm, PropertyForm, VisitForm
-from .models import Inquiry, Property, VirtualTourScene, Visit, Wishlist
+from .models import Inquiry, Property, PropertyImage, VirtualTourScene, Visit, Wishlist
 
 COMPARE_SESSION_KEY = "compare_properties"
 MAX_COMPARE_ITEMS = 3
@@ -14,19 +15,28 @@ MAX_COMPARE_ITEMS = 3
 def _youtube_embed_url(url):
     if not url:
         return ""
-    if "youtube.com/watch?v=" in url:
-        video_id = url.split("watch?v=")[-1].split("&")[0]
-        return f"https://www.youtube.com/embed/{video_id}"
-    if "youtu.be/" in url:
-        video_id = url.split("youtu.be/")[-1].split("?")[0]
-        return f"https://www.youtube.com/embed/{video_id}"
-    if "youtube.com/embed/" in url:
-        return url
+
+    parsed = urlparse(url.strip())
+    host = parsed.netloc.lower().replace("www.", "")
+    path_parts = [part for part in parsed.path.split("/") if part]
+    video_id = ""
+
+    if host in {"youtube.com", "m.youtube.com"}:
+        if path_parts and path_parts[0] == "watch":
+            video_id = parse_qs(parsed.query).get("v", [""])[0]
+        elif path_parts and path_parts[0] in {"shorts", "live", "embed"} and len(path_parts) > 1:
+            video_id = path_parts[1]
+    elif host == "youtu.be" and path_parts:
+        video_id = path_parts[0]
+
+    if video_id:
+        return f"https://www.youtube.com/embed/{video_id}?rel=0"
+
     return ""
 
 
 def home(request):
-    featured_properties = Property.objects.all().order_by("-id")[:4]
+    featured_properties = Property.objects.prefetch_related("images").order_by("-id")[:4]
     return render(request, "listings/home.html", {"featured_properties": featured_properties})
 
 
@@ -113,7 +123,7 @@ def logout_view(request):
 
 
 def property_list(request):
-    properties = Property.objects.all().order_by("-id")
+    properties = Property.objects.prefetch_related("images").order_by("-id")
 
     query = request.GET.get("q")
     location = request.GET.get("location")
@@ -141,7 +151,8 @@ def property_list(request):
 
 
 def property_detail(request, pk):
-    property_obj = get_object_or_404(Property, pk=pk)
+    property_obj = get_object_or_404(Property.objects.prefetch_related("images"), pk=pk)
+    property_images = property_obj.images.all()
     inquiry_form = InquiryForm()
     in_wishlist = False
     compared_ids = request.session.get(COMPARE_SESSION_KEY, [])
@@ -200,6 +211,7 @@ def property_detail(request, pk):
             "tour_scenes": tour_config,
             "default_tour_scene": default_scene,
             "youtube_embed_url": youtube_embed_url,
+            "property_images": property_images,
         },
     )
 
@@ -340,7 +352,9 @@ def property_create(request):
     if request.method == "POST":
         form = PropertyForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
+            property_obj = form.save()
+            for image_file in request.FILES.getlist("image_files"):
+                PropertyImage.objects.create(property=property_obj, image=image_file)
             messages.success(request, "Property added successfully!")
             return redirect("property_list")
         else:
@@ -352,11 +366,13 @@ def property_create(request):
 
 @login_required
 def property_update(request, pk):
-    property_obj = get_object_or_404(Property, pk=pk)
+    property_obj = get_object_or_404(Property.objects.prefetch_related("images"), pk=pk)
     if request.method == "POST":
         form = PropertyForm(request.POST, request.FILES, instance=property_obj)
         if form.is_valid():
-            form.save()
+            property_obj = form.save()
+            for image_file in request.FILES.getlist("image_files"):
+                PropertyImage.objects.create(property=property_obj, image=image_file)
             messages.success(request, "Property updated successfully!")
             return redirect("property_detail", pk=property_obj.pk)
         else:
