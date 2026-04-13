@@ -8,9 +8,11 @@
     <div class="card-grid">
         {% for item in wishlist_items %}
             <div class="card">
-                {% if item.property.image %}
-                    <img src="{{ item.property.image.url }}" alt="{{ item.property.name }}">
+                {% with photo=item.property.images.first %}
+                {% if photo %}
+                    <img src="{{ photo.image.url }}" alt="{{ item.property.name }}">
                 {% endif %}
+                {% endwith %}
                 <div class="card-body">
                     <h3>{{ item.property.name }}</h3>
                     <p><strong>Price:</strong> Rs. {{ item.property.price|intcomma }}</p>

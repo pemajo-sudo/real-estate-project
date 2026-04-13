@@ -3,9 +3,20 @@
 {% block content %}
 <h2>{{ title }}</h2>
 
+{% if property and property.images.exists %}
+<p class="text-muted mb-2">Current photos (upload below to add more):</p>
+<ul class="list-unstyled d-flex flex-wrap gap-2 mb-3">
+    {% for pi in property.images.all %}
+    <li class="border rounded overflow-hidden" style="width: 120px; height: 80px;">
+        <img src="{{ pi.image.url }}" alt="" class="w-100 h-100 object-fit-cover">
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}
+
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit" class="btn">Save</button>
+    <button type="submit" class="btn btn-primary">Save</button>
 </form>
 {% endblock %}
