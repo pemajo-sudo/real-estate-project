@@ -15,7 +15,7 @@
                     <h3>{{ item.property.name }}</h3>
                     <p><strong>Price:</strong> Rs. {{ item.property.price|intcomma }}{% if item.property.listing_category == "Rent" %} per month{% endif %}</p>
                     <a href="{% url 'property_detail' item.property.pk %}" class="btn">View Property</a>
-                    <form method="post" action="{% url 'remove_from_wishlist' item.property.pk %}">
+                    <form method="post" action="{% url 'remove_from_wishlist' item.property.pk %}" class="mt-2">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-danger">Remove</button>
                     </form>

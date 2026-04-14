@@ -180,10 +180,29 @@
         <div class="col-lg-8">
             <!-- Gallery Slider -->
             <div class="detail-gallery">
-                <!-- UI Heart Placeholder -->
-                <button class="detail-favorite-btn" title="Add to Wishlist" onclick="toggleHeart(this)">
-                    <i class="bi bi-heart"></i>
-                </button>
+                {% if user.is_authenticated %}
+                    {% if in_wishlist %}
+                    <form method="post" action="{% url 'remove_from_wishlist' property.pk %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{% url 'property_detail' property.pk %}">
+                        <button class="detail-favorite-btn" title="Remove from Wishlist" aria-label="Remove from Wishlist">
+                            <i class="bi bi-heart-fill"></i>
+                        </button>
+                    </form>
+                    {% else %}
+                    <form method="post" action="{% url 'add_to_wishlist' property.pk %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{% url 'property_detail' property.pk %}">
+                        <button class="detail-favorite-btn" title="Add to Wishlist" aria-label="Add to Wishlist">
+                            <i class="bi bi-heart"></i>
+                        </button>
+                    </form>
+                    {% endif %}
+                {% else %}
+                    <a href="{% url 'login' %}?next={% url 'property_detail' property.pk %}" class="detail-favorite-btn" title="Login to save" aria-label="Login to save">
+                        <i class="bi bi-heart"></i>
+                    </a>
+                {% endif %}
 
                 <div id="propertyCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
                     <div class="carousel-inner">

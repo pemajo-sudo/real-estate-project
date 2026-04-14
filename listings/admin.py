@@ -97,6 +97,7 @@ class InquiryAdmin(admin.ModelAdmin):
     list_display = ("name", "email", "property", "created_at")
     list_filter = ("created_at", "property")
     search_fields = ("name", "email", "message", "property__name")
+    readonly_fields = ("property", "user", "name", "email", "message", "created_at")
 
 
 @admin.register(Agent)
@@ -120,10 +121,20 @@ class WishlistAdmin(admin.ModelAdmin):
 
 @admin.register(SellLead)
 class SellLeadAdmin(admin.ModelAdmin):
-    list_display = ("name", "email", "user", "property_type", "status", "approval_notification_sent", "created_at")
-    list_filter = ("status", "approval_notification_sent", "property_type", "created_at")
+    list_display = ("name", "email", "user", "property_type", "status", "created_at")
+    list_filter = ("status", "property_type", "created_at")
     search_fields = ("name", "email", "phone", "location", "message", "user__username")
     actions = ("approve_selected_leads", "reject_selected_leads")
+    readonly_fields = (
+        "user",
+        "name",
+        "email",
+        "phone",
+        "property_type",
+        "location",
+        "message",
+        "created_at",
+    )
 
     @staticmethod
     def _sync_posting_permission(user):

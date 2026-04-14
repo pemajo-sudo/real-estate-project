@@ -25,8 +25,12 @@ MAX_COMPARE_ITEMS = 3
 def _can_user_post_property(user):
     if not user.is_authenticated:
         return False
+    has_approved_lead = SellLead.objects.filter(user=user, status=SellLead.STATUS_APPROVED).exists()
     profile, _ = UserProfile.objects.get_or_create(user=user)
-    return profile.can_post_property
+    if profile.can_post_property != has_approved_lead:
+        profile.can_post_property = has_approved_lead
+        profile.save(update_fields=["can_post_property"])
+    return has_approved_lead
 
 
 def _notify_user_on_sell_approval(request, user):
@@ -212,6 +216,11 @@ def property_list(request):
         properties = properties.order_by("-id")
 
     compared_ids = request.session.get(COMPARE_SESSION_KEY, [])
+    wishlisted_ids = []
+    if request.user.is_authenticated:
+        wishlisted_ids = list(
+            Wishlist.objects.filter(user=request.user).values_list("property_id", flat=True)
+        )
     map_properties = [
         {
             "id": property_obj.id,
@@ -234,6 +243,7 @@ def property_list(request):
         "property_types": ["Residential", "Apartment", "Commercial", "Land"],
         "compared_ids": compared_ids,
         "compare_count": len(compared_ids),
+        "wishlisted_ids": wishlisted_ids,
         "map_properties": map_properties,
         "google_maps_api_key": settings.GOOGLE_MAPS_API_KEY,
     }
@@ -364,6 +374,9 @@ def add_to_wishlist(request, pk):
         messages.success(request, "Property added to your wishlist.")
     else:
         messages.info(request, "This property is already in your wishlist.")
+    next_url = request.POST.get("next")
+    if next_url:
+        return redirect(next_url)
     return redirect("property_detail", pk=pk)
 
 
@@ -388,6 +401,9 @@ def remove_from_wishlist(request, pk):
         messages.success(request, "Property removed from your wishlist.")
     else:
         messages.info(request, "Property was not in your wishlist.")
+    next_url = request.POST.get("next")
+    if next_url:
+        return redirect(next_url)
     return redirect("wishlist")
 
 

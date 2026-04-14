@@ -345,6 +345,12 @@
     color: #de5b73;
   }
 
+  .prop-heart.active {
+    background: #de5b73;
+    color: #fff;
+    border-color: #de5b73;
+  }
+
   /* Card body */
   .prop-card-body {
     padding: 1.2rem 1.25rem 0.9rem;
@@ -861,10 +867,29 @@
         <span class="prop-badge prop-badge-sell">For Sell</span>
         {% endif %}
 
-        {# Favourite heart (UI Placeholder) #}
-        <button type="button" class="prop-heart" title="Save to Wishlist" onclick="toggleHeart(this)">
+        {% if user.is_authenticated %}
+          {% if property.pk in wishlisted_ids %}
+          <form method="post" action="{% url 'remove_from_wishlist' property.pk %}" class="m-0">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+            <button type="submit" class="prop-heart active" title="Remove from Wishlist" aria-label="Remove from Wishlist">
+              <i class="bi bi-heart-fill"></i>
+            </button>
+          </form>
+          {% else %}
+          <form method="post" action="{% url 'add_to_wishlist' property.pk %}" class="m-0">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+            <button type="submit" class="prop-heart" title="Save to Wishlist" aria-label="Save to Wishlist">
+              <i class="bi bi-heart"></i>
+            </button>
+          </form>
+          {% endif %}
+        {% else %}
+        <a href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}" class="prop-heart" title="Login to save" aria-label="Login to save">
           <i class="bi bi-heart"></i>
-        </button>
+        </a>
+        {% endif %}
 
         {% if property.primary_image %}
         <img src="{{ property.primary_image.image.url }}" alt="{{ property.name }}">
