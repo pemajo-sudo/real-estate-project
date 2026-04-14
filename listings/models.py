@@ -1,17 +1,32 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.conf import settings
+from django.utils.text import slugify
+from pathlib import Path
+import hashlib
 
 class Property(models.Model):
+    LISTING_CATEGORIES = [
+        ("Sell", "Sell"),
+        ("Rent", "Rent"),
+    ]
+
     PROPERTY_TYPES = [
         ("Residential", "Residential"),
         ("Apartment", "Apartment"),
         ("Commercial", "Commercial"),
         ("Land", "Land"),
     ]
+    SIZE_UNITS = [
+        ("sqft", "sqft"),
+        ("acres", "Acres"),
+        ("perch", "Perch"),
+    ]
 
     name = models.CharField(max_length=255)
     location = models.CharField(max_length=255)
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    listing_category = models.CharField(max_length=20, choices=LISTING_CATEGORIES, default="Sell")
     property_type = models.CharField(
         max_length=100,
         choices=PROPERTY_TYPES,
@@ -19,17 +34,72 @@ class Property(models.Model):
     )
     description = models.TextField()
     number_of_rooms = models.PositiveIntegerField(null=True, blank=True)
-    size_sqft = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    image = models.ImageField(upload_to="property_images/", null=True, blank=True)
-    walkthrough_video = models.FileField(upload_to="property_videos/", null=True, blank=True)
+    number_of_bathrooms = models.PositiveIntegerField(null=True, blank=True)
+    size_sqft = models.DecimalField("Size", max_digits=12, decimal_places=2, null=True, blank=True)
+    size_unit = models.CharField(max_length=20, choices=SIZE_UNITS, default="sqft")
+    walkthrough_video = models.FileField(upload_to="", null=True, blank=True)
     video_url = models.URLField(blank=True)
     address = models.CharField(max_length=255, blank=True)
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True)
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="properties")
 
     def __str__(self):
         return self.name
-    
+
+    @property
+    def primary_image(self):
+        return self.images.first()
+
+    def save(self, *args, **kwargs):
+        _deduplicate_uploaded_field(self, "walkthrough_video")
+        super().save(*args, **kwargs)
+
+
+class PropertyImage(models.Model):
+    property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name="images")
+    image = models.ImageField(upload_to="")
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["id"]
+
+    def __str__(self):
+        return f"Image for {self.property.name}"
+
+    def save(self, *args, **kwargs):
+        _deduplicate_uploaded_field(self, "image")
+        super().save(*args, **kwargs)
+
+
+class Agent(models.Model):
+    name = models.CharField(max_length=120)
+    specialization = models.CharField(max_length=120, blank=True)
+    email = models.EmailField()
+    bio = models.TextField(blank=True)
+    deals_closed = models.CharField(max_length=30, blank=True)
+    rating = models.CharField(max_length=20, blank=True)
+    volume = models.CharField(max_length=40, blank=True)
+    photo = models.ImageField(upload_to="", null=True, blank=True)
+    photo_url = models.URLField(blank=True)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["name"]
+
+    def __str__(self):
+        return self.name
+
+    def get_photo_source(self):
+        if self.photo:
+            return self.photo.url
+        return self.photo_url
+
+    def save(self, *args, **kwargs):
+        _deduplicate_uploaded_field(self, "photo")
+        super().save(*args, **kwargs)
+
+
 class Inquiry(models.Model):
     property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name="inquiries")
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
@@ -60,7 +130,7 @@ class VirtualTourScene(models.Model):
     property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name="tour_scenes")
     title = models.CharField(max_length=120)
     scene_key = models.SlugField(max_length=80)
-    panorama_image = models.ImageField(upload_to="virtual_tours/", null=True, blank=True)
+    panorama_image = models.ImageField(upload_to="", null=True, blank=True)
     panorama_url = models.URLField(blank=True)
     sort_order = models.PositiveIntegerField(default=0)
 
@@ -77,6 +147,99 @@ class VirtualTourScene(models.Model):
         if self.panorama_image:
             return self.panorama_image.url
         return self.panorama_url
+
+    def save(self, *args, **kwargs):
+        _deduplicate_uploaded_field(self, "panorama_image")
+
+        if not self.title:
+            self.title = "Virtual Tour Scene"
+
+        if not self.scene_key:
+            base_key = slugify(self.title) or "virtual-tour-scene"
+            candidate_key = base_key
+            suffix = 2
+            while VirtualTourScene.objects.filter(
+                property=self.property,
+                scene_key=candidate_key,
+            ).exclude(pk=self.pk).exists():
+                candidate_key = f"{base_key}-{suffix}"
+                suffix += 1
+            self.scene_key = candidate_key
+
+        if not self.sort_order:
+            max_sort_order = (
+                VirtualTourScene.objects.filter(property=self.property)
+                .exclude(pk=self.pk)
+                .aggregate(models.Max("sort_order"))["sort_order__max"]
+            )
+            self.sort_order = (max_sort_order or 0) + 1
+
+        super().save(*args, **kwargs)
+
+
+def _get_file_sha256(file_obj):
+    current_pos = None
+    try:
+        current_pos = file_obj.tell()
+    except Exception:
+        current_pos = None
+
+    try:
+        if hasattr(file_obj, "seek"):
+            file_obj.seek(0)
+    except Exception:
+        pass
+
+    hasher = hashlib.sha256()
+    for chunk in file_obj.chunks() if hasattr(file_obj, "chunks") else iter(lambda: file_obj.read(8192), b""):
+        if not chunk:
+            break
+        hasher.update(chunk)
+
+    try:
+        if current_pos is not None and hasattr(file_obj, "seek"):
+            file_obj.seek(current_pos)
+    except Exception:
+        pass
+
+    return hasher.hexdigest()
+
+
+def _find_existing_media_file(uploaded_file):
+    media_root = Path(settings.MEDIA_ROOT)
+    if not media_root.exists():
+        return None
+
+    uploaded_size = getattr(uploaded_file, "size", None)
+    uploaded_hash = _get_file_sha256(uploaded_file)
+
+    for existing_path in media_root.rglob("*"):
+        if not existing_path.is_file():
+            continue
+        if uploaded_size is not None and existing_path.stat().st_size != uploaded_size:
+            continue
+
+        with existing_path.open("rb") as existing_file:
+            existing_hash = _get_file_sha256(existing_file)
+            if existing_hash == uploaded_hash:
+                return existing_path.relative_to(media_root).as_posix()
+    return None
+
+
+def _deduplicate_uploaded_field(instance, field_name):
+    field_file = getattr(instance, field_name, None)
+    if not field_file:
+        return
+    if getattr(field_file, "_committed", True):
+        return
+
+    uploaded_file = getattr(field_file, "file", None)
+    if not uploaded_file:
+        return
+
+    existing_relative_path = _find_existing_media_file(uploaded_file)
+    if existing_relative_path:
+        setattr(instance, field_name, existing_relative_path)
 
 
 class VirtualTourHotspot(models.Model):
@@ -112,3 +275,46 @@ class Visit(models.Model):
 
     def __str__(self):
         return f"{self.user.username} visit for {self.property.name} on {self.visit_date}"
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
+    can_post_property = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.user.username} profile"
+
+
+class SellLead(models.Model):
+    STATUS_PENDING = "Pending"
+    STATUS_APPROVED = "Approved"
+    STATUS_REJECTED = "Rejected"
+    STATUS_CHOICES = [
+        (STATUS_PENDING, "Pending"),
+        (STATUS_APPROVED, "Approved"),
+        (STATUS_REJECTED, "Rejected"),
+    ]
+
+    PROPERTY_TYPES = [
+        ("Residential", "Residential"),
+        ("Apartment", "Apartment"),
+        ("Commercial", "Commercial"),
+        ("Land", "Land"),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="sell_leads")
+    name = models.CharField(max_length=150)
+    email = models.EmailField()
+    phone = models.CharField(max_length=30)
+    property_type = models.CharField(max_length=100, choices=PROPERTY_TYPES)
+    location = models.CharField(max_length=255)
+    message = models.TextField(blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_PENDING)
+    approval_notification_sent = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.name} - {self.property_type} ({self.location})"

@@ -1138,6 +1138,13 @@
                                     <i class="bi bi-envelope"></i> My Inquiries
                                 </a>
                             </li>
+                            {% if user_can_post_property %}
+                            <li>
+                                <a class="dropdown-item" href="{% url 'property_create' %}">
+                                    <i class="bi bi-plus-square"></i> Add Property
+                                </a>
+                            </li>
+                            {% endif %}
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
@@ -1194,7 +1201,7 @@
                 <div class="col-lg-2 col-md-6">
                     <h5 class="footer-heading">Join Us</h5>
                     <ul class="footer-link-group">
-                        <li><a href="{% url 'sell' %}">Become an Agent</a></li>
+                        <li><a href="mailto:contact@shelterandsoul.lk">Become an Agent</a></li>
                     </ul>
                 </div>
 

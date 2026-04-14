@@ -138,41 +138,52 @@
                 <h3 class="font-playfair fw-bold mb-4" style="color: var(--primary);">Begin Your Journey</h3>
                 <form method="POST" action="{% url 'sell' %}">
                     {% csrf_token %}
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ form.non_field_errors }}
+                    </div>
+                    {% endif %}
                     <div class="mb-3">
                         <label for="name" class="form-label">Full Name</label>
-                        <input type="text" class="form-control" id="name" name="name" required placeholder="Jane Doe">
+                        <input type="text" class="form-control {% if form.name.errors %}is-invalid{% endif %}" id="name" name="name" required placeholder="Jane Doe" value="{{ form.name.value|default:'' }}">
+                        {% if form.name.errors %}<div class="invalid-feedback">{{ form.name.errors|striptags }}</div>{% endif %}
                     </div>
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="email" class="form-label">Email Address</label>
-                            <input type="email" class="form-control" id="email" name="email" required placeholder="jane@example.com">
+                            <input type="email" class="form-control {% if form.email.errors %}is-invalid{% endif %}" id="email" name="email" required placeholder="jane@example.com" value="{{ form.email.value|default:'' }}">
+                            {% if form.email.errors %}<div class="invalid-feedback">{{ form.email.errors|striptags }}</div>{% endif %}
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="phone" class="form-label">Phone Number</label>
-                            <input type="tel" class="form-control" id="phone" name="phone" required placeholder="(123) 456-7890">
+                            <input type="tel" class="form-control {% if form.phone.errors %}is-invalid{% endif %}" id="phone" name="phone" required placeholder="(123) 456-7890" value="{{ form.phone.value|default:'' }}">
+                            {% if form.phone.errors %}<div class="invalid-feedback">{{ form.phone.errors|striptags }}</div>{% endif %}
                         </div>
                     </div>
 
                     <div class="mb-3">
                         <label for="propertyType" class="form-label">Property Type</label>
-                        <select class="form-select" id="propertyType" name="property_type" required>
-                            <option value="" disabled selected>Select property type...</option>
-                            <option value="Residential">Residential Home</option>
-                            <option value="Apartment">Apartment</option>
-                            <option value="Commercial">Commercial Space</option>
-                            <option value="Land">Land Property</option>
+                        <select class="form-select {% if form.property_type.errors %}is-invalid{% endif %}" id="propertyType" name="property_type" required>
+                            <option value="" disabled {% if not form.property_type.value %}selected{% endif %}>Select property type...</option>
+                            <option value="Residential" {% if form.property_type.value == "Residential" %}selected{% endif %}>Residential Home</option>
+                            <option value="Apartment" {% if form.property_type.value == "Apartment" %}selected{% endif %}>Apartment</option>
+                            <option value="Commercial" {% if form.property_type.value == "Commercial" %}selected{% endif %}>Commercial Space</option>
+                            <option value="Land" {% if form.property_type.value == "Land" %}selected{% endif %}>Land Property</option>
                         </select>
+                        {% if form.property_type.errors %}<div class="invalid-feedback">{{ form.property_type.errors|striptags }}</div>{% endif %}
                     </div>
 
                     <div class="mb-3">
                         <label for="location" class="form-label">Property Location</label>
-                        <input type="text" class="form-control" id="location" name="location" required placeholder="City or Neighborhood">
+                        <input type="text" class="form-control {% if form.location.errors %}is-invalid{% endif %}" id="location" name="location" required placeholder="City or Neighborhood" value="{{ form.location.value|default:'' }}">
+                        {% if form.location.errors %}<div class="invalid-feedback">{{ form.location.errors|striptags }}</div>{% endif %}
                     </div>
 
                     <div class="mb-4">
                         <label for="message" class="form-label">Additional Details</label>
-                        <textarea class="form-control" id="message" name="message" rows="4" placeholder="Tell us about the unique features of your property..."></textarea>
+                        <textarea class="form-control {% if form.message.errors %}is-invalid{% endif %}" id="message" name="message" rows="4" placeholder="Tell us about the unique features of your property...">{{ form.message.value|default:'' }}</textarea>
+                        {% if form.message.errors %}<div class="invalid-feedback">{{ form.message.errors|striptags }}</div>{% endif %}
                     </div>
 
                     <button type="submit" class="btn btn-gold btn-gold-submit">Submit Request</button>

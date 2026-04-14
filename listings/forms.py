@@ -1,31 +1,53 @@
 from django import forms
+from django.forms import inlineformset_factory
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.utils import timezone
 from .models import Property
 from .models import Inquiry
+from .models import SellLead
+from .models import VirtualTourScene
 from .models import Visit
 
 class PropertyForm(forms.ModelForm):
+    class MultipleFileInput(forms.ClearableFileInput):
+        allow_multiple_selected = True
+
+    class MultipleFileField(forms.FileField):
+        def clean(self, data, initial=None):
+            single_file_clean = super().clean
+            if isinstance(data, (list, tuple)):
+                return [single_file_clean(file_data, initial) for file_data in data]
+            if data:
+                return [single_file_clean(data, initial)]
+            return []
+
+    image_files = MultipleFileField(
+        required=False,
+        widget=MultipleFileInput(),
+        help_text="Upload one or more images.",
+        label="Property Images",
+    )
+
     class Meta:
         model = Property
         fields = [
             "name",
             "location",
             "price",
+            "listing_category",
             "property_type",
-            "address",
-            "latitude",
-            "longitude",
             "number_of_rooms",
+            "number_of_bathrooms",
             "size_sqft",
+            "size_unit",
             "description",
-            "image",
             "walkthrough_video",
             "video_url",
         ]
         widgets = {
             "description": forms.Textarea(attrs={"rows": 4}),
+            "size_sqft": forms.NumberInput(attrs={"step": "0.01", "min": "0", "placeholder": "e.g. 1200"}),
         }
 
 
@@ -68,3 +90,40 @@ class VisitForm(forms.ModelForm):
         if visit_date < timezone.localdate():
             raise forms.ValidationError("Visit date cannot be in the past.")
         return visit_date
+
+
+class SellLeadForm(forms.ModelForm):
+    class Meta:
+        model = SellLead
+        fields = ["name", "email", "phone", "property_type", "location", "message"]
+        widgets = {
+            "message": forms.Textarea(
+                attrs={"rows": 4, "placeholder": "Tell us about the unique features of your property..."}
+            ),
+        }
+
+
+class VirtualTourSceneForm(forms.ModelForm):
+    class Meta:
+        model = VirtualTourScene
+        fields = ["panorama_image", "panorama_url"]
+        widgets = {
+            "panorama_url": forms.URLInput(attrs={"placeholder": "https://..."}),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        panorama_image = cleaned_data.get("panorama_image")
+        panorama_url = cleaned_data.get("panorama_url")
+        if not panorama_image and not panorama_url:
+            raise forms.ValidationError("Please provide a panorama image or a panorama URL.")
+        return cleaned_data
+
+
+VirtualTourSceneFormSet = inlineformset_factory(
+    Property,
+    VirtualTourScene,
+    form=VirtualTourSceneForm,
+    extra=1,
+    can_delete=True,
+)

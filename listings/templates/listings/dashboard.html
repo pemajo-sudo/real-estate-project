@@ -210,7 +210,9 @@
                             </a>
                             <span class="dash-item-sub">{{ item.property.location }}</span>
                         </div>
-                        <span class="badge rounded-pill bg-light text-primary border">Rs. {{ item.property.price|intcomma }}</span>
+                        <span class="badge rounded-pill bg-light text-primary border">
+                            Rs. {{ item.property.price|intcomma }}{% if item.property.listing_category == "Rent" %} per month{% endif %}
+                        </span>
                     </li>
                     {% endfor %}
                 </ul>
@@ -266,8 +268,8 @@
                     {% for post in my_posts %}
                     <li class="dash-item">
                         <div class="dash-item-meta">
-                            <a href="#" class="dash-item-name">{{ post.name }}</a>
-                            <span class="dash-item-sub">Active</span>
+                            <a href="{% url 'property_detail' post.pk %}" class="dash-item-name">{{ post.name }}</a>
+                            <span class="dash-item-sub">{{ post.location }}</span>
                         </div>
                     </li>
                     {% endfor %}
@@ -276,7 +278,11 @@
                 <div class="empty-state">
                     <i class="bi bi-plus-circle"></i>
                     <p>You haven't posted any properties yet.</p>
+                    {% if can_post_property %}
+                    <a href="{% url 'property_create' %}" class="btn btn-sm btn-gold mt-2">Add Property</a>
+                    {% else %}
                     <a href="{% url 'sell' %}" class="btn btn-sm btn-outline-primary mt-2">Start Selling</a>
+                    {% endif %}
                 </div>
                 {% endif %}
             </div>

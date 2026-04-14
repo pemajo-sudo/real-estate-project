@@ -6,6 +6,15 @@
 <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form.as_p }}
+
+    <h4>Virtual Tour Scenes</h4>
+    {{ scene_formset.management_form }}
+    {% for scene_form in scene_formset %}
+    <div class="card p-3 mb-3">
+        {{ scene_form.as_p }}
+    </div>
+    {% endfor %}
+
     <button type="submit" class="btn">Save</button>
 </form>
 {% endblock %}

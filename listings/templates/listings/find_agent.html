@@ -5,23 +5,32 @@
 <style>
     /* ===== FIND AN AGENT PAGE REFINEMENT ===== */
     .agents-header-section {
-        background: radial-gradient(circle at center, #1b3a6b 0%, #0d2b66 100%);
-        padding: 6rem 0;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        padding: 4.2rem 0;
         text-align: center;
         color: #ffffff;
-        margin-bottom: 3rem;
+        margin-bottom: 2.5rem;
         position: relative;
         overflow: hidden;
         border-radius: var(--radius-lg);
-        box-shadow: 0 10px 30px rgba(13,43,102,0.15);
+        box-shadow: 0 8px 20px rgba(13,43,102,0.12);
     }
 
     .agents-header-section::after {
         content: '';
         position: absolute;
-        top: 0; left: 0; right: 0; bottom: 0;
-        background: radial-gradient(circle at 70% 30%, rgba(199, 163, 74, 0.15) 0%, transparent 60%);
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(199, 163, 74, 0.1) 0%, transparent 50%);
+        animation: rotateGlow 20s linear infinite;
         pointer-events: none;
+    }
+
+    @keyframes rotateGlow {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
     }
 
     .agents-header-section h1 {
@@ -32,6 +41,7 @@
         position: relative;
         z-index: 1;
         color: #ffffff !important;
+        text-shadow: 0 3px 12px rgba(0, 0, 0, 0.4);
     }
 
     .agents-header-section p {
@@ -42,6 +52,7 @@
         position: relative;
         z-index: 1;
         color: #ffffff !important;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
     }
 
     /* Agent Card Styling */
@@ -142,18 +153,68 @@
 
     /* Join Banner */
     .join-section {
-        background: var(--surface);
+        background: linear-gradient(135deg, #081f4d 0%, #0d2b66 55%, #0c7f76 120%);
         border-radius: var(--radius-lg);
-        padding: 4rem;
+        padding: 4.2rem 2rem;
         text-align: center;
         margin-top: 4rem;
-        border: 1px dashed var(--gold);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        box-shadow: 0 20px 45px rgba(13, 43, 102, 0.2);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .join-section::before {
+        content: "";
+        position: absolute;
+        width: 340px;
+        height: 340px;
+        background: radial-gradient(circle, rgba(199,163,74,0.35) 0%, rgba(199,163,74,0) 70%);
+        top: -110px;
+        right: -80px;
+        pointer-events: none;
+    }
+
+    .join-kicker {
+        display: inline-block;
+        font-size: 0.78rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: #f8e8ba;
+        background: rgba(199, 163, 74, 0.18);
+        border: 1px solid rgba(248, 232, 186, 0.45);
+        padding: 0.4rem 1rem;
+        border-radius: var(--radius-pill);
+        margin-bottom: 1rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .join-title {
+        color: #ffffff;
+        font-family: 'Playfair Display', serif;
+        font-weight: 800;
+        font-size: clamp(1.8rem, 3vw, 2.4rem);
+        margin-bottom: 0.9rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .join-subtext {
+        color: rgba(255, 255, 255, 0.88);
+        max-width: 720px;
+        margin: 0 auto;
+        font-size: 1.02rem;
+        line-height: 1.7;
+        position: relative;
+        z-index: 1;
     }
 
     .btn-apply-agent {
-        background: var(--gold);
-        color: white;
-        padding: 1rem 3rem;
+        background: linear-gradient(145deg, var(--gold), var(--gold-dark));
+        color: #fff;
+        padding: 0.95rem 2.6rem;
         border-radius: var(--radius-pill);
         font-weight: 800;
         text-transform: uppercase;
@@ -161,14 +222,17 @@
         transition: var(--transition);
         border: none;
         display: inline-block;
-        margin-top: 1.5rem;
+        margin-top: 1.8rem;
+        position: relative;
+        z-index: 1;
+        box-shadow: 0 10px 24px rgba(199, 163, 74, 0.45);
     }
 
     .btn-apply-agent:hover {
-        background: var(--gold-dark);
+        background: linear-gradient(145deg, var(--gold-dark), #9f7b2c);
         color: white;
-        transform: translateY(-2px);
-        box-shadow: 0 10px 20px rgba(199, 163, 74, 0.3);
+        transform: translateY(-2px) scale(1.01);
+        box-shadow: 0 14px 26px rgba(199, 163, 74, 0.55);
     }
 
     /* Empty state */
@@ -181,6 +245,7 @@
         box-shadow: var(--shadow-sm);
     }
 
+
 </style>
 
 <div class="agents-header-section fade-in-up">
@@ -191,14 +256,33 @@
 </div>
 
 <div class="container mb-5">
+    <form method="get" class="mb-4">
+        <div class="input-group">
+            <input
+                type="text"
+                name="q"
+                value="{{ search_query }}"
+                class="form-control"
+                placeholder="Search Agents"
+                aria-label="Search agents by name"
+            >
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </form>
+
     <div class="row g-4">
         {% if agents %}
-            <!-- Dynamic Agents (Future integration for admin-managed agents) -->
             {% for agent in agents %}
             <div class="col-lg-6 col-xl-4 fade-in-up">
                 <div class="agent-profile-card hover-lift">
                     <div class="agent-header-row">
-                        <img src="{{ agent.photo.url|default:'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=200&q=80' }}" alt="Agent" class="agent-photo">
+                        {% if agent.photo %}
+                        <img src="{{ agent.photo.url }}" alt="{{ agent.name }}" class="agent-photo">
+                        {% elif agent.photo_url %}
+                        <img src="{{ agent.photo_url }}" alt="{{ agent.name }}" class="agent-photo">
+                        {% else %}
+                        <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=200&q=80" alt="{{ agent.name }}" class="agent-photo">
+                        {% endif %}
                         <div class="agent-identity">
                             <h3>{{ agent.name }}</h3>
                             <span class="tagline">{{ agent.specialization|default:"Real Estate Agent" }}</span>
@@ -221,110 +305,22 @@
                     <p class="agent-bio">
                         {{ agent.bio|truncatewords:25|default:"An experienced professional ready to help you find your dream property with transparency." }}
                     </p>
-                    <button type="button" class="btn-contact-action w-100" data-bs-toggle="modal" data-bs-target="#contactAgentModal">
+                    <a href="mailto:{{ agent.email }}" class="btn-contact-action w-100 text-decoration-none">
                         <i class="bi bi-chat-dots"></i> Contact Agent
-                    </button>
+                    </a>
                 </div>
             </div>
             {% endfor %}
         {% else %}
-            <!-- Fallback Static Partner Agents -->
-            <!-- Agent Card 1 -->
-            <div class="col-lg-6 col-xl-4 fade-in-up" style="transition-delay: 0.1s;">
-                <div class="agent-profile-card hover-lift">
-                    <div class="agent-header-row">
-                        <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=200&q=80" alt="Agent" class="agent-photo">
-                        <div class="agent-identity">
-                            <h3>Malik Jayawardena</h3>
-                            <span class="tagline">Senior Executive Partner</span>
-                        </div>
-                    </div>
-                    <div class="agent-stats-grid">
-                        <div class="stat-item">
-                            <span class="stat-value">85+</span>
-                            <span class="stat-label">Deals</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-value">4.9/5</span>
-                            <span class="stat-label">Rating</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-value">Rs. 1.2B</span>
-                            <span class="stat-label">Volume</span>
-                        </div>
-                    </div>
-                    <p class="agent-bio">
-                        With over 12 years of experience in the Colombo luxury market, Malik specializes in high-end colonial estate properties and modern penthouse developments.
-                    </p>
-                    <button class="btn-contact-action">
-                        <i class="bi bi-chat-dots"></i> Contact Agent
-                    </button>
-                </div>
-            </div>
-
-            <!-- Agent Card 2 -->
-            <div class="col-lg-6 col-xl-4 fade-in-up" style="transition-delay: 0.2s;">
-                <div class="agent-profile-card hover-lift">
-                    <div class="agent-header-row">
-                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80" alt="Agent" class="agent-photo">
-                        <div class="agent-identity">
-                            <h3>Aruni Perera</h3>
-                            <span class="tagline">Residential Specialist</span>
-                        </div>
-                    </div>
-                    <div class="agent-stats-grid">
-                        <div class="stat-item">
-                            <span class="stat-value">120+</span>
-                            <span class="stat-label">Deals</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-value">5.0/5</span>
-                            <span class="stat-label">Rating</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-value">Rs. 850M</span>
-                            <span class="stat-label">Volume</span>
-                        </div>
-                    </div>
-                    <p class="agent-bio">
-                        Aruni is known for her exceptional negotiation skills and deep knowledge of upcoming residential zones in the Greater Colombo area.
-                    </p>
-                    <button class="btn-contact-action">
-                        <i class="bi bi-chat-dots"></i> Contact Agent
-                    </button>
-                </div>
-            </div>
-
-            <!-- Agent Card 3 -->
-            <div class="col-lg-6 col-xl-4 fade-in-up" style="transition-delay: 0.3s;">
-                <div class="agent-profile-card hover-lift">
-                    <div class="agent-header-row">
-                        <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=200&q=80" alt="Agent" class="agent-photo">
-                        <div class="agent-identity">
-                            <h3>Sahan Wickrama</h3>
-                            <span class="tagline">Commercial Consultant</span>
-                        </div>
-                    </div>
-                    <div class="agent-stats-grid">
-                        <div class="stat-item">
-                            <span class="stat-value">60+</span>
-                            <span class="stat-label">Deals</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-value">4.8/5</span>
-                            <span class="stat-label">Rating</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-value">Rs. 2.1B</span>
-                            <span class="stat-label">Volume</span>
-                        </div>
-                    </div>
-                    <p class="agent-bio">
-                        Sahan focuses exclusively on commercial leasing and land acquisition for hospitality projects, serving clients across the southern coast.
-                    </p>
-                    <button class="btn-contact-action">
-                        <i class="bi bi-chat-dots"></i> Contact Agent
-                    </button>
+            <div class="col-12">
+                <div class="empty-state">
+                    {% if search_query %}
+                    <h2 class="font-playfair text-primary">No agents found</h2>
+                    <p class="text-muted mb-0">Try another name or clear the search to view all agents.</p>
+                    {% else %}
+                    <h2 class="font-playfair text-primary">No Agents Available</h2>
+                    <p class="text-muted mb-0">Agents can be added from Django Admin and will appear here automatically.</p>
+                    {% endif %}
                 </div>
             </div>
         {% endif %}
@@ -332,38 +328,10 @@
 
     <!-- Application Banner -->
     <div class="join-section fade-in-up">
-        <h2 class="font-playfair fw-bold mb-3 text-primary">Join Our Expert Network</h2>
-        <p class="text-muted">Are you a professional agent looking to elevate your reach? Apply to join the Shelter & Soul partner program.</p>
+        <span class="join-kicker">Partner Program</span>
+        <h2 class="join-title">Join Our Expert Network</h2>
+        <p class="join-subtext">Are you a professional agent looking to elevate your reach? Apply to join the Shelter & Soul partner program and connect with serious buyers, renters, and investors across Sri Lanka.</p>
         <a href="mailto:careers@shelterandsoul.lk" class="btn-apply-agent">Apply to Join as an Agent</a>
     </div>
-<!-- Contact Agent Modal -->
-<div class="modal fade" id="contactAgentModal" tabindex="-1" aria-labelledby="contactAgentModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg" style="border-radius: var(--radius-lg);">
-            <div class="modal-header border-0 pb-0 px-4 pt-4">
-                <h5 class="modal-title font-playfair fw-bold text-primary" id="contactAgentModalLabel">Drop a Message</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body px-4 pb-4 pt-3">
-                <p class="text-muted text-sm mb-4">Our agents usually respond within 24 hours. Let us know how we can help you.</p>
-                <form>
-                    <div class="mb-3">
-                        <label class="form-label text-sm fw-semibold">Your Name</label>
-                        <input type="text" class="form-control hover-lift" style="border-radius: var(--radius-md);" placeholder="John Doe" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label text-sm fw-semibold">Your Email</label>
-                        <input type="email" class="form-control hover-lift" style="border-radius: var(--radius-md);" placeholder="john@example.com" required>
-                    </div>
-                    <div class="mb-4">
-                        <label class="form-label text-sm fw-semibold">Message</label>
-                        <textarea class="form-control hover-lift" rows="3" style="border-radius: var(--radius-md);" placeholder="I'm interested in viewing a property..." required></textarea>
-                    </div>
-                    <button type="button" class="btn text-white w-100 py-2 hover-lift" style="background-color: var(--primary); border-radius: var(--radius-md); font-weight: 700;" data-bs-dismiss="modal" onclick="alert('Message sent successfully! Our agent will contact you shortly.')">Send Message</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
 
 {% endblock %}
