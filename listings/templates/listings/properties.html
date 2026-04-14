@@ -355,10 +355,31 @@
   }
 
   .prop-price {
-    font-size: 1.38rem;
-    font-weight: 800;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: baseline;
+    gap: 0.2rem;
     color: var(--primary);
-    line-height: 1.15;
+    line-height: 1.1;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .prop-price-main {
+    font-size: clamp(1.05rem, 2.2vw, 1.28rem);
+    font-weight: 800;
+    white-space: nowrap;
+    flex-shrink: 1;
+  }
+
+  .prop-price-suffix {
+    font-size: 0.56rem;
+    font-weight: 600;
+    letter-spacing: 0.015em;
+    white-space: nowrap;
+    vertical-align: baseline;
+    opacity: 0.85;
+    flex-shrink: 0;
   }
 
   .prop-name {
@@ -554,6 +575,13 @@
     justify-content: center;
     text-align: center;
     padding: 1rem;
+  }
+
+  #listing-google-map {
+    min-height: 520px;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid #dfe8f6;
   }
 
   .listing-map-placeholder h4 {
@@ -810,6 +838,11 @@
     <i class="bi bi-plus-lg me-1"></i>Add Listing
   </a>
   {% endif %}
+  {% if compare_count %}
+  <a href="{% url 'compare_properties' %}" class="btn btn-outline-primary btn-sm px-4">
+    <i class="bi bi-ui-checks-grid me-1"></i>Compare ({{ compare_count }})
+  </a>
+  {% endif %}
 </div>
 
 {# ===== PROPERTY GRID + MAP SPLIT ===== #}
@@ -845,7 +878,7 @@
       {# Body #}
       <div class="prop-card-body">
         <div class="prop-price">
-          Rs. {{ property.price|intcomma }}{% if property.listing_category == "Rent" %} per month{% endif %}
+          <span class="prop-price-main">Rs. {{ property.price|intcomma }}</span>{% if property.listing_category == "Rent" %} <span class="prop-price-suffix">per month</span>{% endif %}
         </div>
         <h3 class="prop-name" title="{{ property.name }}">{{ property.name }}</h3>
         {% if property.property_type %}
@@ -908,15 +941,258 @@
     <div class="listing-map-card">
       <div class="listing-map-head">
         <h3 class="listing-map-title">Map View</h3>
-        <span class="listing-map-badge">Preview</span>
+        <span class="listing-map-badge">Live</span>
       </div>
+      {% if google_maps_api_key and map_properties %}
+      <div id="listing-google-map"></div>
+      {{ map_properties|json_script:"listing-map-properties" }}
+      <script>
+        function initListingsMap() {
+          const mapContainer = document.getElementById("listing-google-map");
+          if (!mapContainer) return;
+
+          const properties = JSON.parse(document.getElementById("listing-map-properties").textContent);
+          const fallbackCenter = { lat: 7.8731, lng: 80.7718 }; // Sri Lanka center
+          const sriLankaBounds = {
+            north: 9.95,
+            south: 5.85,
+            west: 79.4,
+            east: 82.1,
+          };
+          const map = new google.maps.Map(mapContainer, {
+            zoom: 8,
+            center: fallbackCenter,
+            mapTypeControl: false,
+            streetViewControl: false,
+            fullscreenControl: true,
+            restriction: {
+              latLngBounds: sriLankaBounds,
+              strictBounds: true,
+            },
+          });
+          const bounds = new google.maps.LatLngBounds();
+          const geocoder = new google.maps.Geocoder();
+          const infoWindow = new google.maps.InfoWindow();
+          let markerCount = 0;
+
+          const isWithinSriLanka = (lat, lng) =>
+            lat >= sriLankaBounds.south &&
+            lat <= sriLankaBounds.north &&
+            lng >= sriLankaBounds.west &&
+            lng <= sriLankaBounds.east;
+
+          const guessSriLankaCoords = (locationText) => {
+            if (!locationText) return null;
+            const text = locationText.toLowerCase();
+            const lookup = [
+              ["colombo", { lat: 6.9271, lng: 79.8612 }],
+              ["rajagiriya", { lat: 6.9069, lng: 79.8952 }],
+              ["dehiwala", { lat: 6.8510, lng: 79.8653 }],
+              ["mount lavinia", { lat: 6.8389, lng: 79.8651 }],
+              ["moratuwa", { lat: 6.7730, lng: 79.8825 }],
+              ["negombo", { lat: 7.2084, lng: 79.8358 }],
+              ["kandy", { lat: 7.2906, lng: 80.6337 }],
+              ["galle", { lat: 6.0535, lng: 80.2210 }],
+              ["matara", { lat: 5.9549, lng: 80.5550 }],
+              ["kurunegala", { lat: 7.4863, lng: 80.3647 }],
+              ["jaffna", { lat: 9.6615, lng: 80.0255 }],
+              ["anuradhapura", { lat: 8.3114, lng: 80.4037 }],
+              ["batticaloa", { lat: 7.7170, lng: 81.7000 }],
+              ["trincomalee", { lat: 8.5874, lng: 81.2152 }],
+              ["nuwara eliya", { lat: 6.9497, lng: 80.7891 }],
+              ["badulla", { lat: 6.9934, lng: 81.0550 }],
+              ["ratnapura", { lat: 6.6828, lng: 80.3992 }],
+            ];
+            for (const [key, coords] of lookup) {
+              if (text.includes(key)) return coords;
+            }
+            return null;
+          };
+
+          const addMarker = (property, position) => {
+            if (!isWithinSriLanka(position.lat, position.lng)) return;
+            const marker = new google.maps.Marker({
+              map,
+              position,
+              title: property.name,
+            });
+            markerCount += 1;
+            bounds.extend(position);
+            const priceSuffix = property.listing_category === "Rent" ? " per month" : "";
+            marker.addListener("click", () => {
+              const accent = property.listing_category === "Rent" ? "#0f9d8a" : "#c7a34a";
+              infoWindow.setContent(
+                `<div style="min-width:220px"><h6 style="margin:0 0 6px">${property.name}</h6><div style="font-size:13px;color:#5d6f88;margin-bottom:6px">${property.location}</div><div style="font-weight:700;color:${accent};margin-bottom:8px">Rs. ${Math.round(property.price).toLocaleString()}${priceSuffix}</div><a href="${property.detail_url}" style="color:#0d2b66;font-weight:600;text-decoration:none">View Details</a></div>`
+              );
+              infoWindow.open(map, marker);
+            });
+          };
+
+          const geocodeLocation = (property) => {
+            return new Promise((resolve) => {
+              if (property.latitude && property.longitude) {
+                if (isWithinSriLanka(property.latitude, property.longitude)) {
+                  resolve({ lat: property.latitude, lng: property.longitude });
+                } else {
+                  resolve(null);
+                }
+                return;
+              }
+              geocoder.geocode(
+                {
+                  address: `${property.location}, Sri Lanka`,
+                  componentRestrictions: { country: "LK" },
+                  region: "lk",
+                  bounds: new google.maps.LatLngBounds(
+                    { lat: sriLankaBounds.south, lng: sriLankaBounds.west },
+                    { lat: sriLankaBounds.north, lng: sriLankaBounds.east }
+                  ),
+                },
+                (results, status) => {
+                if (status === "OK" && results[0]) {
+                  const loc = results[0].geometry.location;
+                  const lat = loc.lat();
+                  const lng = loc.lng();
+                  if (isWithinSriLanka(lat, lng)) {
+                    resolve({ lat, lng });
+                  } else {
+                    resolve(guessSriLankaCoords(property.location));
+                  }
+                } else {
+                  resolve(guessSriLankaCoords(property.location));
+                }
+              });
+            });
+          };
+
+          Promise.all(properties.map(async (property) => {
+            const position = await geocodeLocation(property);
+            if (position) addMarker(property, position);
+          })).then(() => {
+            if (markerCount > 0) {
+              map.fitBounds(bounds);
+              if (markerCount === 1) {
+                map.setZoom(12);
+              }
+            } else {
+              map.setCenter(fallbackCenter);
+              map.setZoom(8);
+            }
+          });
+        }
+      </script>
+      <script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&callback=initListingsMap" async defer></script>
+      {% elif map_properties %}
+      <div id="listing-google-map"></div>
+      {{ map_properties|json_script:"listing-map-properties" }}
+      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+      <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+      <script>
+        (function initListingsFallbackMap() {
+          const mapContainer = document.getElementById("listing-google-map");
+          if (!mapContainer || typeof L === "undefined") return;
+
+          const properties = JSON.parse(document.getElementById("listing-map-properties").textContent);
+          const sriLankaBounds = [[5.85, 79.4], [9.95, 82.1]];
+          const sriLankaCenter = [7.8731, 80.7718];
+          const map = L.map(mapContainer, {
+            maxBounds: sriLankaBounds,
+            maxBoundsViscosity: 0.7,
+            worldCopyJump: false,
+          }).setView(sriLankaCenter, 8);
+          L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+            maxZoom: 19,
+            noWrap: true,
+            attribution: "&copy; OpenStreetMap contributors &copy; CARTO"
+          }).addTo(map);
+
+          const bounds = [];
+          const isWithinSriLanka = (lat, lng) =>
+            lat >= 5.85 && lat <= 9.95 && lng >= 79.4 && lng <= 82.1;
+          const guessSriLankaCoords = (locationText) => {
+            if (!locationText) return null;
+            const text = locationText.toLowerCase();
+            const lookup = [
+              ["colombo", [6.9271, 79.8612]],
+              ["rajagiriya", [6.9069, 79.8952]],
+              ["dehiwala", [6.8510, 79.8653]],
+              ["mount lavinia", [6.8389, 79.8651]],
+              ["moratuwa", [6.7730, 79.8825]],
+              ["negombo", [7.2084, 79.8358]],
+              ["kandy", [7.2906, 80.6337]],
+              ["galle", [6.0535, 80.2210]],
+              ["matara", [5.9549, 80.5550]],
+              ["kurunegala", [7.4863, 80.3647]],
+              ["jaffna", [9.6615, 80.0255]],
+              ["anuradhapura", [8.3114, 80.4037]],
+              ["batticaloa", [7.7170, 81.7000]],
+              ["trincomalee", [8.5874, 81.2152]],
+              ["nuwara eliya", [6.9497, 80.7891]],
+              ["badulla", [6.9934, 81.0550]],
+              ["ratnapura", [6.6828, 80.3992]],
+            ];
+            for (const [key, coords] of lookup) {
+              if (text.includes(key)) return coords;
+            }
+            return null;
+          };
+          const geocodeProperty = async (property) => {
+            if (property.latitude && property.longitude) {
+              if (isWithinSriLanka(property.latitude, property.longitude)) {
+                return [property.latitude, property.longitude];
+              }
+              return null;
+            }
+            try {
+              const endpoint = `https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=lk&bounded=1&viewbox=79.4,9.95,82.1,5.85&q=${encodeURIComponent(property.location)}`;
+              const response = await fetch(endpoint, {
+                headers: { "Accept": "application/json" }
+              });
+              const results = await response.json();
+              if (results && results.length > 0) {
+                const lat = parseFloat(results[0].lat);
+                const lng = parseFloat(results[0].lon);
+                if (isWithinSriLanka(lat, lng)) {
+                  return [lat, lng];
+                }
+                return guessSriLankaCoords(property.location);
+              }
+            } catch (err) {
+              return guessSriLankaCoords(property.location);
+            }
+            return guessSriLankaCoords(property.location);
+          };
+
+          Promise.all(properties.map(async (property) => {
+            const coords = await geocodeProperty(property);
+            if (!coords) return;
+            bounds.push(coords);
+            const priceSuffix = property.listing_category === "Rent" ? " per month" : "";
+            const markerColor = property.listing_category === "Rent" ? "#0f9d8a" : "#c7a34a";
+            L.marker(coords)
+              .addTo(map)
+              .bindPopup(
+                `<div style="min-width:220px"><h6 style="margin:0 0 6px">${property.name}</h6><div style="font-size:13px;color:#5d6f88;margin-bottom:6px">${property.location}</div><div style="font-weight:700;color:${markerColor};margin-bottom:8px">Rs. ${Math.round(property.price).toLocaleString()}${priceSuffix}</div><a href="${property.detail_url}" style="color:#0d2b66;font-weight:600;text-decoration:none">View Details</a></div>`
+              );
+          })).then(() => {
+            if (bounds.length > 0) {
+              map.fitBounds(bounds, { padding: [20, 20] });
+              if (bounds.length === 1) map.setZoom(12);
+            } else {
+              map.setView(sriLankaCenter, 8);
+            }
+          });
+        })();
+      </script>
+      {% else %}
       <div class="listing-map-placeholder">
         <div>
           <i class="bi bi-geo-alt-fill fs-2 text-primary d-block mb-2"></i>
-          <h4>Map View Coming Soon</h4>
-          <p>Listings on the left stay fully functional. This panel is ready for future map integration.</p>
+          <h4>No Mappable Properties</h4>
+          <p>Adjust filters to see properties and locations on the map.</p>
         </div>
       </div>
+      {% endif %}
     </div>
   </aside>
 </div>

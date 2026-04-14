@@ -19,6 +19,7 @@ urlpatterns = [
     path("properties/<int:pk>/schedule-visit/", views.schedule_visit, name="schedule_visit"),
     path("properties/<int:pk>/compare/add/", views.add_to_compare, name="add_to_compare"),
     path("properties/<int:pk>/compare/remove/", views.remove_from_compare, name="remove_from_compare"),
+    path("compare/clear/", views.clear_compare, name="clear_compare"),
     path("properties/<int:pk>/wishlist/add/", views.add_to_wishlist, name="add_to_wishlist"),
     path("properties/<int:pk>/wishlist/remove/", views.remove_from_wishlist, name="remove_from_wishlist"),
     path("compare/", views.compare_properties, name="compare_properties"),

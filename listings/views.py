@@ -1,9 +1,11 @@
 from django.contrib import messages
+from django.conf import settings
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from urllib.parse import parse_qs, urlparse
 
 from .forms import (
@@ -170,7 +172,11 @@ def property_list(request):
     query = request.GET.get("q")
     location = request.GET.get("location", "").strip()
     property_type = request.GET.get("property_type")
+    bedrooms = request.GET.get("bedrooms")
     bathrooms = request.GET.get("bathrooms")
+    price_min = request.GET.get("price_min")
+    price_max = request.GET.get("price_max")
+    sort = request.GET.get("sort", "").strip()
 
     if query:
         properties = properties.filter(name__icontains=query)
@@ -186,10 +192,39 @@ def property_list(request):
     elif listing_type in {"sell", "buy"}:
         properties = properties.filter(listing_category="Sell")
 
+    if bedrooms:
+        properties = properties.filter(number_of_rooms__gte=bedrooms)
+
     if bathrooms:
         properties = properties.filter(number_of_bathrooms__gte=bathrooms)
 
+    if price_min:
+        properties = properties.filter(price__gte=price_min)
+
+    if price_max:
+        properties = properties.filter(price__lte=price_max)
+
+    if sort == "price_low":
+        properties = properties.order_by("price", "-id")
+    elif sort == "price_high":
+        properties = properties.order_by("-price", "-id")
+    elif sort == "newest":
+        properties = properties.order_by("-id")
+
     compared_ids = request.session.get(COMPARE_SESSION_KEY, [])
+    map_properties = [
+        {
+            "id": property_obj.id,
+            "name": property_obj.name,
+            "location": property_obj.location,
+            "price": float(property_obj.price),
+            "listing_category": property_obj.listing_category,
+            "detail_url": reverse("property_detail", args=[property_obj.id]),
+            "latitude": float(property_obj.latitude) if property_obj.latitude is not None else None,
+            "longitude": float(property_obj.longitude) if property_obj.longitude is not None else None,
+        }
+        for property_obj in properties
+    ]
     context = {
         "properties": properties,
         "selected_query": query or "",
@@ -198,6 +233,9 @@ def property_list(request):
         "selected_listing_type": listing_type,
         "property_types": ["Residential", "Apartment", "Commercial", "Land"],
         "compared_ids": compared_ids,
+        "compare_count": len(compared_ids),
+        "map_properties": map_properties,
+        "google_maps_api_key": settings.GOOGLE_MAPS_API_KEY,
     }
     return render(request, "listings/properties.html", context)
 
@@ -381,6 +419,15 @@ def remove_from_compare(request, pk):
         compared_ids.remove(pk)
         request.session[COMPARE_SESSION_KEY] = compared_ids
         messages.success(request, "Property removed from comparison.")
+    return redirect(request.POST.get("next") or "compare_properties")
+
+
+def clear_compare(request):
+    if request.method != "POST":
+        return redirect("compare_properties")
+
+    request.session[COMPARE_SESSION_KEY] = []
+    messages.success(request, "Comparison list cleared.")
     return redirect(request.POST.get("next") or "compare_properties")
 
 

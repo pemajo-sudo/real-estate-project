@@ -110,6 +110,15 @@
     <div class="compare-header">
         <h1>Compare Properties</h1>
         <p>Make the best decision by comparing features side by side.</p>
+        {% if compare_count %}
+        <form method="post" action="{% url 'clear_compare' %}" class="d-inline-block mt-2">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{% url 'compare_properties' %}">
+            <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-4">
+                <i class="bi bi-trash3 me-1"></i>Clear All
+            </button>
+        </form>
+        {% endif %}
     </div>
 
     {% if compare_count >= 2 %}
@@ -174,6 +183,12 @@
                     <td>Property Type</td>
                     {% for property in properties %}
                     <td>{{ property.property_type }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td>Category</td>
+                    {% for property in properties %}
+                    <td>{{ property.listing_category }}</td>
                     {% endfor %}
                 </tr>
                 <tr>

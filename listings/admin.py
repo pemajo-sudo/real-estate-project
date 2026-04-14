@@ -35,7 +35,6 @@ class PropertyAdmin(admin.ModelAdmin):
         "listing_category",
         "property_type",
         "price",
-        "has_map_location",
         "has_video_walkthrough",
     )
     list_filter = ("listing_category", "property_type")
@@ -67,18 +66,7 @@ class PropertyAdmin(admin.ModelAdmin):
                 "description": "Add either an uploaded video file or a YouTube/external video URL.",
             },
         ),
-        (
-            "Map Location",
-            {
-                "fields": ("address", "latitude", "longitude"),
-                "description": "Add an address and precise coordinates to show an interactive map on the property page.",
-            },
-        ),
     )
-
-    @admin.display(boolean=True, description="Has Map")
-    def has_map_location(self, obj):
-        return obj.latitude is not None and obj.longitude is not None
 
     @admin.display(boolean=True, description="Has Video")
     def has_video_walkthrough(self, obj):
@@ -128,13 +116,6 @@ class WishlistAdmin(admin.ModelAdmin):
     list_display = ("user", "property", "created_at")
     list_filter = ("created_at",)
     search_fields = ("user__username", "property__name")
-
-
-@admin.register(Visit)
-class VisitAdmin(admin.ModelAdmin):
-    list_display = ("user", "property", "visit_date", "visit_time", "created_at")
-    list_filter = ("visit_date", "created_at")
-    search_fields = ("user__username", "property__name", "note")
 
 
 @admin.register(SellLead)
