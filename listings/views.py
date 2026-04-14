@@ -6,11 +6,41 @@ from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, redirect, render
 from urllib.parse import parse_qs, urlparse
 
-from .forms import CustomUserCreationForm, InquiryForm, PropertyForm, VisitForm
-from .models import Agent, Inquiry, Property, PropertyImage, VirtualTourScene, Visit, Wishlist
+from .forms import (
+    CustomUserCreationForm,
+    InquiryForm,
+    PropertyForm,
+    SellLeadForm,
+    VirtualTourSceneFormSet,
+    VisitForm,
+)
+from .models import Agent, Inquiry, Property, PropertyImage, SellLead, UserProfile, VirtualTourScene, Visit, Wishlist
 
 COMPARE_SESSION_KEY = "compare_properties"
 MAX_COMPARE_ITEMS = 3
+
+
+def _can_user_post_property(user):
+    if not user.is_authenticated:
+        return False
+    profile, _ = UserProfile.objects.get_or_create(user=user)
+    return profile.can_post_property
+
+
+def _notify_user_on_sell_approval(request, user):
+    pending_notifications = SellLead.objects.filter(
+        user=user,
+        status=SellLead.STATUS_APPROVED,
+        approval_notification_sent=False,
+    )
+    if not pending_notifications.exists():
+        return
+
+    pending_notifications.update(approval_notification_sent=True)
+    messages.success(
+        request,
+        "Good news! Your request has been approved. Now you can add property",
+    )
 
 
 def _youtube_embed_url(url):
@@ -50,16 +80,20 @@ def find_agent(request):
     return render(request, "listings/find_agent.html", {"agents": agents, "search_query": search_query})
 
 
+@login_required
 def sell_property(request):
     """Renders the Sell property lead capture page."""
+    form = SellLeadForm(request.POST or None)
     if request.method == "POST":
-        # Form submission simulation without DB saving
-        name = request.POST.get("name")
-        email = request.POST.get("email")
-        # In a full flow we would save a SellLead model here, but we are just handling frontend UI
-        messages.success(request, "Thank you! We have received your query. Our agent will contact you shortly.")
-        return render(request, "listings/sell.html", {"success": True})
-    return render(request, "listings/sell.html")
+        if form.is_valid():
+            lead = form.save(commit=False)
+            lead.user = request.user
+            lead.status = SellLead.STATUS_PENDING
+            lead.save()
+            messages.success(request, "Thank you! We have received your query. Our agent will contact you shortly.")
+            return render(request, "listings/sell.html", {"success": True, "form": SellLeadForm()})
+        messages.error(request, "Please correct the highlighted fields and submit again.")
+    return render(request, "listings/sell.html", {"form": form})
 
 
 def about(request):
@@ -78,7 +112,7 @@ def dashboard_view(request):
     inquiries = Inquiry.objects.filter(user=request.user).order_by("-created_at")[:5]
     
     # Placeholders for features not yet in the DB model
-    my_posts = [] # Would fetch from Property.owner if exists
+    my_posts = Property.objects.filter(owner=request.user).order_by("-id")[:5]
     recent_searches = [] # Would fetch from SearchLog if exists
     
     context = {
@@ -86,6 +120,7 @@ def dashboard_view(request):
         "inquiries": inquiries,
         "my_posts": my_posts,
         "recent_searches": recent_searches,
+        "can_post_property": _can_user_post_property(request.user),
     }
     return render(request, "listings/dashboard.html", context)
 
@@ -114,6 +149,7 @@ def login_view(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
+            _notify_user_on_sell_approval(request, user)
             return redirect("home")
         else:
             messages.error(request, "Please enter a correct username and password.")
@@ -130,6 +166,7 @@ def logout_view(request):
 def property_list(request):
     properties = Property.objects.prefetch_related("images").order_by("-id")
 
+    listing_type = request.GET.get("type", "").strip().lower()
     query = request.GET.get("q")
     location = request.GET.get("location", "").strip()
     property_type = request.GET.get("property_type")
@@ -144,6 +181,11 @@ def property_list(request):
     if property_type:
         properties = properties.filter(property_type=property_type)
 
+    if listing_type in {"rent"}:
+        properties = properties.filter(listing_category="Rent")
+    elif listing_type in {"sell", "buy"}:
+        properties = properties.filter(listing_category="Sell")
+
     if bathrooms:
         properties = properties.filter(number_of_bathrooms__gte=bathrooms)
 
@@ -153,6 +195,7 @@ def property_list(request):
         "selected_query": query or "",
         "selected_location": location or "",
         "selected_type": property_type or "",
+        "selected_listing_type": listing_type,
         "property_types": ["Residential", "Apartment", "Commercial", "Land"],
         "compared_ids": compared_ids,
     }
@@ -358,10 +401,32 @@ def compare_properties(request):
 
 @login_required
 def property_create(request):
+    if not _can_user_post_property(request.user):
+        messages.error(request, "Your seller account is not approved yet. Please submit a Sell With Us request.")
+        return redirect("sell")
+
     if request.method == "POST":
         form = PropertyForm(request.POST, request.FILES)
         if form.is_valid():
-            property_obj = form.save()
+            property_obj = form.save(commit=False)
+            property_obj.owner = request.user
+            scene_formset = VirtualTourSceneFormSet(
+                request.POST,
+                request.FILES,
+                instance=property_obj,
+                prefix="scenes",
+            )
+            if scene_formset.is_valid():
+                property_obj.save()
+                form.save_m2m()
+                scene_formset.save()
+            else:
+                messages.error(request, "Please correct the virtual tour scene errors below.")
+                return render(
+                    request,
+                    "listings/property_form.html",
+                    {"form": form, "scene_formset": scene_formset, "title": "Add Property"},
+                )
             for image_file in request.FILES.getlist("image_files"):
                 PropertyImage.objects.create(property=property_obj, image=image_file)
             messages.success(request, "Property added successfully!")
@@ -370,19 +435,34 @@ def property_create(request):
             messages.error(request, "Please correct the errors below.")
     else:
         form = PropertyForm()
-    return render(request, "listings/property_form.html", {"form": form, "title": "Add Property"})
+    scene_formset = VirtualTourSceneFormSet(instance=Property(owner=request.user), prefix="scenes")
+    return render(
+        request,
+        "listings/property_form.html",
+        {"form": form, "scene_formset": scene_formset, "title": "Add Property"},
+    )
 
 
 @login_required
 def property_update(request, pk):
-    if not (request.user.is_staff or request.user.is_superuser):
-        raise PermissionDenied("Only admin users can edit properties.")
-
     property_obj = get_object_or_404(Property.objects.prefetch_related("images"), pk=pk)
+    if not (request.user.is_staff or request.user.is_superuser or property_obj.owner == request.user):
+        raise PermissionDenied("You can only edit your own properties.")
+
+    if property_obj.owner != request.user and not (request.user.is_staff or request.user.is_superuser):
+        raise PermissionDenied("You can only manage virtual tour scenes for your own properties.")
+
     if request.method == "POST":
         form = PropertyForm(request.POST, request.FILES, instance=property_obj)
-        if form.is_valid():
+        scene_formset = VirtualTourSceneFormSet(
+            request.POST,
+            request.FILES,
+            instance=property_obj,
+            prefix="scenes",
+        )
+        if form.is_valid() and scene_formset.is_valid():
             property_obj = form.save()
+            scene_formset.save()
             for image_file in request.FILES.getlist("image_files"):
                 PropertyImage.objects.create(property=property_obj, image=image_file)
             messages.success(request, "Property updated successfully!")
@@ -391,15 +471,19 @@ def property_update(request, pk):
             messages.error(request, "Please correct the errors below.")
     else:
         form = PropertyForm(instance=property_obj)
-    return render(request, "listings/property_form.html", {"form": form, "title": "Edit Property"})
+        scene_formset = VirtualTourSceneFormSet(instance=property_obj, prefix="scenes")
+    return render(
+        request,
+        "listings/property_form.html",
+        {"form": form, "scene_formset": scene_formset, "title": "Edit Property"},
+    )
 
 
 @login_required
 def property_delete(request, pk):
-    if not (request.user.is_staff or request.user.is_superuser):
-        raise PermissionDenied("Only admin users can delete properties.")
-
     property_obj = get_object_or_404(Property, pk=pk)
+    if not (request.user.is_staff or request.user.is_superuser or property_obj.owner == request.user):
+        raise PermissionDenied("You can only delete your own properties.")
     if request.method == "POST":
         property_obj.delete()
         messages.success(request, "Property deleted successfully!")

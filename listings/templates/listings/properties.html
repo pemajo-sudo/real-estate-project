@@ -783,17 +783,13 @@
 {# ===== TYPE PILLS ===== #}
 <div class="type-filter-pills">
   <a href="{% url 'property_list' %}"
-    class="type-pill {% if not request.GET.type and not selected_type %}active{% endif %}">All</a>
-  <a href="{% url 'property_list' %}?type=buy" class="type-pill {% if request.GET.type == 'buy' %}active{% endif %}">
-    <i class="bi bi-house-door me-1"></i>Buy
+    class="type-pill {% if not selected_listing_type and not selected_type %}active{% endif %}">All</a>
+  <a href="{% url 'property_list' %}?type=sell" class="type-pill pill-gold {% if selected_listing_type == 'sell' or selected_listing_type == 'buy' %}active{% endif %}">
+    <i class="bi bi-tag me-1"></i>Sell
   </a>
   <a href="{% url 'property_list' %}?type=rent"
-    class="type-pill pill-teal {% if request.GET.type == 'rent' %}active{% endif %}">
+    class="type-pill pill-teal {% if selected_listing_type == 'rent' %}active{% endif %}">
     <i class="bi bi-key me-1"></i>Rent
-  </a>
-  <a href="{% url 'property_list' %}?type=sell"
-    class="type-pill pill-gold {% if request.GET.type == 'sell' %}active{% endif %}">
-    <i class="bi bi-tag me-1"></i>Sell
   </a>
 </div>
 
@@ -809,7 +805,7 @@
     Showing all available listings
     {% endif %}
   </p>
-  {% if user.is_authenticated %}
+  {% if user_can_post_property %}
   <a href="{% url 'property_create' %}" class="btn btn-gold btn-sm px-4">
     <i class="bi bi-plus-lg me-1"></i>Add Listing
   </a>
@@ -826,16 +822,10 @@
       {# Image #}
       <div class="prop-media">
         {# Badge #}
-        {% if forloop.first %}
-        <span class="prop-badge prop-badge-featured">Featured</span>
-        {% elif forloop.counter == 2 %}
-        <span class="prop-badge prop-badge-new">New</span>
-        {% elif forloop.counter == 3 %}
-        <span class="prop-badge prop-badge-hot">Hot Deal</span>
-        {% elif property.property_type == "Apartment" %}
-        <span class="prop-badge prop-badge-rent">Apartment</span>
-        {% elif property.property_type == "Commercial" %}
-        <span class="prop-badge prop-badge-sell">Commercial</span>
+        {% if property.listing_category == "Rent" %}
+        <span class="prop-badge prop-badge-rent">For Rent</span>
+        {% else %}
+        <span class="prop-badge prop-badge-sell">For Sell</span>
         {% endif %}
 
         {# Favourite heart (UI Placeholder) #}
@@ -854,7 +844,9 @@
 
       {# Body #}
       <div class="prop-card-body">
-        <div class="prop-price">Rs. {{ property.price|intcomma }}</div>
+        <div class="prop-price">
+          Rs. {{ property.price|intcomma }}{% if property.listing_category == "Rent" %} per month{% endif %}
+        </div>
         <h3 class="prop-name" title="{{ property.name }}">{{ property.name }}</h3>
         {% if property.property_type %}
         <div class="prop-type-tag"><i class="bi bi-building"></i>{{ property.property_type }}</div>

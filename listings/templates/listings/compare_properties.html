@@ -141,7 +141,9 @@
                 <tr>
                     <td>Price</td>
                     {% for property in properties %}
-                    <td class="fw-bold text-primary">Rs. {{ property.price|intcomma }}</td>
+                    <td class="fw-bold text-primary">
+                        Rs. {{ property.price|intcomma }}{% if property.listing_category == "Rent" %} per month{% endif %}
+                    </td>
                     {% endfor %}
                 </tr>
                 <tr>

@@ -1,0 +1,21 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_extras %}
+
+{% block content %}
+<div id="content-main">
+    <div class="module" style="margin-bottom: 20px;">
+        <h2 style="margin-bottom: 12px;">Sell Leads Overview</h2>
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px;">
+            <div>
+                <div style="font-size: 13px; color: #666;">Total Sell Leads</div>
+                <div style="font-size: 28px; font-weight: 700; line-height: 1.2;">
+                    {% sell_leads_count %}
+                </div>
+            </div>
+            <a href="{% url 'admin:listings_selllead_changelist' %}" class="button">View Sell Leads</a>
+        </div>
+    </div>
+
+    {% include "admin/app_list.html" with app_list=app_list show_changelinks=True %}
+</div>
+{% endblock %}

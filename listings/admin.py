@@ -3,7 +3,17 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import User
 from django.contrib.admin.sites import NotRegistered
 
-from .models import Agent, Inquiry, Property, PropertyImage, VirtualTourHotspot, VirtualTourScene, Visit, Wishlist
+from .models import (
+    Agent,
+    Inquiry,
+    Property,
+    PropertyImage,
+    SellLead,
+    UserProfile,
+    VirtualTourScene,
+    Visit,
+    Wishlist,
+)
 
 
 class PropertyImageInline(admin.TabularInline):
@@ -11,19 +21,36 @@ class PropertyImageInline(admin.TabularInline):
     extra = 1
 
 
+class VirtualTourSceneInline(admin.StackedInline):
+    model = VirtualTourScene
+    extra = 1
+    fields = ("panorama_image", "panorama_url")
+
+
 @admin.register(Property)
 class PropertyAdmin(admin.ModelAdmin):
-    list_display = ("name", "location", "property_type", "price", "has_map_location", "has_video_walkthrough")
-    search_fields = ("name", "location", "property_type")
-    inlines = [PropertyImageInline]
+    list_display = (
+        "name",
+        "location",
+        "listing_category",
+        "property_type",
+        "price",
+        "has_map_location",
+        "has_video_walkthrough",
+    )
+    list_filter = ("listing_category", "property_type")
+    search_fields = ("name", "location", "listing_category", "property_type")
+    inlines = [PropertyImageInline, VirtualTourSceneInline]
     fieldsets = (
         (
             "Basic Information",
             {
                 "fields": (
                     "name",
+                    "owner",
                     "location",
                     "price",
+                    "listing_category",
                     "property_type",
                     "number_of_rooms",
                     "number_of_bathrooms",
@@ -70,6 +97,13 @@ class UserAdmin(BaseUserAdmin):
     ordering = ("-date_joined",)
 
 
+@admin.register(UserProfile)
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = ("user", "can_post_property")
+    list_filter = ("can_post_property",)
+    search_fields = ("user__username", "user__email")
+
+
 @admin.register(Inquiry)
 class InquiryAdmin(admin.ModelAdmin):
     list_display = ("name", "email", "property", "created_at")
@@ -103,15 +137,46 @@ class VisitAdmin(admin.ModelAdmin):
     search_fields = ("user__username", "property__name", "note")
 
 
-class VirtualTourHotspotInline(admin.TabularInline):
-    model = VirtualTourHotspot
-    extra = 1
-    fk_name = "scene"
+@admin.register(SellLead)
+class SellLeadAdmin(admin.ModelAdmin):
+    list_display = ("name", "email", "user", "property_type", "status", "approval_notification_sent", "created_at")
+    list_filter = ("status", "approval_notification_sent", "property_type", "created_at")
+    search_fields = ("name", "email", "phone", "location", "message", "user__username")
+    actions = ("approve_selected_leads", "reject_selected_leads")
 
+    @staticmethod
+    def _sync_posting_permission(user):
+        if not user:
+            return
+        profile, _ = UserProfile.objects.get_or_create(user=user)
+        has_approved_lead = SellLead.objects.filter(user=user, status=SellLead.STATUS_APPROVED).exists()
+        if profile.can_post_property != has_approved_lead:
+            profile.can_post_property = has_approved_lead
+            profile.save(update_fields=["can_post_property"])
 
-@admin.register(VirtualTourScene)
-class VirtualTourSceneAdmin(admin.ModelAdmin):
-    list_display = ("title", "property", "scene_key", "sort_order")
-    list_filter = ("property",)
-    search_fields = ("title", "scene_key", "property__name")
-    inlines = [VirtualTourHotspotInline]
+    @admin.action(description="Approve selected sell leads")
+    def approve_selected_leads(self, request, queryset):
+        user_ids = list(queryset.exclude(user__isnull=True).values_list("user_id", flat=True).distinct())
+        queryset.update(status=SellLead.STATUS_APPROVED, approval_notification_sent=False)
+        for user in User.objects.filter(id__in=user_ids):
+            profile, _ = UserProfile.objects.get_or_create(user=user)
+            if not profile.can_post_property:
+                profile.can_post_property = True
+                profile.save(update_fields=["can_post_property"])
+        self.message_user(request, f"Approved {queryset.count()} lead(s).")
+
+    @admin.action(description="Reject selected sell leads")
+    def reject_selected_leads(self, request, queryset):
+        users = list(queryset.exclude(user__isnull=True).values_list("user", flat=True).distinct())
+        queryset.update(status=SellLead.STATUS_REJECTED)
+        for user_id in users:
+            user = User.objects.filter(pk=user_id).first()
+            self._sync_posting_permission(user)
+        self.message_user(request, f"Rejected {queryset.count()} lead(s).")
+
+    def save_model(self, request, obj, form, change):
+        if obj.status == SellLead.STATUS_APPROVED and (not change or "status" in form.changed_data):
+            obj.approval_notification_sent = False
+        super().save_model(request, obj, form, change)
+        self._sync_posting_permission(obj.user)
+

@@ -833,7 +833,11 @@
                     <h3>Sell a Property</h3>
                     <p>Create your listing, reach ready buyers, and present your property with confidence.</p>
                 </div>
+                {% if user_can_post_property %}
                 <a href="{% url 'property_create' %}" class="btn btn-action-gold rounded-pill px-3">List to Sell</a>
+                {% else %}
+                <a href="{% url 'sell' %}" class="btn btn-action-gold rounded-pill px-3">Request Seller Approval</a>
+                {% endif %}
             </div>
         </div>
         <div class="col">
@@ -878,12 +882,10 @@
         <div class="col">
             <article class="featured-card h-100">
                 <div class="featured-media">
-                    {% if forloop.first %}
-                    <span class="featured-badge featured">Featured</span>
-                    {% elif forloop.counter == 2 %}
-                    <span class="featured-badge new">New</span>
+                    {% if property.listing_category == "Rent" %}
+                    <span class="featured-badge new">For Rent</span>
                     {% else %}
-                    <span class="featured-badge hot">Hot Deal</span>
+                    <span class="featured-badge hot">For Sell</span>
                     {% endif %}
                     <button type="button" class="featured-heart" aria-label="Save" onclick="toggleHeart(this)">
                         <i class="bi bi-heart"></i>
@@ -898,7 +900,9 @@
                     {% endif %}
                 </div>
                 <div class="featured-card-body">
-                    <div class="featured-price">Rs. {{ property.price|intcomma }}</div>
+                    <div class="featured-price">
+                        Rs. {{ property.price|intcomma }}{% if property.listing_category == "Rent" %} per month{% endif %}
+                    </div>
                     <h3 class="featured-name">{{ property.name }}</h3>
                     <p class="featured-location"><i class="bi bi-geo-alt-fill me-1 text-primary"></i>{{ property.location|default:"Not specified" }}</p>
                     <div class="featured-meta">
@@ -919,7 +923,7 @@
         <div class="col-12 text-center py-5">
             <i class="bi bi-houses text-muted fs-1 d-block mb-3"></i>
             <p class="lead text-muted">No featured properties yet. Start by adding your first listing.</p>
-            {% if user.is_authenticated %}
+            {% if user_can_post_property %}
             <a href="{% url 'property_create' %}" class="btn btn-primary mt-2">
                 <i class="bi bi-plus-lg me-1"></i>Add Property
             </a>

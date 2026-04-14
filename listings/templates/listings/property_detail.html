@@ -268,7 +268,9 @@
         <!-- Sidebar Column -->
         <div class="col-lg-4">
             <div class="detail-sidebar-card">
-                <div class="detail-price">Rs. {{ property.price|intcomma }}</div>
+                <div class="detail-price">
+                    Rs. {{ property.price|intcomma }}{% if property.listing_category == "Rent" %} per month{% endif %}
+                </div>
                 <div class="detail-loc">
                     <i class="bi bi-geo-alt-fill text-teal"></i>
                     {{ property.location }}
@@ -310,7 +312,7 @@
                 </div>
 
                 <!-- Admin Controls -->
-                {% if user.is_staff or user.is_superuser %}
+                {% if user.is_staff or user.is_superuser or property.owner == user %}
                 <div class="mt-4 pt-3 border-top d-flex gap-2">
                     <a href="{% url 'property_update' property.pk %}" class="btn btn-sm btn-outline-secondary w-100">Edit</a>
                     <a href="{% url 'property_delete' property.pk %}" class="btn btn-sm btn-outline-danger w-100">Delete</a>

@@ -1,9 +1,12 @@
 from django import forms
+from django.forms import inlineformset_factory
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.utils import timezone
 from .models import Property
 from .models import Inquiry
+from .models import SellLead
+from .models import VirtualTourScene
 from .models import Visit
 
 class PropertyForm(forms.ModelForm):
@@ -32,6 +35,7 @@ class PropertyForm(forms.ModelForm):
             "name",
             "location",
             "price",
+            "listing_category",
             "property_type",
             "address",
             "latitude",
@@ -89,3 +93,40 @@ class VisitForm(forms.ModelForm):
         if visit_date < timezone.localdate():
             raise forms.ValidationError("Visit date cannot be in the past.")
         return visit_date
+
+
+class SellLeadForm(forms.ModelForm):
+    class Meta:
+        model = SellLead
+        fields = ["name", "email", "phone", "property_type", "location", "message"]
+        widgets = {
+            "message": forms.Textarea(
+                attrs={"rows": 4, "placeholder": "Tell us about the unique features of your property..."}
+            ),
+        }
+
+
+class VirtualTourSceneForm(forms.ModelForm):
+    class Meta:
+        model = VirtualTourScene
+        fields = ["panorama_image", "panorama_url"]
+        widgets = {
+            "panorama_url": forms.URLInput(attrs={"placeholder": "https://..."}),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        panorama_image = cleaned_data.get("panorama_image")
+        panorama_url = cleaned_data.get("panorama_url")
+        if not panorama_image and not panorama_url:
+            raise forms.ValidationError("Please provide a panorama image or a panorama URL.")
+        return cleaned_data
+
+
+VirtualTourSceneFormSet = inlineformset_factory(
+    Property,
+    VirtualTourScene,
+    form=VirtualTourSceneForm,
+    extra=1,
+    can_delete=True,
+)
