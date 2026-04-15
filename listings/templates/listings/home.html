@@ -513,13 +513,17 @@
         position: relative;
         height: 260px;
         overflow: hidden;
+        isolation: isolate;
     }
 
     .featured-media img {
         width: 100%;
         height: 100%;
         object-fit: cover;
+        position: relative;
+        z-index: 1;
         transition: transform 0.4s ease;
+        pointer-events: none;
     }
 
     .featured-card:hover .featured-media img {
@@ -536,6 +540,7 @@
         border-radius: 999px;
         padding: 0.3rem 0.68rem;
         color: #fff;
+        pointer-events: none;
     }
 
     .featured-badge.featured {
@@ -554,6 +559,7 @@
         position: absolute;
         top: 12px;
         right: 12px;
+        z-index: 4;
         width: 36px;
         height: 36px;
         border-radius: 50%;
@@ -565,6 +571,25 @@
         justify-content: center;
         font-size: 0.95rem;
         box-shadow: 0 5px 12px rgba(16, 33, 63, 0.16);
+        transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+        text-decoration: none;
+        cursor: pointer;
+        pointer-events: auto;
+    }
+
+    .featured-heart i {
+        pointer-events: none;
+    }
+
+    .featured-heart:hover {
+        transform: scale(1.08);
+        color: #c84f66;
+    }
+
+    .featured-heart.active {
+        background: rgba(222, 91, 115, 0.12);
+        color: #de5b73;
+        border-color: rgba(222, 91, 115, 0.4);
     }
 
     .featured-card-body {
@@ -806,6 +831,134 @@
                 label.textContent = labels[e.to];
             });
         }
+
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function updateWishlistButtonState(button, isWishlisted) {
+            var icon = button.querySelector('i');
+            button.dataset.isWishlisted = isWishlisted ? 'true' : 'false';
+            button.classList.toggle('active', isWishlisted);
+            button.title = isWishlisted ? 'Remove from Wishlist' : 'Save to Wishlist';
+            button.setAttribute('aria-label', button.title);
+            if (icon) {
+                icon.classList.toggle('bi-heart-fill', isWishlisted);
+                icon.classList.toggle('bi-heart', !isWishlisted);
+            }
+        }
+
+        function submitWishlistFallback(button, url) {
+            var form = document.createElement('form');
+            form.method = 'POST';
+            form.action = url;
+            form.style.display = 'none';
+
+            var csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = 'csrfmiddlewaretoken';
+            csrfInput.value = button.dataset.csrfToken || getCookie('csrftoken') || '';
+            form.appendChild(csrfInput);
+
+            var nextInput = document.createElement('input');
+            nextInput.type = 'hidden';
+            nextInput.name = 'next';
+            nextInput.value = window.location.pathname + window.location.search;
+            form.appendChild(nextInput);
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        async function syncWishlistStateFromServer() {
+            var buttons = Array.from(document.querySelectorAll('.js-wishlist-toggle'));
+            if (!buttons.length) {
+                return;
+            }
+
+            var params = new URLSearchParams();
+            buttons.forEach(function (button) {
+                if (button.dataset.propertyId) {
+                    params.append('ids', button.dataset.propertyId);
+                }
+            });
+
+            if (!params.toString()) {
+                return;
+            }
+
+            try {
+                var response = await fetch("{% url 'wishlist_status' %}?" + params.toString(), {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                if (!response.ok) {
+                    return;
+                }
+                var data = await response.json();
+                var wishlistedSet = new Set((data.wishlisted_ids || []).map(String));
+                buttons.forEach(function (button) {
+                    var propertyId = button.dataset.propertyId || '';
+                    updateWishlistButtonState(button, wishlistedSet.has(propertyId));
+                });
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        document.querySelectorAll('.js-wishlist-toggle').forEach(function (button) {
+            button.addEventListener('click', async function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+                if (button.disabled) {
+                    return;
+                }
+
+                var isWishlisted = button.dataset.isWishlisted === 'true';
+                var url = isWishlisted ? button.dataset.removeUrl : button.dataset.addUrl;
+                button.disabled = true;
+
+                try {
+                    var response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': button.dataset.csrfToken || getCookie('csrftoken'),
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Wishlist update failed');
+                    }
+
+                    var data = await response.json();
+                    updateWishlistButtonState(button, Boolean(data.is_wishlisted));
+                } catch (error) {
+                    console.error(error);
+                    submitWishlistFallback(button, url);
+                } finally {
+                    button.disabled = false;
+                }
+            });
+        });
+
+        syncWishlistStateFromServer();
+
+        window.addEventListener('pageshow', function () {
+            syncWishlistStateFromServer();
+        });
     });
 </script>
 {# ========== ACTION CARDS ========== #}
@@ -887,9 +1040,24 @@
                     {% else %}
                     <span class="featured-badge hot">For Sell</span>
                     {% endif %}
-                    <button type="button" class="featured-heart" aria-label="Save" onclick="toggleHeart(this)">
-                        <i class="bi bi-heart"></i>
+                    {% if user.is_authenticated %}
+                    <button
+                        type="button"
+                        class="featured-heart js-wishlist-toggle{% if property.pk in wishlisted_ids %} active{% endif %}"
+                        title="{% if property.pk in wishlisted_ids %}Remove from Wishlist{% else %}Save to Wishlist{% endif %}"
+                        aria-label="{% if property.pk in wishlisted_ids %}Remove from Wishlist{% else %}Save to Wishlist{% endif %}"
+                        data-is-wishlisted="{% if property.pk in wishlisted_ids %}true{% else %}false{% endif %}"
+                        data-property-id="{{ property.pk }}"
+                        data-add-url="{% url 'add_to_wishlist' property.pk %}"
+                        data-remove-url="{% url 'remove_from_wishlist' property.pk %}"
+                        data-csrf-token="{{ csrf_token }}">
+                        <i class="bi {% if property.pk in wishlisted_ids %}bi-heart-fill{% else %}bi-heart{% endif %}"></i>
                     </button>
+                    {% else %}
+                    <a href="{% url 'login' %}?next={{ request.get_full_path|urlencode }}" class="featured-heart" title="Login to save" aria-label="Login to save">
+                        <i class="bi bi-heart"></i>
+                    </a>
+                    {% endif %}
                     {% if property.primary_image %}
                     <img src="{{ property.primary_image.image.url }}" alt="{{ property.name }}">
                     {% else %}

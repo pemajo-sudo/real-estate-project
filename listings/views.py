@@ -4,6 +4,7 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import PermissionDenied
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from urllib.parse import parse_qs, urlparse
@@ -72,9 +73,25 @@ def _youtube_embed_url(url):
     return ""
 
 
+def _wants_json_response(request):
+    return request.headers.get("x-requested-with") == "XMLHttpRequest"
+
+
 def home(request):
     featured_properties = Property.objects.prefetch_related("images").order_by("-id")[:4]
-    return render(request, "listings/home.html", {"featured_properties": featured_properties})
+    wishlisted_ids = []
+    if request.user.is_authenticated:
+        wishlisted_ids = list(
+            Wishlist.objects.filter(user=request.user).values_list("property_id", flat=True)
+        )
+    return render(
+        request,
+        "listings/home.html",
+        {
+            "featured_properties": featured_properties,
+            "wishlisted_ids": wishlisted_ids,
+        },
+    )
 
 
 def find_agent(request):
@@ -370,6 +387,15 @@ def add_to_wishlist(request, pk):
 
     property_obj = get_object_or_404(Property, pk=pk)
     _, created = Wishlist.objects.get_or_create(user=request.user, property=property_obj)
+    if _wants_json_response(request):
+        return JsonResponse(
+            {
+                "success": True,
+                "is_wishlisted": True,
+                "created": created,
+                "property_id": property_obj.pk,
+            }
+        )
     if created:
         messages.success(request, "Property added to your wishlist.")
     else:
@@ -391,12 +417,42 @@ def wishlist_view(request):
 
 
 @login_required
+def wishlist_status(request):
+    raw_ids = request.GET.getlist("ids")
+    property_ids = []
+    for raw_id in raw_ids:
+        try:
+            property_ids.append(int(raw_id))
+        except (TypeError, ValueError):
+            continue
+
+    if not property_ids:
+        return JsonResponse({"wishlisted_ids": []})
+
+    wishlisted_ids = list(
+        Wishlist.objects.filter(user=request.user, property_id__in=property_ids).values_list(
+            "property_id", flat=True
+        )
+    )
+    return JsonResponse({"wishlisted_ids": wishlisted_ids})
+
+
+@login_required
 def remove_from_wishlist(request, pk):
     if request.method != "POST":
         return redirect("wishlist")
 
     property_obj = get_object_or_404(Property, pk=pk)
     deleted_count, _ = Wishlist.objects.filter(user=request.user, property=property_obj).delete()
+    if _wants_json_response(request):
+        return JsonResponse(
+            {
+                "success": True,
+                "is_wishlisted": False,
+                "removed": bool(deleted_count),
+                "property_id": property_obj.pk,
+            }
+        )
     if deleted_count:
         messages.success(request, "Property removed from your wishlist.")
     else:
