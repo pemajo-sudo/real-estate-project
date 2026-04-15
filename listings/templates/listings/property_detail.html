@@ -331,26 +331,37 @@
                     <form method="post" action="{% url 'add_to_compare' property.pk %}">
                         {% csrf_token %}
                         <input type="hidden" name="next" value="{% url 'property_detail' property.pk %}">
-                        <button type="submit" class="btn btn-outline-primary w-100 rounded-pill">
+                        <button type="submit" class="btn btn-primary w-100 rounded-pill">
                             <i class="bi bi-plus-circle me-1"></i>Add to Compare
                         </button>
                     </form>
                     {% endif %}
-                    <a href="{% url 'compare_properties' %}" class="btn btn-gold w-100 rounded-pill">
-                        Compare Selected ({{ compare_count }})
-                    </a>
                 </div>
 
                 <!-- Inquiry Card -->
                 <div class="inquiry-card">
                     <h3>Request Information</h3>
+                    {% if user.is_authenticated %}
                     <form method="post" action="{% url 'send_inquiry' property.pk %}">
                         {% csrf_token %}
-                        <input type="text" name="name" class="form-control" placeholder="Your Name" required>
-                        <input type="email" name="email" class="form-control" placeholder="Email Address" required>
-                        <textarea name="message" class="form-control" rows="4" placeholder="I'm interested in this property..." required></textarea>
+                        {% if inquiry_form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {{ inquiry_form.non_field_errors }}
+                        </div>
+                        {% endif %}
+                        <input type="text" name="name" class="form-control {% if inquiry_form.name.errors %}is-invalid{% endif %}" placeholder="Your Name" required value="{{ inquiry_form.name.value|default:'' }}">
+                        {% if inquiry_form.name.errors %}<div class="invalid-feedback d-block">{{ inquiry_form.name.errors|striptags }}</div>{% endif %}
+                        <input type="email" name="email" class="form-control {% if inquiry_form.email.errors %}is-invalid{% endif %}" placeholder="Email Address" required value="{{ inquiry_form.email.value|default:'' }}">
+                        {% if inquiry_form.email.errors %}<div class="invalid-feedback d-block">{{ inquiry_form.email.errors|striptags }}</div>{% endif %}
+                        <textarea name="message" class="form-control {% if inquiry_form.message.errors %}is-invalid{% endif %}" rows="4" placeholder="I'm interested in this property..." required>{{ inquiry_form.message.value|default:'' }}</textarea>
+                        {% if inquiry_form.message.errors %}<div class="invalid-feedback d-block">{{ inquiry_form.message.errors|striptags }}</div>{% endif %}
                         <button type="submit" class="btn btn-gold btn-gold-submit">Send Inquiry</button>
                     </form>
+                    {% else %}
+                    <a href="{% url 'login' %}?next={% url 'property_detail' property.pk %}" class="btn btn-outline-primary w-100 rounded-pill">
+                        Login to Send Inquiry
+                    </a>
+                    {% endif %}
                 </div>
 
                 <!-- Admin Controls -->

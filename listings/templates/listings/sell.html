@@ -157,7 +157,7 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="phone" class="form-label">Phone Number</label>
-                            <input type="tel" class="form-control {% if form.phone.errors %}is-invalid{% endif %}" id="phone" name="phone" required placeholder="(123) 456-7890" value="{{ form.phone.value|default:'' }}">
+                            <input type="tel" class="form-control {% if form.phone.errors %}is-invalid{% endif %}" id="phone" name="phone" required placeholder="+94 77 123 4567" value="{{ form.phone.value|default:'' }}">
                             {% if form.phone.errors %}<div class="invalid-feedback">{{ form.phone.errors|striptags }}</div>{% endif %}
                         </div>
                     </div>
