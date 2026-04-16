@@ -1074,12 +1074,16 @@
                     <h3 class="featured-name">{{ property.name }}</h3>
                     <p class="featured-location"><i class="bi bi-geo-alt-fill me-1 text-primary"></i>{{ property.location|default:"Not specified" }}</p>
                     <div class="featured-meta">
+                        {% if property.property_type != "Land" and property.property_type != "Commercial" %}
                         <span class="featured-meta-item"><i class="bi bi-door-open"></i>{{ property.number_of_rooms|default:"--" }} Beds</span>
+                        {% endif %}
+                        {% if property.property_type != "Land" %}
                         <span class="featured-meta-item">
                             <i class="bi bi-droplet-half"></i>
                             {{ property.number_of_bathrooms|default:"--" }}
                             Baths
                         </span>
+                        {% endif %}
                         <span class="featured-meta-item"><i class="bi bi-aspect-ratio"></i>{% if property.size_sqft %}{{ property.size_sqft|floatformat:-2 }} {{ property.get_size_unit_display }}{% else %}--{% endif %}</span>
                     </div>
                     <a href="{% url 'property_detail' property.pk %}" class="btn btn-outline-primary w-100 mt-2">View

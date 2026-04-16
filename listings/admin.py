@@ -29,6 +29,9 @@ class VirtualTourSceneInline(admin.StackedInline):
 
 @admin.register(Property)
 class PropertyAdmin(admin.ModelAdmin):
+    class Media:
+        js = ('listings/js/admin_property.js',)
+
     list_display = (
         "name",
         "location",

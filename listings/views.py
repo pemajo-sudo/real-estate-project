@@ -315,12 +315,7 @@ def property_detail(request, pk):
 
     if request.user.is_authenticated:
         in_wishlist = Wishlist.objects.filter(user=request.user, property=property_obj).exists()
-        inquiry_form = InquiryForm(
-            initial={
-                "name": request.user.get_full_name() or request.user.username,
-                "email": request.user.email,
-            }
-        )
+        inquiry_form = InquiryForm()
     youtube_embed_url = _youtube_embed_url(property_obj.video_url)
     return render(
         request,

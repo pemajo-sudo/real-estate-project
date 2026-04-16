@@ -295,17 +295,21 @@
                     {{ property.location }}
                 </div>
 
-                <div class="specs-grid">
+                <div class="specs-grid"{% if property.property_type == 'Land' %} style="grid-template-columns: 1fr;"{% elif property.property_type == 'Commercial' %} style="grid-template-columns: repeat(2, 1fr);"{% endif %}>
+                    {% if property.property_type != "Land" and property.property_type != "Commercial" %}
                     <div class="spec-item">
                         <span class="spec-val">{{ property.number_of_rooms|default:"--" }}</span>
                         <span class="spec-lbl">Beds</span>
                     </div>
+                    {% endif %}
+                    {% if property.property_type != "Land" %}
                     <div class="spec-item">
                         <span class="spec-val">
                             {{ property.number_of_bathrooms|default:"--" }}
                         </span>
                         <span class="spec-lbl">Baths</span>
                     </div>
+                    {% endif %}
                     <div class="spec-item">
                         <span class="spec-val">
                             {% if property.size_sqft %}

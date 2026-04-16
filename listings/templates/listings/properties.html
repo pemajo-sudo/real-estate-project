@@ -914,12 +914,16 @@
           {{ property.location }}
         </p>
         <div class="prop-amenities">
+          {% if property.property_type != "Land" and property.property_type != "Commercial" %}
           <span class="prop-amenity"><i class="bi bi-door-open"></i>{{ property.number_of_rooms|default:"—" }} Beds</span>
+          {% endif %}
+          {% if property.property_type != "Land" %}
           <span class="prop-amenity">
             <i class="bi bi-droplet-half"></i>
             {{ property.number_of_bathrooms|default:"—" }}
             Baths
           </span>
+          {% endif %}
           <span class="prop-amenity"><i class="bi bi-aspect-ratio"></i>{% if property.size_sqft %}{{ property.size_sqft|floatformat:-2 }} {{ property.get_size_unit_display }}{% else %}—{% endif %}</span>
         </div>
       </div>
