@@ -29,6 +29,9 @@ class VirtualTourSceneInline(admin.StackedInline):
 
 @admin.register(Property)
 class PropertyAdmin(admin.ModelAdmin):
+    class Media:
+        js = ('listings/js/admin_property.js',)
+
     list_display = (
         "name",
         "location",
@@ -94,9 +97,10 @@ class UserProfileAdmin(admin.ModelAdmin):
 
 @admin.register(Inquiry)
 class InquiryAdmin(admin.ModelAdmin):
-    list_display = ("name", "email", "property", "created_at")
+    list_display = ("name", "email", "user", "property", "created_at")
     list_filter = ("created_at", "property")
-    search_fields = ("name", "email", "message", "property__name")
+    search_fields = ("name", "email", "message", "property__name", "user__username", "user__email")
+    ordering = ("-created_at",)
     readonly_fields = ("property", "user", "name", "email", "message", "created_at")
 
 
