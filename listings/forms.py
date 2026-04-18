@@ -24,7 +24,7 @@ class PropertyForm(forms.ModelForm):
 
     image_files = MultipleFileField(
         required=False,
-        widget=MultipleFileInput(),
+        widget=MultipleFileInput(attrs={'multiple': True}),
         help_text="Upload one or more images.",
         label="Property Images",
     )
