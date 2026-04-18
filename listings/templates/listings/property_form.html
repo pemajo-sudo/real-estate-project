@@ -1,20 +1,197 @@
 {% extends "listings/base.html" %}
 
 {% block content %}
-<h2>{{ title }}</h2>
+<style>
+    .property-form-container {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 4rem 1.5rem;
+        background: var(--surface);
+    }
 
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
+    .property-form-card {
+        background: #fff;
+        border-radius: var(--radius-lg);
+        width: 100%;
+        max-width: 800px;
+        padding: 3rem;
+        box-shadow: var(--shadow-lg);
+        border: 1px solid var(--border);
+    }
 
-    <h4>Virtual Tour Scenes</h4>
-    {{ scene_formset.management_form }}
-    {% for scene_form in scene_formset %}
-    <div class="card p-3 mb-3">
-        {{ scene_form.as_p }}
+    .property-form-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+
+    .property-form-header h2 {
+        font-family: 'Playfair Display', serif;
+        font-weight: 800;
+        color: var(--primary);
+        font-size: 2.2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .property-form-header p {
+        color: var(--muted);
+        font-size: 0.95rem;
+    }
+
+    .section-title {
+        font-family: 'Playfair Display', serif;
+        font-weight: 700;
+        color: var(--primary);
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+        border-bottom: 2px solid var(--border);
+        padding-bottom: 0.5rem;
+    }
+    
+    .scene-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+    }
+</style>
+
+<div class="property-form-container">
+    <div class="property-form-card">
+        <div class="property-form-header">
+            <h2>{{ title|default:"Property Details" }}</h2>
+            <p>Fill in the details below to list or update the property.</p>
+        </div>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="row">
+                {% for field in form %}
+                <div class="col-md-{% if field.name in 'description image_files walkthrough_video video_url name location' %}12{% else %}6{% endif %} mb-4">
+                    <label class="form-label fw-bold text-dark" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    
+                    {% if field.name == 'image_files' %}
+                    <div id="image-upload-container">
+                        {{ field }}
+                    </div>
+                    <button type="button" class="btn btn-outline-primary btn-sm mt-2 fw-bold" onclick="addAnotherImageField()"><i class="bi bi-plus-circle"></i> Add another image</button>
+                    {% else %}
+                    {{ field }}
+                    {% endif %}
+
+                    {% if field.help_text %}
+                    <small class="text-muted d-block mt-1">{{ field.help_text }}</small>
+                    {% endif %}
+                    {% for error in field.errors %}
+                    <div class="text-danger small mt-1">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+            </div>
+
+            <h4 class="section-title">Virtual Tour Scenes</h4>
+            {{ scene_formset.management_form }}
+            {% for scene_form in scene_formset %}
+            <div class="scene-card">
+                <div class="row">
+                    {% for field in scene_form %}
+                    {% if not field.is_hidden %}
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold text-dark" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}
+                        <small class="text-muted d-block mt-1">{{ field.help_text }}</small>
+                        {% endif %}
+                        {% for error in field.errors %}
+                        <div class="text-danger small mt-1">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                        {{ field }}
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+
+            <button type="submit" class="btn btn-primary w-100 py-3 mt-4 rounded-pill fw-bold text-uppercase" style="letter-spacing: 0.05em;">Save Property</button>
+        </form>
     </div>
-    {% endfor %}
+</div>
 
-    <button type="submit" class="btn">Save</button>
-</form>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const propertyTypeSelect = document.getElementById('id_property_type');
+        const roomsInput = document.getElementById('id_number_of_rooms');
+        const bathroomsInput = document.getElementById('id_number_of_bathrooms');
+
+        function toggleFields() {
+            if (propertyTypeSelect && roomsInput && bathroomsInput) {
+                // Find parent container
+                const roomsContainer = roomsInput.closest('div[class^="col-"]');
+                const bathroomsContainer = bathroomsInput.closest('div[class^="col-"]');
+                const pType = propertyTypeSelect.value;
+                
+                // Handle rooms display
+                if (pType === 'Land' || pType === 'Commercial') {
+                    if (roomsContainer) roomsContainer.style.display = 'none';
+                    // Optional: clear value if hidden
+                    roomsInput.value = '';
+                } else {
+                    if (roomsContainer) roomsContainer.style.display = 'block';
+                }
+
+                // Handle bathrooms display
+                if (pType === 'Land') {
+                    if (bathroomsContainer) bathroomsContainer.style.display = 'none';
+                    // Optional: clear value if hidden
+                    bathroomsInput.value = '';
+                } else {
+                    if (bathroomsContainer) bathroomsContainer.style.display = 'block';
+                }
+            }
+        }
+
+        if (propertyTypeSelect) {
+            propertyTypeSelect.addEventListener('change', toggleFields);
+            toggleFields(); // Initial call
+        }
+    });
+
+    // Dynamically add another image file input
+    function addAnotherImageField() {
+        const container = document.getElementById('image-upload-container');
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.name = 'image_files';
+        input.className = 'form-control mt-2';
+        input.multiple = true;
+        container.appendChild(input);
+    }
+
+    // Add bootstrap form classes to all inputs
+    document.querySelectorAll('input:not([type="checkbox"]):not([type="file"]), select, textarea').forEach(el => {
+        if (el.tagName.toLowerCase() === 'select') {
+            el.classList.add('form-select');
+        } else {
+            el.classList.add('form-control');
+        }
+    });
+
+    document.querySelectorAll('input[type="file"]').forEach(el => {
+        el.classList.add('form-control');
+    });
+
+    document.querySelectorAll('input[type="checkbox"]').forEach(el => {
+        el.classList.add('form-check-input');
+        if (el.parentElement && el.parentElement.tagName.toLowerCase() === 'label') {
+            el.parentElement.classList.add('form-check-label');
+            el.parentElement.parentElement.classList.add('form-check');
+        }
+    });
+</script>
 {% endblock %}

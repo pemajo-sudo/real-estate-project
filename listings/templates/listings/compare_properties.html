@@ -121,7 +121,7 @@
         {% endif %}
     </div>
 
-    {% if compare_count >= 2 %}
+    {% if compare_count >= 1 %}
     <div class="compare-wrapper fade-in-up" style="transition-delay: 0.1s;">
         <table class="compare-table">
             <thead>
@@ -132,8 +132,6 @@
                         <div class="prop-img-wrap">
                             {% if property.primary_image %}
                                 <img src="{{ property.primary_image.image.url }}" alt="{{ property.name }}">
-                            {% else %}
-                                <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=400&q=80" alt="Placeholder">
                             {% endif %}
                         </div>
                         <div class="prop-title">{{ property.name }}</div>
@@ -144,6 +142,16 @@
                         </form>
                     </th>
                     {% endfor %}
+                    
+                    {% if compare_count < 3 %}
+                    <th class="text-center align-middle" style="background: #f8fafc; padding: 1.5rem;">
+                        <a href="{% url 'property_list' %}" class="d-flex flex-column align-items-center justify-content-center w-100 border border-2 rounded text-decoration-none hover-shadow" style="border-style: dashed !important; border-color: var(--border) !important; min-height: 260px; transition: all 0.3s ease; background: #fff;">
+                            <i class="bi bi-plus-circle-fill text-gold mb-2" style="font-size: 2.5rem;"></i>
+                            <span class="text-primary fw-bold font-playfair fs-5">Add Property</span>
+                            <small class="text-muted mt-1 fw-normal">Click to browse</small>
+                        </a>
+                    </th>
+                    {% endif %}
                 </tr>
             </thead>
             <tbody>
@@ -154,48 +162,56 @@
                         Rs. {{ property.price|intcomma }}{% if property.listing_category == "Rent" %} per month{% endif %}
                     </td>
                     {% endfor %}
+                    {% if compare_count < 3 %}<td class="text-center text-muted align-middle bg-light">-</td>{% endif %}
                 </tr>
                 <tr>
                     <td>Location</td>
                     {% for property in properties %}
                     <td>{{ property.location }}</td>
                     {% endfor %}
+                    {% if compare_count < 3 %}<td class="text-center text-muted align-middle bg-light">-</td>{% endif %}
                 </tr>
                 <tr>
                     <td>Bedrooms</td>
                     {% for property in properties %}
                     <td>{{ property.number_of_rooms|default:"-" }}</td>
                     {% endfor %}
+                    {% if compare_count < 3 %}<td class="text-center text-muted align-middle bg-light">-</td>{% endif %}
                 </tr>
                 <tr>
                     <td>Bathrooms</td>
                     {% for property in properties %}
                     <td>{{ property.number_of_bathrooms|default:"-" }}</td>
                     {% endfor %}
+                    {% if compare_count < 3 %}<td class="text-center text-muted align-middle bg-light">-</td>{% endif %}
                 </tr>
                 <tr>
                     <td>Size</td>
                     {% for property in properties %}
                     <td>{% if property.size_sqft %}{{ property.size_sqft|floatformat:-2 }} {{ property.get_size_unit_display }}{% else %}-{% endif %}</td>
                     {% endfor %}
+                    {% if compare_count < 3 %}<td class="text-center text-muted align-middle bg-light">-</td>{% endif %}
                 </tr>
                 <tr>
                     <td>Property Type</td>
                     {% for property in properties %}
                     <td>{{ property.property_type }}</td>
                     {% endfor %}
+                    {% if compare_count < 3 %}<td class="text-center text-muted align-middle bg-light">-</td>{% endif %}
                 </tr>
                 <tr>
                     <td>Category</td>
                     {% for property in properties %}
                     <td>{{ property.listing_category }}</td>
                     {% endfor %}
+                    {% if compare_count < 3 %}<td class="text-center text-muted align-middle bg-light">-</td>{% endif %}
                 </tr>
                 <tr>
                     <td>Description</td>
                     {% for property in properties %}
                     <td style="font-size: 0.9rem; color: #5f6f86;">{{ property.description|truncatewords:20 }}</td>
                     {% endfor %}
+                    {% if compare_count < 3 %}<td class="text-center text-muted align-middle bg-light">-</td>{% endif %}
                 </tr>
             </tbody>
         </table>
@@ -203,8 +219,8 @@
     {% else %}
     <div class="empty-state fade-in-up">
         <i class="bi bi-ui-checks-grid"></i>
-        <h2 class="font-playfair text-primary">Not Enough Properties</h2>
-        <p class="text-muted">Select at least 2 properties to compare features side by side. You can compare up to 3 properties at once.</p>
+        <h2 class="font-playfair text-primary">No Properties Selected</h2>
+        <p class="text-muted">Select properties to compare features side by side. You can compare up to 3 properties at once.</p>
         <a href="{% url 'property_list' %}" class="btn btn-gold mt-3 px-4 py-2 rounded-pill">Browse Properties</a>
     </div>
     {% endif %}
