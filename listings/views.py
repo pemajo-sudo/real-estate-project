@@ -8,6 +8,9 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from urllib.parse import parse_qs, urlparse
+import logging
+
+logger = logging.getLogger(__name__)
 
 from .forms import (
     CustomUserCreationForm,
@@ -109,13 +112,18 @@ def sell_property(request):
     form = SellLeadForm(request.POST or None)
     if request.method == "POST":
         if form.is_valid():
-            lead = form.save(commit=False)
-            lead.user = request.user
-            lead.status = SellLead.STATUS_PENDING
-            lead.save()
-            messages.success(request, "Thank you! We have received your query. Our agent will contact you shortly.")
-            return render(request, "listings/sell.html", {"success": True, "form": SellLeadForm()})
-        messages.error(request, "Please correct the highlighted fields and submit again.")
+            try:
+                lead = form.save(commit=False)
+                lead.user = request.user
+                lead.status = SellLead.STATUS_PENDING
+                lead.save()
+                messages.success(request, "Thank you! We have received your query. Our agent will contact you shortly.")
+                return render(request, "listings/sell.html", {"success": True, "form": SellLeadForm()})
+            except Exception as e:
+                logger.error(f"Error saving SellLead form: {e}")
+                messages.error(request, "An unexpected error occurred while saving your request. Please try again.")
+        else:
+            messages.error(request, "Please correct the highlighted fields and submit again.")
     return render(request, "listings/sell.html", {"form": form})
 
 
@@ -343,14 +351,19 @@ def send_inquiry(request, pk):
 
     inquiry_form = InquiryForm(request.POST)
     if inquiry_form.is_valid():
-        inquiry = inquiry_form.save(commit=False)
-        inquiry.property = property_obj
-        inquiry.user = request.user
-        inquiry.save()
-        messages.success(request, "Your inquiry has been sent successfully.")
-        return redirect("property_detail", pk=pk)
-
-    messages.error(request, "Please correct the errors below and try again.")
+        try:
+            inquiry = inquiry_form.save(commit=False)
+            inquiry.property = property_obj
+            inquiry.user = request.user
+            inquiry.save()
+            messages.success(request, "Your inquiry has been sent successfully.")
+            return redirect("property_detail", pk=pk)
+        except Exception as e:
+            logger.error(f"Error saving Inquiry form: {e}")
+            messages.error(request, "An unexpected error occurred while saving your inquiry. Please try again.")
+    else:
+        messages.error(request, "Please correct the errors below and try again.")
+    
     return render(
         request,
         "listings/property_detail.html",
