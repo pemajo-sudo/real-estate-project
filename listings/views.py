@@ -117,12 +117,15 @@ def sell_property(request):
                 lead.user = request.user
                 lead.status = SellLead.STATUS_PENDING
                 lead.save()
+                print("Saved successfully:", lead)
                 messages.success(request, "Thank you! We have received your query. Our agent will contact you shortly.")
                 return render(request, "listings/sell.html", {"success": True, "form": SellLeadForm()})
             except Exception as e:
                 logger.error(f"Error saving SellLead form: {e}")
+                print("Error saving SellLead form:", e)
                 messages.error(request, "An unexpected error occurred while saving your request. Please try again.")
         else:
+            print("SellLeadForm errors:", form.errors)
             messages.error(request, "Please correct the highlighted fields and submit again.")
     return render(request, "listings/sell.html", {"form": form})
 
@@ -356,12 +359,15 @@ def send_inquiry(request, pk):
             inquiry.property = property_obj
             inquiry.user = request.user
             inquiry.save()
+            print("Saved successfully:", inquiry)
             messages.success(request, "Your inquiry has been sent successfully.")
             return redirect("property_detail", pk=pk)
         except Exception as e:
             logger.error(f"Error saving Inquiry form: {e}")
+            print("Error saving Inquiry form:", e)
             messages.error(request, "An unexpected error occurred while saving your inquiry. Please try again.")
     else:
+        print("InquiryForm errors:", inquiry_form.errors)
         messages.error(request, "Please correct the errors below and try again.")
     
     return render(
