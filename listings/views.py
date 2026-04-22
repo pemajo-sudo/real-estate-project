@@ -110,6 +110,14 @@ def find_agent(request):
 def sell_property(request):
     """Renders the Sell property lead capture page."""
     if request.method == "POST":
+        db_engine = settings.DATABASES['default']['ENGINE']
+        db_name = str(settings.DATABASES['default'].get('NAME', 'unknown'))
+        print("===" * 15)
+        print(f"[SellLead] Request received from host: {request.get_host()}")
+        print(f"[SellLead] User: {request.user.username} | Authenticated: {request.user.is_authenticated}")
+        print(f"[SellLead] DB Engine: {db_engine} | DB Name: {db_name}")
+        print("===" * 15)
+        
         logger.debug(f"SellLead POST data received from user {request.user.username}")
         post_data = request.POST.copy()
         if not post_data.get("name"):
@@ -373,6 +381,14 @@ def send_inquiry(request, pk):
 
     if request.method != "POST":
         return redirect("property_detail", pk=pk)
+
+    db_engine = settings.DATABASES['default']['ENGINE']
+    db_name = str(settings.DATABASES['default'].get('NAME', 'unknown'))
+    print("===" * 15)
+    print(f"[Inquiry] Request received from host: {request.get_host()}")
+    print(f"[Inquiry] User: {request.user.username} | Authenticated: {request.user.is_authenticated}")
+    print(f"[Inquiry] DB Engine: {db_engine} | DB Name: {db_name}")
+    print("===" * 15)
 
     logger.debug(f"Inquiry POST data received from user {request.user.username} for property {pk}")
     post_data = request.POST.copy()
