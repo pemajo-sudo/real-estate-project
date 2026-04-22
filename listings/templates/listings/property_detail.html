@@ -353,9 +353,9 @@
                             {{ inquiry_form.non_field_errors }}
                         </div>
                         {% endif %}
-                        <input type="text" name="name" class="form-control {% if inquiry_form.name.errors %}is-invalid{% endif %}" placeholder="Your Name" required value="{{ inquiry_form.name.value|default:'' }}">
+                        <input type="text" name="name" class="form-control {% if inquiry_form.name.errors %}is-invalid{% endif %}" placeholder="Your Name (Optional)" value="{{ inquiry_form.name.value|default:'' }}">
                         {% if inquiry_form.name.errors %}<div class="invalid-feedback d-block">{{ inquiry_form.name.errors|striptags }}</div>{% endif %}
-                        <input type="email" name="email" class="form-control {% if inquiry_form.email.errors %}is-invalid{% endif %}" placeholder="Email Address" required value="{{ inquiry_form.email.value|default:'' }}">
+                        <input type="email" name="email" class="form-control {% if inquiry_form.email.errors %}is-invalid{% endif %}" placeholder="Email Address (Optional)" value="{{ inquiry_form.email.value|default:'' }}">
                         {% if inquiry_form.email.errors %}<div class="invalid-feedback d-block">{{ inquiry_form.email.errors|striptags }}</div>{% endif %}
                         <textarea name="message" class="form-control {% if inquiry_form.message.errors %}is-invalid{% endif %}" rows="4" placeholder="I'm interested in this property..." required>{{ inquiry_form.message.value|default:'' }}</textarea>
                         {% if inquiry_form.message.errors %}<div class="invalid-feedback d-block">{{ inquiry_form.message.errors|striptags }}</div>{% endif %}

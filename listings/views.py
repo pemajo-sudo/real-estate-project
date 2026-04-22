@@ -109,8 +109,13 @@ def find_agent(request):
 @login_required
 def sell_property(request):
     """Renders the Sell property lead capture page."""
-    form = SellLeadForm(request.POST or None)
     if request.method == "POST":
+        post_data = request.POST.copy()
+        if not post_data.get("name"):
+            post_data["name"] = request.user.get_full_name().strip() or request.user.username
+        if not post_data.get("email"):
+            post_data["email"] = request.user.email
+        form = SellLeadForm(post_data)
         if form.is_valid():
             try:
                 lead = form.save(commit=False)
@@ -127,6 +132,8 @@ def sell_property(request):
         else:
             print("SellLeadForm errors:", form.errors)
             messages.error(request, "Please correct the highlighted fields and submit again.")
+    else:
+        form = SellLeadForm()
     return render(request, "listings/sell.html", {"form": form})
 
 
@@ -278,10 +285,8 @@ def property_list(request):
     return render(request, "listings/properties.html", context)
 
 
-def property_detail(request, pk):
-    property_obj = get_object_or_404(Property.objects.prefetch_related("images"), pk=pk)
+def _get_property_detail_context(request, property_obj):
     property_images = property_obj.images.all()
-    inquiry_form = InquiryForm()
     in_wishlist = False
     compared_ids = request.session.get(COMPARE_SESSION_KEY, [])
     scenes = (
@@ -326,33 +331,52 @@ def property_detail(request, pk):
 
     if request.user.is_authenticated:
         in_wishlist = Wishlist.objects.filter(user=request.user, property=property_obj).exists()
-        inquiry_form = InquiryForm()
+
     youtube_embed_url = _youtube_embed_url(property_obj.video_url)
+
+    return {
+        "property": property_obj,
+        "in_wishlist": in_wishlist,
+        "is_compared": property_obj.pk in compared_ids,
+        "compare_count": len(compared_ids),
+        "tour_scenes": tour_config,
+        "default_tour_scene": default_scene,
+        "youtube_embed_url": youtube_embed_url,
+        "property_images": property_images,
+    }
+
+
+def property_detail(request, pk):
+    property_obj = get_object_or_404(Property.objects.prefetch_related("images"), pk=pk)
+    context = _get_property_detail_context(request, property_obj)
+    
+    inquiry_form = InquiryForm()
+    if request.user.is_authenticated:
+        inquiry_form = InquiryForm()
+        
+    context["inquiry_form"] = inquiry_form
+
     return render(
         request,
         "listings/property_detail.html",
-        {
-            "property": property_obj,
-            "inquiry_form": inquiry_form,
-            "in_wishlist": in_wishlist,
-            "is_compared": property_obj.pk in compared_ids,
-            "compare_count": len(compared_ids),
-            "tour_scenes": tour_config,
-            "default_tour_scene": default_scene,
-            "youtube_embed_url": youtube_embed_url,
-            "property_images": property_images,
-        },
+        context,
     )
 
 
 @login_required
 def send_inquiry(request, pk):
-    property_obj = get_object_or_404(Property, pk=pk)
+    property_obj = get_object_or_404(Property.objects.prefetch_related("images"), pk=pk)
 
     if request.method != "POST":
         return redirect("property_detail", pk=pk)
 
-    inquiry_form = InquiryForm(request.POST)
+    post_data = request.POST.copy()
+    if not post_data.get("name"):
+        post_data["name"] = request.user.get_full_name().strip() or request.user.username
+    if not post_data.get("email"):
+        post_data["email"] = request.user.email
+
+    inquiry_form = InquiryForm(post_data)
     if inquiry_form.is_valid():
         try:
             inquiry = inquiry_form.save(commit=False)
@@ -370,10 +394,12 @@ def send_inquiry(request, pk):
         print("InquiryForm errors:", inquiry_form.errors)
         messages.error(request, "Please correct the errors below and try again.")
     
+    context = _get_property_detail_context(request, property_obj)
+    context["inquiry_form"] = inquiry_form
     return render(
         request,
         "listings/property_detail.html",
-        {"property": property_obj, "inquiry_form": inquiry_form},
+        context,
     )
 
 
