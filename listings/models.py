@@ -318,3 +318,52 @@ class SellLead(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.property_type} ({self.location})"
+
+
+class SearchLog(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="recent_searches")
+    query = models.CharField(max_length=255, blank=True)
+    location = models.CharField(max_length=255, blank=True)
+    property_type = models.CharField(max_length=100, blank=True)
+    listing_category = models.CharField(max_length=20, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"Search by {self.user.username} on {self.created_at}"
+
+    @property
+    def display_text(self):
+        parts = []
+        if self.query:
+            parts.append(f'"{self.query}"')
+        if self.location:
+            parts.append(f"in {self.location}")
+        if self.property_type:
+            parts.append(f"Type: {self.property_type}")
+        if self.listing_category:
+            parts.append(f"For {self.listing_category.capitalize()}")
+        
+        return ", ".join(parts) if parts else "All Properties"
+
+    @property
+    def search_url(self):
+        from django.urls import reverse
+        from urllib.parse import urlencode
+        
+        base_url = reverse("property_list")
+        params = {}
+        if self.query:
+            params["q"] = self.query
+        if self.location:
+            params["location"] = self.location
+        if self.property_type:
+            params["property_type"] = self.property_type
+        if self.listing_category:
+            params["type"] = self.listing_category
+            
+        if params:
+            return f"{base_url}?{urlencode(params)}"
+        return base_url
