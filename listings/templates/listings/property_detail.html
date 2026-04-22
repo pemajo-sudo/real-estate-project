@@ -346,7 +346,7 @@
                 <div class="inquiry-card">
                     <h3>Request Information</h3>
                     {% if user.is_authenticated %}
-                    <form method="post" action="{% url 'send_inquiry' property.pk %}">
+                    <form method="post" action="{% url 'send_inquiry' property.pk %}" enctype="multipart/form-data">
                         {% csrf_token %}
                         {% if inquiry_form.non_field_errors %}
                         <div class="alert alert-danger">
