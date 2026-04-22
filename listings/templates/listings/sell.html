@@ -136,7 +136,7 @@
                 </div>
                 {% else %}
                 <h3 class="font-playfair fw-bold mb-4" style="color: var(--primary);">Begin Your Journey</h3>
-                <form method="POST" action="{% url 'sell' %}">
+                <form method="POST" action="{% url 'sell' %}" enctype="multipart/form-data">
                     {% csrf_token %}
                     {% if form.non_field_errors %}
                     <div class="alert alert-danger">

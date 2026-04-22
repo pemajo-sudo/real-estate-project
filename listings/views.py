@@ -110,18 +110,21 @@ def find_agent(request):
 def sell_property(request):
     """Renders the Sell property lead capture page."""
     if request.method == "POST":
+        logger.debug(f"SellLead POST data received from user {request.user.username}")
         post_data = request.POST.copy()
         if not post_data.get("name"):
             post_data["name"] = request.user.get_full_name().strip() or request.user.username
         if not post_data.get("email"):
-            post_data["email"] = request.user.email
-        form = SellLeadForm(post_data)
+            post_data["email"] = request.user.email or "unknown@example.com"
+            
+        form = SellLeadForm(post_data, request.FILES)
         if form.is_valid():
             try:
                 lead = form.save(commit=False)
                 lead.user = request.user
                 lead.status = SellLead.STATUS_PENDING
                 lead.save()
+                logger.info(f"SellLead saved successfully: {lead}")
                 print("Saved successfully:", lead)
                 messages.success(request, "Thank you! We have received your query. Our agent will contact you shortly.")
                 return render(request, "listings/sell.html", {"success": True, "form": SellLeadForm()})
@@ -130,6 +133,7 @@ def sell_property(request):
                 print("Error saving SellLead form:", e)
                 messages.error(request, "An unexpected error occurred while saving your request. Please try again.")
         else:
+            logger.warning(f"SellLeadForm validation failed for user {request.user.username}. Errors: {form.errors}")
             print("SellLeadForm errors:", form.errors)
             messages.error(request, "Please correct the highlighted fields and submit again.")
     else:
@@ -370,19 +374,21 @@ def send_inquiry(request, pk):
     if request.method != "POST":
         return redirect("property_detail", pk=pk)
 
+    logger.debug(f"Inquiry POST data received from user {request.user.username} for property {pk}")
     post_data = request.POST.copy()
     if not post_data.get("name"):
         post_data["name"] = request.user.get_full_name().strip() or request.user.username
     if not post_data.get("email"):
-        post_data["email"] = request.user.email
+        post_data["email"] = request.user.email or "unknown@example.com"
 
-    inquiry_form = InquiryForm(post_data)
+    inquiry_form = InquiryForm(post_data, request.FILES)
     if inquiry_form.is_valid():
         try:
             inquiry = inquiry_form.save(commit=False)
             inquiry.property = property_obj
             inquiry.user = request.user
             inquiry.save()
+            logger.info(f"Inquiry saved successfully: {inquiry}")
             print("Saved successfully:", inquiry)
             messages.success(request, "Your inquiry has been sent successfully.")
             return redirect("property_detail", pk=pk)
@@ -391,6 +397,7 @@ def send_inquiry(request, pk):
             print("Error saving Inquiry form:", e)
             messages.error(request, "An unexpected error occurred while saving your inquiry. Please try again.")
     else:
+        logger.warning(f"InquiryForm validation failed for user {request.user.username}. Errors: {inquiry_form.errors}")
         print("InquiryForm errors:", inquiry_form.errors)
         messages.error(request, "Please correct the errors below and try again.")
     
