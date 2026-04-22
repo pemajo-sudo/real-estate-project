@@ -20,7 +20,7 @@ from .forms import (
     VirtualTourSceneFormSet,
     VisitForm,
 )
-from .models import Agent, Inquiry, Property, PropertyImage, SellLead, UserProfile, VirtualTourScene, Visit, Wishlist
+from .models import Agent, Inquiry, Property, PropertyImage, SearchLog, SellLead, UserProfile, VirtualTourScene, Visit, Wishlist
 
 COMPARE_SESSION_KEY = "compare_properties"
 MAX_COMPARE_ITEMS = 3
@@ -166,7 +166,7 @@ def dashboard_view(request):
     
     # Placeholders for features not yet in the DB model
     my_posts = Property.objects.filter(owner=request.user).order_by("-id")[:5]
-    recent_searches = [] # Would fetch from SearchLog if exists
+    recent_searches = SearchLog.objects.filter(user=request.user).order_by("-created_at")[:5]
     
     context = {
         "wishlist_items": wishlist_items,
@@ -261,6 +261,19 @@ def property_list(request):
         properties = properties.order_by("-price", "-id")
     elif sort == "newest":
         properties = properties.order_by("-id")
+
+    if request.user.is_authenticated and (query or location or property_type or listing_type):
+        last_search = SearchLog.objects.filter(user=request.user).first()
+        current_query = query or ""
+        current_type = property_type or ""
+        if not (last_search and last_search.query == current_query and last_search.location == location and last_search.property_type == current_type and last_search.listing_category == listing_type):
+            SearchLog.objects.create(
+                user=request.user,
+                query=current_query,
+                location=location,
+                property_type=current_type,
+                listing_category=listing_type,
+            )
 
     compared_ids = request.session.get(COMPARE_SESSION_KEY, [])
     wishlisted_ids = []

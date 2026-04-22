@@ -300,8 +300,8 @@
                     {% for search in recent_searches %}
                     <li class="dash-item">
                         <div class="dash-item-meta">
-                            <a href="#" class="dash-item-name">{{ search.query }}</a>
-                            <span class="dash-item-sub">{{ search.timestamp|timesince }} ago</span>
+                            <a href="{{ search.search_url }}" class="dash-item-name">{{ search.display_text }}</a>
+                            <span class="dash-item-sub">{{ search.created_at|timesince }} ago</span>
                         </div>
                     </li>
                     {% endfor %}
