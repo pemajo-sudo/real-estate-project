@@ -20,7 +20,7 @@ from .forms import (
     VirtualTourSceneFormSet,
     VisitForm,
 )
-from .models import Agent, Inquiry, Property, PropertyImage, SearchLog, SellLead, UserProfile, VirtualTourScene, Visit, Wishlist
+from .models import Agent, Inquiry, Property, PropertyImage, SearchLog, SellLead, UserProfile, VirtualTourScene, Visit, Wishlist, RecentlyViewedProperty
 
 COMPARE_SESSION_KEY = "compare_properties"
 MAX_COMPARE_ITEMS = 3
@@ -29,12 +29,15 @@ MAX_COMPARE_ITEMS = 3
 def _can_user_post_property(user):
     if not user.is_authenticated:
         return False
-    has_approved_lead = SellLead.objects.filter(user=user, status=SellLead.STATUS_APPROVED).exists()
+    approved_leads_count = SellLead.objects.filter(user=user, status=SellLead.STATUS_APPROVED).count()
+    properties_count = Property.objects.filter(owner=user).count()
+    can_post = properties_count < approved_leads_count
+    
     profile, _ = UserProfile.objects.get_or_create(user=user)
-    if profile.can_post_property != has_approved_lead:
-        profile.can_post_property = has_approved_lead
+    if profile.can_post_property != can_post:
+        profile.can_post_property = can_post
         profile.save(update_fields=["can_post_property"])
-    return has_approved_lead
+    return can_post
 
 
 def _notify_user_on_sell_approval(request, user):
@@ -134,7 +137,7 @@ def sell_property(request):
                 lead.save()
                 logger.info(f"SellLead saved successfully: {lead}")
                 print("Saved successfully:", lead)
-                messages.success(request, "Thank you! We have received your query. Our agent will contact you shortly.")
+                messages.success(request, "Thank you! Your request has been received. We’ll contact you shortly.")
                 return render(request, "listings/sell.html", {"success": True, "form": SellLeadForm()})
             except Exception as e:
                 logger.error(f"Error saving SellLead form: {e}")
@@ -166,13 +169,13 @@ def dashboard_view(request):
     
     # Placeholders for features not yet in the DB model
     my_posts = Property.objects.filter(owner=request.user).order_by("-id")[:5]
-    recent_searches = SearchLog.objects.filter(user=request.user).order_by("-created_at")[:5]
+    recent_views = RecentlyViewedProperty.objects.filter(user=request.user).select_related("property").prefetch_related("property__images").order_by("-viewed_at")[:5]
     
     context = {
         "wishlist_items": wishlist_items,
         "inquiries": inquiries,
         "my_posts": my_posts,
-        "recent_searches": recent_searches,
+        "recent_views": recent_views,
         "can_post_property": _can_user_post_property(request.user),
     }
     return render(request, "listings/dashboard.html", context)
@@ -378,6 +381,9 @@ def property_detail(request, pk):
     inquiry_form = InquiryForm()
     if request.user.is_authenticated:
         inquiry_form = InquiryForm()
+        obj, created = RecentlyViewedProperty.objects.get_or_create(user=request.user, property=property_obj)
+        if not created:
+            obj.save()
         
     context["inquiry_form"] = inquiry_form
 
@@ -621,6 +627,7 @@ def property_create(request):
                 property_obj.save()
                 form.save_m2m()
                 scene_formset.save()
+                _can_user_post_property(request.user)
             else:
                 messages.error(request, "Please correct the virtual tour scene errors below.")
                 return render(
@@ -687,6 +694,7 @@ def property_delete(request, pk):
         raise PermissionDenied("You can only delete your own properties.")
     if request.method == "POST":
         property_obj.delete()
+        _can_user_post_property(request.user)
         messages.success(request, "Property deleted successfully!")
         return redirect("property_list")
     return render(request, "listings/property_confirm_delete.html", {"property": property_obj})

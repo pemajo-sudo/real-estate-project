@@ -106,6 +106,7 @@ class Inquiry(models.Model):
     name = models.CharField(max_length=150, default="Unknown")
     email = models.EmailField(default="unknown@example.com")
     message = models.TextField()
+    admin_reply = models.TextField(blank=True, null=True, help_text="Admin's reply to this inquiry")
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -364,6 +365,20 @@ class SearchLog(models.Model):
         if self.listing_category:
             params["type"] = self.listing_category
             
-        if params:
             return f"{base_url}?{urlencode(params)}"
         return base_url
+
+
+class RecentlyViewedProperty(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="recently_viewed")
+    property = models.ForeignKey(Property, on_delete=models.CASCADE, related_name="viewed_by")
+    viewed_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-viewed_at"]
+        constraints = [
+            models.UniqueConstraint(fields=["user", "property"], name="unique_user_recently_viewed")
+        ]
+
+    def __str__(self):
+        return f"{self.user.username} viewed {self.property.name}"
