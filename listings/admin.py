@@ -130,7 +130,7 @@ class SellLeadAdmin(admin.ModelAdmin):
     list_filter = ("status", "property_type", "created_at")
     search_fields = ("name", "email", "phone", "location", "message", "user__username")
     actions = ("approve_selected_leads", "reject_selected_leads")
-    fields = ("user", "name", "email", "phone", "property_type", "location", "message", "created_at", "status", "approval_notification_sent")
+    fields = ("user", "name", "email", "phone", "property_type", "location", "message", "created_at", "status")
     readonly_fields = ("user", "name", "email", "phone", "property_type", "location", "message", "created_at")
 
     @staticmethod
@@ -148,7 +148,7 @@ class SellLeadAdmin(admin.ModelAdmin):
     @admin.action(description="Reject selected sell leads")
     def reject_selected_leads(self, request, queryset):
         users = list(queryset.exclude(user__isnull=True).values_list("user", flat=True).distinct())
-        queryset.update(status=SellLead.STATUS_REJECTED)
+        queryset.update(status=SellLead.STATUS_REJECTED, rejection_notification_sent=False)
         for user_id in users:
             user = User.objects.filter(pk=user_id).first()
             self._sync_posting_permission(user)
@@ -157,6 +157,8 @@ class SellLeadAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         if obj.status == SellLead.STATUS_APPROVED and (not change or "status" in form.changed_data):
             obj.approval_notification_sent = False
+        elif obj.status == SellLead.STATUS_REJECTED and (not change or "status" in form.changed_data):
+            obj.rejection_notification_sent = False
         super().save_model(request, obj, form, change)
         self._sync_posting_permission(obj.user)
 

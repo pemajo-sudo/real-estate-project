@@ -34,25 +34,8 @@ def _can_user_post_property(user):
     if profile.can_post_property:
         return True
     
-    approved_leads_count = SellLead.objects.filter(user=user, status=SellLead.STATUS_APPROVED).count()
-    properties_count = Property.objects.filter(owner=user).count()
-    return properties_count < approved_leads_count
-
-
-def _notify_user_on_sell_approval(request, user):
-    pending_notifications = SellLead.objects.filter(
-        user=user,
-        status=SellLead.STATUS_APPROVED,
-        approval_notification_sent=False,
-    )
-    if not pending_notifications.exists():
-        return
-
-    pending_notifications.update(approval_notification_sent=True)
-    messages.success(
-        request,
-        "Good news! Your request has been approved. Now you can add property",
-    )
+    # Allow posting if there's at least one approved sell lead that hasn't been used yet
+    return SellLead.objects.filter(user=user, status=SellLead.STATUS_APPROVED, is_used=False).exists()
 
 
 def _youtube_embed_url(url):
@@ -204,7 +187,6 @@ def login_view(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            _notify_user_on_sell_approval(request, user)
             return redirect("home")
         else:
             messages.error(request, "Please enter a correct username and password.")
@@ -608,7 +590,7 @@ def compare_properties(request):
 @login_required
 def property_create(request):
     if not _can_user_post_property(request.user):
-        messages.error(request, "Your seller account is not approved yet. Please submit a Sell With Us request.")
+        messages.error(request, "Please submit a Sell Request.")
         return redirect("sell")
 
     if request.method == "POST":
@@ -635,6 +617,14 @@ def property_create(request):
                 )
             for image_file in request.FILES.getlist("image_files"):
                 PropertyImage.objects.create(property=property_obj, image=image_file)
+            
+            # Consume one unused approved SellLead, unless they have global permission
+            if not getattr(request.user.profile, 'can_post_property', False):
+                unused_lead = SellLead.objects.filter(user=request.user, status=SellLead.STATUS_APPROVED, is_used=False).order_by('created_at').first()
+                if unused_lead:
+                    unused_lead.is_used = True
+                    unused_lead.save(update_fields=['is_used'])
+                    
             messages.success(request, "Property added successfully!")
             return redirect("property_list")
         else:

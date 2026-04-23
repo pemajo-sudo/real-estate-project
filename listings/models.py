@@ -358,6 +358,8 @@ class SellLead(models.Model):
     message = models.TextField(blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_PENDING)
     approval_notification_sent = models.BooleanField(default=False)
+    rejection_notification_sent = models.BooleanField(default=False)
+    is_used = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

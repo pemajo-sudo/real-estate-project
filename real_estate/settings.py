@@ -47,6 +47,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "listings.middleware.SellApprovalNotificationMiddleware",
 ]
 
 ROOT_URLCONF = "real_estate.urls"
@@ -124,4 +125,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # External APIs
 GOOGLE_MAPS_API_KEY = os.environ.get("GOOGLE_MAPS_API_KEY", "")
+
+from django.contrib.messages import constants as messages
+MESSAGE_TAGS = {
+    messages.ERROR: 'danger',
+}
 
