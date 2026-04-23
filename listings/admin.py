@@ -135,16 +135,7 @@ class SellLeadAdmin(admin.ModelAdmin):
 
     @staticmethod
     def _sync_posting_permission(user):
-        if not user:
-            return
-        from .models import Property
-        profile, _ = UserProfile.objects.get_or_create(user=user)
-        approved_leads_count = SellLead.objects.filter(user=user, status=SellLead.STATUS_APPROVED).count()
-        properties_count = Property.objects.filter(owner=user).count()
-        can_post = properties_count < approved_leads_count
-        if profile.can_post_property != can_post:
-            profile.can_post_property = can_post
-            profile.save(update_fields=["can_post_property"])
+        pass
 
     @admin.action(description="Approve selected sell leads")
     def approve_selected_leads(self, request, queryset):

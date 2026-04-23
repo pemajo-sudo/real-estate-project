@@ -2,10 +2,12 @@
 {% load humanize %}
 
 {% block content %}
-<h2>My Wishlist</h2>
+<div class="fade-in-up" style="text-align: center; margin-bottom: 3rem; margin-top: 2rem;">
+    <h1 style="font-family: 'Playfair Display', serif; font-weight: 800; color: var(--primary);">My Wishlist</h1>
+</div>
 
 {% if wishlist_items %}
-    <div class="card-grid">
+    <div class="card-grid fade-in-up" style="transition-delay: 0.1s;">
         {% for item in wishlist_items %}
             <div class="card">
                 {% if item.property.primary_image %}
@@ -24,6 +26,8 @@
         {% endfor %}
     </div>
 {% else %}
-    <p>You have not added any properties to your wishlist yet.</p>
+    <div class="fade-in-up" style="transition-delay: 0.1s; text-align: center; padding: 4rem 2rem;">
+        <p>You have not added any properties to your wishlist yet.</p>
+    </div>
 {% endif %}
 {% endblock %}

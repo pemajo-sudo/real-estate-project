@@ -75,10 +75,38 @@
                     <label class="form-label fw-bold text-dark" for="{{ field.id_for_label }}">{{ field.label }}</label>
                     
                     {% if field.name == 'image_files' %}
-                    <div id="image-upload-container">
+                        {% if form.instance.pk and form.instance.images.all %}
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-dark d-block" style="font-size: 0.9rem;">Existing Images</label>
+                            <div class="row g-2">
+                                {% for img in form.instance.images.all %}
+                                <div class="col-6 col-md-4 col-lg-3">
+                                    <div class="position-relative border rounded p-1 h-100 d-flex flex-column">
+                                        <img src="{{ img.image.url }}" class="img-fluid rounded mb-2" alt="Property Image" style="height: 100px; width: 100%; object-fit: cover;">
+                                        <div class="form-check mt-auto">
+                                            <input class="form-check-input" type="checkbox" name="delete_images" value="{{ img.id }}" id="delete_img_{{ img.id }}">
+                                            <label class="form-check-label small text-danger" for="delete_img_{{ img.id }}">Delete</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <label class="form-label fw-bold text-dark d-block mt-3" style="font-size: 0.9rem;">Upload New Images</label>
+                        {% endif %}
+                        <div id="image-upload-container">
+                            {{ field }}
+                        </div>
+                        <button type="button" class="btn btn-outline-primary btn-sm mt-2 fw-bold" onclick="addAnotherImageField()"><i class="bi bi-plus-circle"></i> Add another image</button>
+                    {% elif field.name == 'walkthrough_video' %}
+                        {% if form.instance.pk and form.instance.walkthrough_video %}
+                        <div class="mb-2">
+                            <label class="form-label fw-bold text-dark d-block" style="font-size: 0.9rem;">Current Walkthrough Video</label>
+                            <video src="{{ form.instance.walkthrough_video.url }}" controls class="img-fluid rounded" style="max-height: 200px; width: auto;"></video>
+                        </div>
+                        <label class="form-label fw-bold text-dark d-block mt-2" style="font-size: 0.9rem;">Upload New Video</label>
+                        {% endif %}
                         {{ field }}
-                    </div>
-                    <button type="button" class="btn btn-outline-primary btn-sm mt-2 fw-bold" onclick="addAnotherImageField()"><i class="bi bi-plus-circle"></i> Add another image</button>
                     {% else %}
                     {{ field }}
                     {% endif %}
@@ -93,28 +121,37 @@
                 {% endfor %}
             </div>
 
-            <h4 class="section-title">Virtual Tour Scenes</h4>
+            <label class="form-label fw-bold text-dark mt-4 d-block text-uppercase">Virtual Tour Scenes</label>
             {{ scene_formset.management_form }}
             {% for scene_form in scene_formset %}
-            <div class="scene-card">
-                <div class="row">
-                    {% for field in scene_form %}
-                    {% if not field.is_hidden %}
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold text-dark" for="{{ field.id_for_label }}">{{ field.label }}</label>
+            <div class="row mb-2">
+                {% for field in scene_form %}
+                {% if not field.is_hidden %}
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold text-dark" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    
+                    {% if field.name == 'panorama_image' and scene_form.instance.pk and scene_form.instance.panorama_image %}
+                        <div class="mb-2">
+                            <label class="form-label fw-bold text-dark d-block" style="font-size: 0.9rem;">Current Panorama Image</label>
+                            <img src="{{ scene_form.instance.panorama_image.url }}" class="img-fluid rounded" alt="Panorama Image" style="height: 100px; width: 100%; object-fit: cover;">
+                        </div>
+                        <label class="form-label fw-bold text-dark d-block mt-2" style="font-size: 0.9rem;">Upload New Image</label>
                         {{ field }}
-                        {% if field.help_text %}
-                        <small class="text-muted d-block mt-1">{{ field.help_text }}</small>
-                        {% endif %}
-                        {% for error in field.errors %}
-                        <div class="text-danger small mt-1">{{ error }}</div>
-                        {% endfor %}
-                    </div>
                     {% else %}
                         {{ field }}
                     {% endif %}
+                    
+                    {% if field.help_text %}
+                    <small class="text-muted d-block mt-1">{{ field.help_text }}</small>
+                    {% endif %}
+                    {% for error in field.errors %}
+                    <div class="text-danger small mt-1">{{ error }}</div>
                     {% endfor %}
                 </div>
+                {% else %}
+                    {{ field }}
+                {% endif %}
+                {% endfor %}
             </div>
             {% endfor %}
 

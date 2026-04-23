@@ -127,3 +127,11 @@ VirtualTourSceneFormSet = inlineformset_factory(
     extra=1,
     can_delete=True,
 )
+
+VirtualTourSceneUpdateFormSet = inlineformset_factory(
+    Property,
+    VirtualTourScene,
+    form=VirtualTourSceneForm,
+    extra=0,
+    can_delete=True,
+)

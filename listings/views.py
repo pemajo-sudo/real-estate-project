@@ -18,6 +18,7 @@ from .forms import (
     PropertyForm,
     SellLeadForm,
     VirtualTourSceneFormSet,
+    VirtualTourSceneUpdateFormSet,
     VisitForm,
 )
 from .models import Agent, Inquiry, Property, PropertyImage, SearchLog, SellLead, UserProfile, VirtualTourScene, Visit, Wishlist, RecentlyViewedProperty
@@ -29,15 +30,13 @@ MAX_COMPARE_ITEMS = 3
 def _can_user_post_property(user):
     if not user.is_authenticated:
         return False
+    profile, _ = UserProfile.objects.get_or_create(user=user)
+    if profile.can_post_property:
+        return True
+    
     approved_leads_count = SellLead.objects.filter(user=user, status=SellLead.STATUS_APPROVED).count()
     properties_count = Property.objects.filter(owner=user).count()
-    can_post = properties_count < approved_leads_count
-    
-    profile, _ = UserProfile.objects.get_or_create(user=user)
-    if profile.can_post_property != can_post:
-        profile.can_post_property = can_post
-        profile.save(update_fields=["can_post_property"])
-    return can_post
+    return properties_count < approved_leads_count
 
 
 def _notify_user_on_sell_approval(request, user):
@@ -168,7 +167,7 @@ def dashboard_view(request):
     inquiries = Inquiry.objects.filter(user=request.user).order_by("-created_at")[:5]
     
     # Placeholders for features not yet in the DB model
-    my_posts = Property.objects.filter(owner=request.user).order_by("-id")[:5]
+    my_posts = Property.objects.filter(owner=request.user).prefetch_related("images").order_by("-id")[:5]
     recent_views = RecentlyViewedProperty.objects.filter(user=request.user).select_related("property").prefetch_related("property__images").order_by("-viewed_at")[:5]
     
     context = {
@@ -627,7 +626,6 @@ def property_create(request):
                 property_obj.save()
                 form.save_m2m()
                 scene_formset.save()
-                _can_user_post_property(request.user)
             else:
                 messages.error(request, "Please correct the virtual tour scene errors below.")
                 return render(
@@ -662,7 +660,7 @@ def property_update(request, pk):
 
     if request.method == "POST":
         form = PropertyForm(request.POST, request.FILES, instance=property_obj)
-        scene_formset = VirtualTourSceneFormSet(
+        scene_formset = VirtualTourSceneUpdateFormSet(
             request.POST,
             request.FILES,
             instance=property_obj,
@@ -671,6 +669,11 @@ def property_update(request, pk):
         if form.is_valid() and scene_formset.is_valid():
             property_obj = form.save()
             scene_formset.save()
+            
+            images_to_delete = request.POST.getlist('delete_images')
+            if images_to_delete:
+                PropertyImage.objects.filter(id__in=images_to_delete, property=property_obj).delete()
+                
             for image_file in request.FILES.getlist("image_files"):
                 PropertyImage.objects.create(property=property_obj, image=image_file)
             messages.success(request, "Property updated successfully!")
@@ -679,7 +682,7 @@ def property_update(request, pk):
             messages.error(request, "Please correct the errors below.")
     else:
         form = PropertyForm(instance=property_obj)
-        scene_formset = VirtualTourSceneFormSet(instance=property_obj, prefix="scenes")
+        scene_formset = VirtualTourSceneUpdateFormSet(instance=property_obj, prefix="scenes")
     return render(
         request,
         "listings/property_form.html",
@@ -704,3 +707,9 @@ def property_delete(request, pk):
 def view_inquiries(request):
     inquiries = Inquiry.objects.filter(user=request.user).order_by("-id")
     return render(request, "listings/view_inquiries.html", {"inquiries": inquiries})
+
+
+@login_required
+def view_sell_requests(request):
+    sell_requests = SellLead.objects.filter(user=request.user).order_by("-created_at")
+    return render(request, "listings/view_sell_requests.html", {"sell_requests": sell_requests})

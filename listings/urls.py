@@ -8,6 +8,7 @@ urlpatterns = [
     path("agents/", views.find_agent, name="find_agent"),
     path("register/", views.register, name="register"),
     path("inquiries/", views.view_inquiries, name="view_inquiries"),
+    path("sell-requests/", views.view_sell_requests, name="view_sell_requests"),
     path("login/", views.login_view, name="login"),
     path("logout/", views.logout_view, name="logout"),
     

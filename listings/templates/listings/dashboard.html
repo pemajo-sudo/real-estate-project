@@ -178,7 +178,7 @@
 
 </style>
 
-<div class="container dashboard-container">
+<div class="container dashboard-container fade-in-up">
     <!-- Profile Header -->
     <div class="profile-card">
         <div class="profile-avatar">
@@ -267,9 +267,18 @@
                 <ul class="dash-item-list">
                     {% for post in my_posts %}
                     <li class="dash-item">
-                        <div class="dash-item-meta">
-                            <a href="{% url 'property_detail' post.pk %}" class="dash-item-name">{{ post.name }}</a>
-                            <span class="dash-item-sub">{{ post.location }}</span>
+                        <div class="d-flex align-items-center gap-3">
+                            {% if post.images.first %}
+                            <img src="{{ post.images.first.image.url }}" alt="{{ post.name }}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;">
+                            {% else %}
+                            <div style="width: 50px; height: 50px; background-color: #f1f4f9; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #adb5bd; font-size: 1.2rem;">
+                                <i class="bi bi-building"></i>
+                            </div>
+                            {% endif %}
+                            <div class="dash-item-meta">
+                                <a href="{% url 'property_detail' post.pk %}" class="dash-item-name">{{ post.name }}</a>
+                                <span class="dash-item-sub">{{ post.location }}</span>
+                            </div>
                         </div>
                     </li>
                     {% endfor %}

@@ -1,10 +1,12 @@
 {% extends "listings/base.html" %}
 
 {% block content %}
-<h2 class="mb-4">My Inquiries</h2>
+<div class="fade-in-up" style="text-align: center; margin-bottom: 3rem; margin-top: 2rem;">
+    <h1 style="font-family: 'Playfair Display', serif; font-weight: 800; color: var(--primary);">My Inquiries</h1>
+</div>
 
 {% if inquiries %}
-<div class="card-grid">
+<div class="card-grid fade-in-up" style="transition-delay: 0.1s;">
     {% for inquiry in inquiries %}
     <div class="card">
         <div class="card-body">
@@ -24,6 +26,8 @@
     {% endfor %}
 </div>
 {% else %}
-<p>No inquiries have been submitted yet.</p>
+<div class="fade-in-up" style="transition-delay: 0.1s; text-align: center; padding: 4rem 2rem;">
+    <p>No inquiries have been submitted yet.</p>
+</div>
 {% endif %}
 {% endblock %}
