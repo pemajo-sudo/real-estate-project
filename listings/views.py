@@ -18,9 +18,10 @@ from .forms import (
     PropertyForm,
     SellLeadForm,
     VirtualTourSceneFormSet,
+    VirtualTourSceneUpdateFormSet,
     VisitForm,
 )
-from .models import Agent, Inquiry, Property, PropertyImage, SellLead, UserProfile, VirtualTourScene, Visit, Wishlist
+from .models import Agent, Inquiry, Property, PropertyImage, SearchLog, SellLead, UserProfile, VirtualTourScene, Visit, Wishlist, RecentlyViewedProperty
 
 COMPARE_SESSION_KEY = "compare_properties"
 MAX_COMPARE_ITEMS = 3
@@ -29,12 +30,13 @@ MAX_COMPARE_ITEMS = 3
 def _can_user_post_property(user):
     if not user.is_authenticated:
         return False
-    has_approved_lead = SellLead.objects.filter(user=user, status=SellLead.STATUS_APPROVED).exists()
     profile, _ = UserProfile.objects.get_or_create(user=user)
-    if profile.can_post_property != has_approved_lead:
-        profile.can_post_property = has_approved_lead
-        profile.save(update_fields=["can_post_property"])
-    return has_approved_lead
+    if profile.can_post_property:
+        return True
+    
+    approved_leads_count = SellLead.objects.filter(user=user, status=SellLead.STATUS_APPROVED).count()
+    properties_count = Property.objects.filter(owner=user).count()
+    return properties_count < approved_leads_count
 
 
 def _notify_user_on_sell_approval(request, user):
@@ -134,7 +136,7 @@ def sell_property(request):
                 lead.save()
                 logger.info(f"SellLead saved successfully: {lead}")
                 print("Saved successfully:", lead)
-                messages.success(request, "Thank you! We have received your query. Our agent will contact you shortly.")
+                messages.success(request, "Thank you! Your request has been received. We’ll contact you shortly.")
                 return render(request, "listings/sell.html", {"success": True, "form": SellLeadForm()})
             except Exception as e:
                 logger.error(f"Error saving SellLead form: {e}")
@@ -165,14 +167,14 @@ def dashboard_view(request):
     inquiries = Inquiry.objects.filter(user=request.user).order_by("-created_at")[:5]
     
     # Placeholders for features not yet in the DB model
-    my_posts = Property.objects.filter(owner=request.user).order_by("-id")[:5]
-    recent_searches = [] # Would fetch from SearchLog if exists
+    my_posts = Property.objects.filter(owner=request.user).prefetch_related("images").order_by("-id")[:5]
+    recent_views = RecentlyViewedProperty.objects.filter(user=request.user).select_related("property").prefetch_related("property__images").order_by("-viewed_at")[:5]
     
     context = {
         "wishlist_items": wishlist_items,
         "inquiries": inquiries,
         "my_posts": my_posts,
-        "recent_searches": recent_searches,
+        "recent_views": recent_views,
         "can_post_property": _can_user_post_property(request.user),
     }
     return render(request, "listings/dashboard.html", context)
@@ -261,6 +263,19 @@ def property_list(request):
         properties = properties.order_by("-price", "-id")
     elif sort == "newest":
         properties = properties.order_by("-id")
+
+    if request.user.is_authenticated and (query or location or property_type or listing_type):
+        last_search = SearchLog.objects.filter(user=request.user).first()
+        current_query = query or ""
+        current_type = property_type or ""
+        if not (last_search and last_search.query == current_query and last_search.location == location and last_search.property_type == current_type and last_search.listing_category == listing_type):
+            SearchLog.objects.create(
+                user=request.user,
+                query=current_query,
+                location=location,
+                property_type=current_type,
+                listing_category=listing_type,
+            )
 
     compared_ids = request.session.get(COMPARE_SESSION_KEY, [])
     wishlisted_ids = []
@@ -365,6 +380,9 @@ def property_detail(request, pk):
     inquiry_form = InquiryForm()
     if request.user.is_authenticated:
         inquiry_form = InquiryForm()
+        obj, created = RecentlyViewedProperty.objects.get_or_create(user=request.user, property=property_obj)
+        if not created:
+            obj.save()
         
     context["inquiry_form"] = inquiry_form
 
@@ -642,7 +660,7 @@ def property_update(request, pk):
 
     if request.method == "POST":
         form = PropertyForm(request.POST, request.FILES, instance=property_obj)
-        scene_formset = VirtualTourSceneFormSet(
+        scene_formset = VirtualTourSceneUpdateFormSet(
             request.POST,
             request.FILES,
             instance=property_obj,
@@ -651,6 +669,11 @@ def property_update(request, pk):
         if form.is_valid() and scene_formset.is_valid():
             property_obj = form.save()
             scene_formset.save()
+            
+            images_to_delete = request.POST.getlist('delete_images')
+            if images_to_delete:
+                PropertyImage.objects.filter(id__in=images_to_delete, property=property_obj).delete()
+                
             for image_file in request.FILES.getlist("image_files"):
                 PropertyImage.objects.create(property=property_obj, image=image_file)
             messages.success(request, "Property updated successfully!")
@@ -659,7 +682,7 @@ def property_update(request, pk):
             messages.error(request, "Please correct the errors below.")
     else:
         form = PropertyForm(instance=property_obj)
-        scene_formset = VirtualTourSceneFormSet(instance=property_obj, prefix="scenes")
+        scene_formset = VirtualTourSceneUpdateFormSet(instance=property_obj, prefix="scenes")
     return render(
         request,
         "listings/property_form.html",
@@ -674,6 +697,7 @@ def property_delete(request, pk):
         raise PermissionDenied("You can only delete your own properties.")
     if request.method == "POST":
         property_obj.delete()
+        _can_user_post_property(request.user)
         messages.success(request, "Property deleted successfully!")
         return redirect("property_list")
     return render(request, "listings/property_confirm_delete.html", {"property": property_obj})
@@ -683,3 +707,9 @@ def property_delete(request, pk):
 def view_inquiries(request):
     inquiries = Inquiry.objects.filter(user=request.user).order_by("-id")
     return render(request, "listings/view_inquiries.html", {"inquiries": inquiries})
+
+
+@login_required
+def view_sell_requests(request):
+    sell_requests = SellLead.objects.filter(user=request.user).order_by("-created_at")
+    return render(request, "listings/view_sell_requests.html", {"sell_requests": sell_requests})

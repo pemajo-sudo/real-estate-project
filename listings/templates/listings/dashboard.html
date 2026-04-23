@@ -5,12 +5,12 @@
 <style>
     /* Dashboard Specific Styles */
     .dashboard-container {
-        padding: 3rem 0;
+        padding: 1rem 0 3rem 0;
         font-family: 'Inter', sans-serif;
     }
 
     .dashboard-header {
-        margin-bottom: 3rem;
+        margin-bottom: 1.5rem;
     }
 
     .profile-card {
@@ -178,7 +178,7 @@
 
 </style>
 
-<div class="container dashboard-container">
+<div class="container dashboard-container fade-in-up">
     <!-- Profile Header -->
     <div class="profile-card">
         <div class="profile-avatar">
@@ -267,9 +267,18 @@
                 <ul class="dash-item-list">
                     {% for post in my_posts %}
                     <li class="dash-item">
-                        <div class="dash-item-meta">
-                            <a href="{% url 'property_detail' post.pk %}" class="dash-item-name">{{ post.name }}</a>
-                            <span class="dash-item-sub">{{ post.location }}</span>
+                        <div class="d-flex align-items-center gap-3">
+                            {% if post.images.first %}
+                            <img src="{{ post.images.first.image.url }}" alt="{{ post.name }}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;">
+                            {% else %}
+                            <div style="width: 50px; height: 50px; background-color: #f1f4f9; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #adb5bd; font-size: 1.2rem;">
+                                <i class="bi bi-building"></i>
+                            </div>
+                            {% endif %}
+                            <div class="dash-item-meta">
+                                <a href="{% url 'property_detail' post.pk %}" class="dash-item-name">{{ post.name }}</a>
+                                <span class="dash-item-sub">{{ post.location }}</span>
+                            </div>
                         </div>
                     </li>
                     {% endfor %}
@@ -288,28 +297,37 @@
             </div>
         </div>
 
-        <!-- Recent Searches (Placeholder) -->
+        <!-- Recently Viewed Properties -->
         <div class="dashboard-section">
             <div class="section-title">
-                <i class="bi bi-clock-history"></i>
-                <h2>Recent Searches</h2>
+                <i class="bi bi-eye-fill"></i>
+                <h2>Recently Viewed Properties</h2>
             </div>
             <div class="section-content">
-                {% if recent_searches %}
+                {% if recent_views %}
                 <ul class="dash-item-list">
-                    {% for search in recent_searches %}
+                    {% for view in recent_views %}
                     <li class="dash-item">
-                        <div class="dash-item-meta">
-                            <a href="#" class="dash-item-name">{{ search.query }}</a>
-                            <span class="dash-item-sub">{{ search.timestamp|timesince }} ago</span>
+                        <div class="d-flex align-items-center gap-3">
+                            {% if view.property.images.first %}
+                            <img src="{{ view.property.images.first.image.url }}" alt="{{ view.property.name }}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;">
+                            {% else %}
+                            <div style="width: 50px; height: 50px; background-color: #f1f4f9; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #adb5bd; font-size: 1.2rem;">
+                                <i class="bi bi-building"></i>
+                            </div>
+                            {% endif %}
+                            <div class="dash-item-meta">
+                                <a href="{% url 'property_detail' view.property.pk %}" class="dash-item-name">{{ view.property.name }}</a>
+                                <span class="dash-item-sub">{{ view.property.location }} - {{ view.viewed_at|timesince }} ago</span>
+                            </div>
                         </div>
                     </li>
                     {% endfor %}
                 </ul>
                 {% else %}
                 <div class="empty-state">
-                    <i class="bi bi-search"></i>
-                    <p>No recent search history.</p>
+                    <i class="bi bi-eye"></i>
+                    <p>No recently viewed properties.</p>
                 </div>
                 {% endif %}
             </div>

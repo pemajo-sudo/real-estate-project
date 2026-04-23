@@ -82,7 +82,7 @@ class VisitForm(forms.ModelForm):
         widgets = {
             "visit_date": forms.DateInput(attrs={"type": "date"}),
             "visit_time": forms.TimeInput(attrs={"type": "time"}),
-            "note": forms.Textarea(attrs={"rows": 3, "placeholder": "Optional note"}),
+            "note": forms.Textarea(attrs={"rows": 3, "placeholder": "Note"}),
         }
 
     def clean_visit_date(self):
@@ -125,5 +125,13 @@ VirtualTourSceneFormSet = inlineformset_factory(
     VirtualTourScene,
     form=VirtualTourSceneForm,
     extra=1,
+    can_delete=True,
+)
+
+VirtualTourSceneUpdateFormSet = inlineformset_factory(
+    Property,
+    VirtualTourScene,
+    form=VirtualTourSceneForm,
+    extra=0,
     can_delete=True,
 )

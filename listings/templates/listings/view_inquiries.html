@@ -1,10 +1,12 @@
 {% extends "listings/base.html" %}
 
 {% block content %}
-<h2 class="mb-4">My Inquiries</h2>
+<div class="fade-in-up" style="text-align: center; margin-bottom: 3rem; margin-top: 2rem;">
+    <h1 style="font-family: 'Playfair Display', serif; font-weight: 800; color: var(--primary);">My Inquiries</h1>
+</div>
 
 {% if inquiries %}
-<div class="card-grid">
+<div class="card-grid fade-in-up" style="transition-delay: 0.1s;">
     {% for inquiry in inquiries %}
     <div class="card">
         <div class="card-body">
@@ -13,11 +15,19 @@
             <p><strong>Property:</strong> {{ inquiry.property.name }}</p>
             <p><strong>Received:</strong> {{ inquiry.created_at|date:"M d, Y H:i" }}</p>
             <p><strong>Message:</strong> {{ inquiry.message }}</p>
+            {% if inquiry.admin_reply %}
+            <div class="mt-3 p-3" style="background-color: #f8f9fa; border-left: 4px solid var(--primary); border-radius: 4px;">
+                <h5 style="color: var(--primary); margin-bottom: 0.5rem; font-size: 1.1rem;">Response:</h5>
+                <p class="mb-0">{{ inquiry.admin_reply|linebreaksbr }}</p>
+            </div>
+            {% endif %}
         </div>
     </div>
     {% endfor %}
 </div>
 {% else %}
-<p>No inquiries have been submitted yet.</p>
+<div class="fade-in-up" style="transition-delay: 0.1s; text-align: center; padding: 4rem 2rem;">
+    <p>No inquiries have been submitted yet.</p>
+</div>
 {% endif %}
 {% endblock %}

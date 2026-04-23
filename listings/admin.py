@@ -101,7 +101,8 @@ class InquiryAdmin(admin.ModelAdmin):
     list_filter = ("created_at", "property")
     search_fields = ("name", "email", "message", "property__name", "user__username", "user__email")
     ordering = ("-created_at",)
-    readonly_fields = ("created_at",)
+    fields = ("property", "user", "name", "email", "message", "created_at", "admin_reply")
+    readonly_fields = ("property", "user", "name", "email", "message", "created_at")
 
 
 @admin.register(Agent)
@@ -129,27 +130,19 @@ class SellLeadAdmin(admin.ModelAdmin):
     list_filter = ("status", "property_type", "created_at")
     search_fields = ("name", "email", "phone", "location", "message", "user__username")
     actions = ("approve_selected_leads", "reject_selected_leads")
-    readonly_fields = ("created_at",)
+    fields = ("user", "name", "email", "phone", "property_type", "location", "message", "created_at", "status", "approval_notification_sent")
+    readonly_fields = ("user", "name", "email", "phone", "property_type", "location", "message", "created_at")
 
     @staticmethod
     def _sync_posting_permission(user):
-        if not user:
-            return
-        profile, _ = UserProfile.objects.get_or_create(user=user)
-        has_approved_lead = SellLead.objects.filter(user=user, status=SellLead.STATUS_APPROVED).exists()
-        if profile.can_post_property != has_approved_lead:
-            profile.can_post_property = has_approved_lead
-            profile.save(update_fields=["can_post_property"])
+        pass
 
     @admin.action(description="Approve selected sell leads")
     def approve_selected_leads(self, request, queryset):
         user_ids = list(queryset.exclude(user__isnull=True).values_list("user_id", flat=True).distinct())
         queryset.update(status=SellLead.STATUS_APPROVED, approval_notification_sent=False)
         for user in User.objects.filter(id__in=user_ids):
-            profile, _ = UserProfile.objects.get_or_create(user=user)
-            if not profile.can_post_property:
-                profile.can_post_property = True
-                profile.save(update_fields=["can_post_property"])
+            self._sync_posting_permission(user)
         self.message_user(request, f"Approved {queryset.count()} lead(s).")
 
     @admin.action(description="Reject selected sell leads")

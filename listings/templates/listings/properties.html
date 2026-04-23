@@ -709,7 +709,7 @@
 </style>
 
 {# ===== PAGE HEADER ===== #}
-<div class="listings-page-header d-flex flex-column flex-md-row align-items-md-end justify-content-between gap-3">
+<div class="listings-page-header fade-in-up d-flex flex-column flex-md-row align-items-md-end justify-content-between gap-3">
   <div>
     <span class="listings-kicker">Explore Properties</span>
     <h1>Available Properties</h1>
@@ -722,7 +722,7 @@
 </div>
 
 {# ===== FILTER BAR ===== #}
-<div class="listings-filter-card">
+<div class="listings-filter-card fade-in-up" style="transition-delay: 0.1s;">
   <form method="get" id="filterForm">
     <div class="filter-heading">
       <h3>Refine Listings</h3>
@@ -815,7 +815,7 @@
 </div>
 
 {# ===== TYPE PILLS ===== #}
-<div class="type-filter-pills">
+<div class="type-filter-pills fade-in-up" style="transition-delay: 0.2s;">
   <a href="{% url 'property_list' %}"
     class="type-pill {% if not selected_listing_type and not selected_type %}active{% endif %}">All</a>
   <a href="{% url 'property_list' %}?type=sell" class="type-pill pill-gold {% if selected_listing_type == 'sell' or selected_listing_type == 'buy' %}active{% endif %}">
@@ -828,7 +828,7 @@
 </div>
 
 {# ===== RESULTS BAR ===== #}
-<div class="results-bar">
+<div class="results-bar fade-in-up" style="transition-delay: 0.3s;">
   <p class="mb-0 text-muted" style="font-size:0.9rem;">
     {% if selected_query or selected_location or selected_type %}
     Showing results
