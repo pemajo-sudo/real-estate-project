@@ -53,6 +53,52 @@ class Property(models.Model):
 
     def save(self, *args, **kwargs):
         _deduplicate_uploaded_field(self, "walkthrough_video")
+        
+        if self.location and (not self.latitude or not self.longitude):
+            import urllib.request
+            import urllib.parse
+            import json
+
+            text = self.location.lower()
+            lookup = {
+                "colombo": (6.9271, 79.8612),
+                "rajagiriya": (6.9069, 79.8952),
+                "dehiwala": (6.8510, 79.8653),
+                "mount lavinia": (6.8389, 79.8651),
+                "moratuwa": (6.7730, 79.8825),
+                "negombo": (7.2084, 79.8358),
+                "kandy": (7.2906, 80.6337),
+                "galle": (6.0535, 80.2210),
+                "matara": (5.9549, 80.5550),
+                "kurunegala": (7.4863, 80.3647),
+                "jaffna": (9.6615, 80.0255),
+                "anuradhapura": (8.3114, 80.4037),
+                "batticaloa": (7.7170, 81.7000),
+                "trincomalee": (8.5874, 81.2152),
+                "nuwara eliya": (6.9497, 80.7891),
+                "badulla": (6.9934, 81.0550),
+                "ratnapura": (6.6828, 80.3992),
+            }
+            
+            found = False
+            for key, coords in lookup.items():
+                if key in text:
+                    self.latitude, self.longitude = coords
+                    found = True
+                    break
+            
+            if not found:
+                try:
+                    url = f"https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=lk&q={urllib.parse.quote(self.location)}"
+                    req = urllib.request.Request(url, headers={'User-Agent': 'ShelterAndSoulApp/1.0'})
+                    with urllib.request.urlopen(req, timeout=3) as response:
+                        data = json.loads(response.read().decode())
+                        if data:
+                            self.latitude = data[0]['lat']
+                            self.longitude = data[0]['lon']
+                except Exception:
+                    pass
+
         super().save(*args, **kwargs)
 
 
@@ -312,6 +358,8 @@ class SellLead(models.Model):
     message = models.TextField(blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_PENDING)
     approval_notification_sent = models.BooleanField(default=False)
+    rejection_notification_sent = models.BooleanField(default=False)
+    is_used = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
