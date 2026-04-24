@@ -1,4 +1,4 @@
-                                                  # Shelter & Soul – Real Estate Web Application
+# Shelter & Soul – Real Estate Web Application
 
 ## Project Overview
 
@@ -75,7 +75,8 @@ The platform allows users to search, view, and list properties for sale or rent,
 
 ### Compare Properties
 
-<img width="1903" height="872" alt="image" src="https://github.com/user-attachments/assets/6c31daf6-ad05-4bf4-acdf-f856aef49177" />
+<img width="1903" height="872" alt="image" src="https://github.com/user-attachments/assets/6c31daf6-ad05-4bf4-acdf-f856aef49177" />  
+
 
 
 This project demonstrates a fully functional real estate management system with user interaction, admin control, and modern UI design, fulfilling the requirements of the assignment.
