@@ -154,7 +154,7 @@ class SellLeadAdmin(admin.ModelAdmin):
     @admin.action(description="Approve selected sell leads")
     def approve_selected_leads(self, request, queryset):
         user_ids = list(queryset.exclude(user__isnull=True).values_list("user_id", flat=True).distinct())
-        queryset.update(status=SellLead.STATUS_APPROVED, approval_notification_sent=False)
+        queryset.update(status=SellLead.STATUS_APPROVED, approval_notification_sent=False, is_used=False)
         for user in User.objects.filter(id__in=user_ids):
             self._sync_posting_permission(user)
         self.message_user(request, f"Approved {queryset.count()} lead(s).")
@@ -171,6 +171,7 @@ class SellLeadAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         if obj.status == SellLead.STATUS_APPROVED and (not change or "status" in form.changed_data):
             obj.approval_notification_sent = False
+            obj.is_used = False
         elif obj.status == SellLead.STATUS_REJECTED and (not change or "status" in form.changed_data):
             obj.rejection_notification_sent = False
         super().save_model(request, obj, form, change)
