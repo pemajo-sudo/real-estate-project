@@ -9,8 +9,6 @@ def seller_permissions(request):
         if profile.can_post_property:
             can_post = True
         else:
-            from listings.models import Property
-            approved_leads_count = user.sell_leads.filter(status="Approved").count()
-            properties_count = Property.objects.filter(owner=user).count()
-            can_post = properties_count < approved_leads_count
+            from listings.models import SellLead
+            can_post = SellLead.objects.filter(user=user, status=SellLead.STATUS_APPROVED, is_used=False).exists()
     return {"user_can_post_property": can_post}

@@ -122,7 +122,7 @@ def sell_property(request):
                 logger.info(f"SellLead saved successfully: {lead}")
                 print("Saved successfully:", lead)
                 messages.success(request, "Thank you! Your request has been received. We’ll contact you shortly.")
-                return render(request, "listings/sell.html", {"success": True, "form": SellLeadForm()})
+                return redirect(f"{reverse('sell')}?success=1")
             except Exception as e:
                 logger.error(f"Error saving SellLead form: {e}")
                 print("Error saving SellLead form:", e)
@@ -133,7 +133,9 @@ def sell_property(request):
             messages.error(request, "Please correct the highlighted fields and submit again.")
     else:
         form = SellLeadForm()
-    return render(request, "listings/sell.html", {"form": form})
+        
+    success = request.GET.get("success") == "1"
+    return render(request, "listings/sell.html", {"form": form, "success": success})
 
 
 def about(request):
