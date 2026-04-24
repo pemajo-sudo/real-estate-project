@@ -6,47 +6,112 @@
 {% block main_class %}container py-5{% endblock %}
 
 {% block content %}
+<style>
+    /* Scoped styling for profile form to ensure inputs look premium without needing backend form class changes */
+    .profile-form input[type="text"],
+    .profile-form input[type="email"],
+    .profile-form select,
+    .profile-form textarea {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        font-size: 0.95rem;
+        color: var(--text);
+        border-radius: var(--radius-md);
+        border: 1px solid #e2e8f0;
+        background-color: #f8fafc;
+        transition: all var(--transition);
+        display: block;
+    }
+
+    .profile-form input[type="text"]:focus,
+    .profile-form input[type="email"]:focus,
+    .profile-form select:focus,
+    .profile-form textarea:focus {
+        border-color: var(--teal);
+        box-shadow: 0 0 0 4px rgba(15, 157, 138, 0.1);
+        outline: none;
+        background-color: #ffffff;
+    }
+
+    .profile-form .form-label {
+        font-weight: 600;
+        color: #475569;
+        margin-bottom: 0.5rem;
+        font-size: 0.88rem;
+        display: block;
+    }
+
+    .profile-section-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--primary);
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid #f1f5f9;
+        display: flex;
+        align-items: center;
+    }
+
+    .profile-section-title i {
+        color: var(--gold);
+        margin-right: 0.6rem;
+        font-size: 1.25rem;
+    }
+
+    /* Grid spacing enhancements */
+    .profile-form .row {
+        row-gap: 1.5rem;
+    }
+
+    .section-spacing {
+        margin-top: 3rem;
+    }
+</style>
+
 <div class="row justify-content-center">
     <div class="col-lg-8">
         <div class="d-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0">My Profile</h1>
-            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary btn-sm rounded-pill">
+            <h1 class="h3 mb-0 text-primary fw-bold">My Profile</h1>
+            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
                 <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
             </a>
         </div>
 
-        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="card border-0 shadow rounded-4 overflow-hidden">
             <!-- Premium Header -->
-            <div class="bg-primary text-white p-4 pb-5 position-relative" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);">
-                <div class="d-flex align-items-center gap-3">
-                    <div class="rounded-circle bg-white text-primary d-flex align-items-center justify-content-center shadow" style="width: 64px; height: 64px;">
-                        <i class="bi bi-person-fill fs-2"></i>
+            <div class="p-4 pb-5 position-relative" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);">
+                <div class="d-flex align-items-center gap-3 position-relative z-1">
+                    <div class="rounded-circle bg-white text-primary d-flex align-items-center justify-content-center shadow" style="width: 72px; height: 72px;">
+                        <i class="bi bi-person-fill fs-1"></i>
                     </div>
                     <div>
-                        <h2 class="h4 mb-0 text-white">{{ user.get_full_name|default:user.username }}</h2>
-                        <p class="mb-0 text-white-50 small">{{ user.email }}</p>
+                        <h2 class="h4 mb-1 text-white fw-bold">{{ user.get_full_name|default:user.username }}</h2>
+                        <p class="mb-0 text-white opacity-75 small">{{ user.email }}</p>
                     </div>
                 </div>
                 <!-- Decorative element -->
                 <div class="position-absolute top-0 end-0 p-3 opacity-25">
-                    <i class="bi bi-person-vcard fs-1"></i>
+                    <i class="bi bi-person-vcard" style="font-size: 5rem;"></i>
                 </div>
             </div>
 
             <!-- Form Body -->
-            <div class="card-body p-4 pt-5 position-relative bg-white" style="margin-top: -20px; border-radius: 20px 20px 0 0;">
+            <div class="card-body p-4 p-md-5 position-relative bg-white profile-form" style="margin-top: -20px; border-radius: 20px 20px 0 0;">
                 <form method="post" action="{% url 'profile' %}">
                     {% csrf_token %}
 
                     {% if user_form.errors or profile_form.errors %}
-                        <div class="alert alert-danger mb-4 rounded-3 border-0">
-                            Please correct the errors below before saving.
+                        <div class="alert alert-danger mb-4 rounded-3 border-0 shadow-sm d-flex align-items-center">
+                            <i class="bi bi-exclamation-triangle-fill me-3 fs-5"></i>
+                            <div>Please correct the errors below before saving.</div>
                         </div>
                     {% endif %}
 
                     <!-- Personal Information -->
-                    <h5 class="text-primary mb-3"><i class="bi bi-person-lines-fill me-2"></i>Personal Information</h5>
-                    <div class="row g-3 mb-4">
+                    <div class="profile-section-title">
+                        <i class="bi bi-person-lines-fill"></i>Personal Information
+                    </div>
+                    <div class="row gx-4">
                         <div class="col-md-6">
                             <label class="form-label" for="{{ user_form.first_name.id_for_label }}">First Name</label>
                             {{ user_form.first_name }}
@@ -70,86 +135,92 @@
                         </div>
                     </div>
 
-                    <hr class="text-muted opacity-25 mb-4">
-
                     <!-- Contact Information -->
-                    <h5 class="text-primary mb-3"><i class="bi bi-telephone-fill me-2"></i>Contact Information</h5>
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-6">
-                            <label class="form-label" for="{{ profile_form.personal_contact_number.id_for_label }}">Personal Contact Number</label>
-                            {{ profile_form.personal_contact_number }}
-                            {% if profile_form.personal_contact_number.errors %}
-                                <div class="text-danger small mt-1">{{ profile_form.personal_contact_number.errors }}</div>
-                            {% endif %}
+                    <div class="section-spacing">
+                        <div class="profile-section-title">
+                            <i class="bi bi-telephone-fill"></i>Contact Information
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label" for="{{ profile_form.whatsapp_number.id_for_label }}">WhatsApp Number</label>
-                            {{ profile_form.whatsapp_number }}
-                            {% if profile_form.whatsapp_number.errors %}
-                                <div class="text-danger small mt-1">{{ profile_form.whatsapp_number.errors }}</div>
-                            {% endif %}
+                        <div class="row gx-4">
+                            <div class="col-md-6">
+                                <label class="form-label" for="{{ profile_form.personal_contact_number.id_for_label }}">Personal Contact Number</label>
+                                {{ profile_form.personal_contact_number }}
+                                {% if profile_form.personal_contact_number.errors %}
+                                    <div class="text-danger small mt-1">{{ profile_form.personal_contact_number.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="{{ profile_form.whatsapp_number.id_for_label }}">WhatsApp Number</label>
+                                {{ profile_form.whatsapp_number }}
+                                {% if profile_form.whatsapp_number.errors %}
+                                    <div class="text-danger small mt-1">{{ profile_form.whatsapp_number.errors }}</div>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
-
-                    <hr class="text-muted opacity-25 mb-4">
 
                     <!-- Address Details -->
-                    <h5 class="text-primary mb-3"><i class="bi bi-geo-alt-fill me-2"></i>Address Details</h5>
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-12">
-                            <label class="form-label" for="{{ profile_form.residential_address.id_for_label }}">Residential Address</label>
-                            {{ profile_form.residential_address }}
-                            {% if profile_form.residential_address.errors %}
-                                <div class="text-danger small mt-1">{{ profile_form.residential_address.errors }}</div>
-                            {% endif %}
+                    <div class="section-spacing">
+                        <div class="profile-section-title">
+                            <i class="bi bi-geo-alt-fill"></i>Address Details
                         </div>
-                        <div class="col-md-12">
-                            <label class="form-label" for="{{ profile_form.office_address.id_for_label }}">Office Address</label>
-                            {{ profile_form.office_address }}
-                            {% if profile_form.office_address.errors %}
-                                <div class="text-danger small mt-1">{{ profile_form.office_address.errors }}</div>
-                            {% endif %}
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label" for="{{ profile_form.city.id_for_label }}">City</label>
-                            {{ profile_form.city }}
-                            {% if profile_form.city.errors %}
-                                <div class="text-danger small mt-1">{{ profile_form.city.errors }}</div>
-                            {% endif %}
+                        <div class="row gx-4">
+                            <div class="col-md-12">
+                                <label class="form-label" for="{{ profile_form.residential_address.id_for_label }}">Residential Address</label>
+                                {{ profile_form.residential_address }}
+                                {% if profile_form.residential_address.errors %}
+                                    <div class="text-danger small mt-1">{{ profile_form.residential_address.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label" for="{{ profile_form.office_address.id_for_label }}">Office Address</label>
+                                {{ profile_form.office_address }}
+                                {% if profile_form.office_address.errors %}
+                                    <div class="text-danger small mt-1">{{ profile_form.office_address.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="{{ profile_form.city.id_for_label }}">City</label>
+                                {{ profile_form.city }}
+                                {% if profile_form.city.errors %}
+                                    <div class="text-danger small mt-1">{{ profile_form.city.errors }}</div>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
-
-                    <hr class="text-muted opacity-25 mb-4">
 
                     <!-- Other Information -->
-                    <h5 class="text-primary mb-3"><i class="bi bi-info-circle-fill me-2"></i>Property Preferences & Bio</h5>
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-6">
-                            <label class="form-label" for="{{ profile_form.occupation.id_for_label }}">Occupation / Job Title</label>
-                            {{ profile_form.occupation }}
-                            {% if profile_form.occupation.errors %}
-                                <div class="text-danger small mt-1">{{ profile_form.occupation.errors }}</div>
-                            {% endif %}
+                    <div class="section-spacing">
+                        <div class="profile-section-title">
+                            <i class="bi bi-info-circle-fill"></i>Property Preferences & Bio
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label" for="{{ profile_form.preferred_property_interest.id_for_label }}">Preferred Property Interest</label>
-                            {{ profile_form.preferred_property_interest }}
-                            {% if profile_form.preferred_property_interest.errors %}
-                                <div class="text-danger small mt-1">{{ profile_form.preferred_property_interest.errors }}</div>
-                            {% endif %}
-                        </div>
-                        <div class="col-md-12">
-                            <label class="form-label" for="{{ profile_form.short_bio.id_for_label }}">Short Bio / Notes</label>
-                            {{ profile_form.short_bio }}
-                            {% if profile_form.short_bio.errors %}
-                                <div class="text-danger small mt-1">{{ profile_form.short_bio.errors }}</div>
-                            {% endif %}
+                        <div class="row gx-4">
+                            <div class="col-md-6">
+                                <label class="form-label" for="{{ profile_form.occupation.id_for_label }}">Occupation / Job Title</label>
+                                {{ profile_form.occupation }}
+                                {% if profile_form.occupation.errors %}
+                                    <div class="text-danger small mt-1">{{ profile_form.occupation.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="{{ profile_form.preferred_property_interest.id_for_label }}">Preferred Property Interest</label>
+                                {{ profile_form.preferred_property_interest }}
+                                {% if profile_form.preferred_property_interest.errors %}
+                                    <div class="text-danger small mt-1">{{ profile_form.preferred_property_interest.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label" for="{{ profile_form.short_bio.id_for_label }}">Short Bio / Notes</label>
+                                {{ profile_form.short_bio }}
+                                {% if profile_form.short_bio.errors %}
+                                    <div class="text-danger small mt-1">{{ profile_form.short_bio.errors }}</div>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
 
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-5">
-                        <a href="{% url 'dashboard' %}" class="btn btn-light rounded-pill px-4">Cancel</a>
-                        <button type="submit" class="btn btn-gold rounded-pill px-5 shadow-sm">Save Changes</button>
+                    <div class="d-grid gap-3 d-md-flex justify-content-md-end mt-5 pt-3 border-top">
+                        <a href="{% url 'dashboard' %}" class="btn btn-light rounded-pill px-4 fw-semibold text-muted">Cancel</a>
+                        <button type="submit" class="btn btn-gold rounded-pill px-5 shadow-sm fw-semibold">Save Changes</button>
                     </div>
                 </form>
             </div>
