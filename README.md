@@ -45,6 +45,10 @@ The platform allows users to search, view, and list properties for sale or rent,
 
 <img width="1900" height="864" alt="image" src="https://github.com/user-attachments/assets/b1cdec5c-1856-414b-a510-f6fad7b0c0fc" />
 
+## Add property
+
+<img width="1895" height="867" alt="image" src="https://github.com/user-attachments/assets/71930c04-edfd-4a4f-999c-57ca490b73c8" />
+
 ### Agent Page
 
 <img width="1901" height="868" alt="image" src="https://github.com/user-attachments/assets/cda6fec4-3c07-4da7-9357-7e1cb2100b2e" />
