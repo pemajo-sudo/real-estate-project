@@ -14,8 +14,12 @@ The platform allows users to search, view, and list properties for sale or rent,
 - View detailed property information with images 
 - Add properties to Wishlist 
 - Compare different properties 
-- Send inquiries to property agents 
-- Submit property for selling (approval required) 
+- Send inquiries to admin/agents
+- Contact Agents through mail
+- View recently viewed properties
+- Edit profile details
+- Add property for selling (approval required)
+- Edit or delete user-submitted property listings
 
 ### Admin Features
 - Managing property listings (add, edit, delete)
@@ -81,39 +85,41 @@ The platform allows users to search, view, and list properties for sale or rent,
 
 ## Installation & Setup Guide
 
-### Follow these steps to run the project locally:
-git clone https://github.com/pemajo-sudo/real-estate-project.git
+- ### Follow these steps to run the project locally
+git clone https://github.com/pemajo-sudo/real-estate-project.git  
 cd real-estate-project
 
-### Create virtual environment (optional but recommended)
+- ### Create virtual environment
 python -m venv env
-env\Scripts\activate
 
-### Install dependencies
+- ### Activate environment
+source env/Scripts/activate
+
+- ### Install dependencies
 pip install -r requirements.txt
 
-### Apply migrations
+- ### Apply migrations
 python manage.py migrate
 
-### Run the server
+- ### Run the server
 python manage.py runserver
 
-### Open in browser
+- ### Open in browser
 http://127.0.0.1:8000/
 
 ## Admin Panel & Database Management
 
 This application uses Django’s built-in administration panel to manage the database efficiently.
 
-Admin panel can be accessed at:
+- ### Admin panel can be accessed at:
 http://127.0.0.1:8000/admin
 
-Login using superuser credentials:
-Username: user1
-Password: 1234admin
-email: admin@gmail.com
+- ### Login using superuser credentials
+Username: user1  
+Password: 1234admin  
+Email: admin@gmail.com
 
-This project demonstrates a fully functional real estate management system with user interaction, admin control, and modern UI design, fulfilling the requirements of the assignment.
+This project demonstrates a fully functional real estate management system with user interaction, admin control and modern UI design, fulfilling the requirements of the assignment.
 
 
 
