@@ -9,13 +9,13 @@ Key Features
 
 User Features
 - User Registration and Login 
-•	Browse and Search Properties 
-•	Filter Properties  
-•	View detailed property information with images 
-•	Add properties to Wishlist 
-•	Compare different properties 
-•	Send inquiries to property agents 
-•	Submit property for selling (approval required) 
+- Browse and Search Properties 
+- Filter Properties  
+- View detailed property information with images 
+- Add properties to Wishlist 
+- Compare different properties 
+- Send inquiries to property agents 
+- Submit property for selling (approval required) 
 
 Admin Features
 •	Manage users and authentication 
