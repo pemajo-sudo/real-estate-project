@@ -20,6 +20,8 @@ from .forms import (
     VirtualTourSceneFormSet,
     VirtualTourSceneUpdateFormSet,
     VisitForm,
+    UserUpdateForm,
+    UserProfileForm,
 )
 from .models import Agent, Inquiry, Property, PropertyImage, SearchLog, SellLead, UserProfile, VirtualTourScene, Visit, Wishlist, RecentlyViewedProperty
 
@@ -703,3 +705,29 @@ def view_inquiries(request):
 def view_sell_requests(request):
     sell_requests = SellLead.objects.filter(user=request.user).order_by("-created_at")
     return render(request, "listings/view_sell_requests.html", {"sell_requests": sell_requests})
+
+
+@login_required
+def profile_view(request):
+    profile, created = UserProfile.objects.get_or_create(user=request.user)
+
+    if request.method == "POST":
+        user_form = UserUpdateForm(request.POST, instance=request.user)
+        profile_form = UserProfileForm(request.POST, instance=profile)
+
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+            messages.success(request, "Your profile has been updated successfully!")
+            return redirect("profile")
+        else:
+            messages.error(request, "Please correct the errors below.")
+    else:
+        user_form = UserUpdateForm(instance=request.user)
+        profile_form = UserProfileForm(instance=profile)
+
+    context = {
+        "user_form": user_form,
+        "profile_form": profile_form,
+    }
+    return render(request, "listings/profile.html", context)
