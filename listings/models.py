@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.utils.text import slugify
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from pathlib import Path
 import hashlib
 
@@ -325,8 +327,28 @@ class Visit(models.Model):
 
 
 class UserProfile(models.Model):
+    PROPERTY_INTEREST_CHOICES = [
+        ("Buy", "Buy"),
+        ("Rent", "Rent"),
+        ("Sell", "Sell"),
+        ("Invest", "Invest"),
+    ]
+
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
     can_post_property = models.BooleanField(default=False)
+    
+    personal_contact_number = models.CharField(max_length=30, blank=True)
+    whatsapp_number = models.CharField(max_length=30, blank=True)
+    residential_address = models.TextField(blank=True)
+    office_address = models.TextField(blank=True)
+    city = models.CharField(max_length=100, blank=True)
+    occupation = models.CharField(max_length=150, blank=True)
+    preferred_property_interest = models.CharField(
+        max_length=20, 
+        choices=PROPERTY_INTEREST_CHOICES, 
+        blank=True
+    )
+    short_bio = models.TextField(blank=True)
 
     def __str__(self):
         return f"{self.user.username} profile"
@@ -430,3 +452,17 @@ class RecentlyViewedProperty(models.Model):
 
     def __str__(self):
         return f"{self.user.username} viewed {self.property.name}"
+
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        UserProfile.objects.get_or_create(user=instance)
+
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    try:
+        instance.profile.save()
+    except Exception:
+        UserProfile.objects.get_or_create(user=instance)
