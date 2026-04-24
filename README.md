@@ -18,18 +18,18 @@ User Features
 - Submit property for selling (approval required) 
 
 Admin Features
-•	Manage users and authentication 
-•	Add, edit, and delete property listings 
-•	Approve/reject user-submitted properties 
-•	View and manage inquiries 
-•	Monitor platform activity through admin dashboard
+- Manage users and authentication 
+- Add, edit, and delete property listings 
+- Approve/reject user-submitted properties 
+- View and manage inquiries 
+- Monitor platform activity through admin dashboard
 
 Technologies Used
-•	Backend: Python, Django 
-•	Database: SQLite 
-•	Frontend: HTML, CSS, JavaScript 
-•	Styling: Bootstrap 
-•	Version Control: Git & GitHub
+- Backend: Python, Django 
+- Database: SQLite 
+- Frontend: HTML, CSS, JavaScript 
+- Styling: Bootstrap 
+- Version Control: Git & GitHub
 
 Screenshots
 
