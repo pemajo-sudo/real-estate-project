@@ -8,6 +8,7 @@ from .models import Inquiry
 from .models import SellLead
 from .models import VirtualTourScene
 from .models import Visit
+from .models import UserProfile
 
 class PropertyForm(forms.ModelForm):
     class MultipleFileInput(forms.ClearableFileInput):
@@ -135,3 +136,38 @@ VirtualTourSceneUpdateFormSet = inlineformset_factory(
     extra=0,
     can_delete=True,
 )
+
+
+class UserUpdateForm(forms.ModelForm):
+    first_name = forms.CharField(max_length=150, required=False)
+    last_name = forms.CharField(max_length=150, required=False)
+    email = forms.EmailField(required=True)
+
+    class Meta:
+        model = User
+        fields = ["first_name", "last_name", "email"]
+        widgets = {
+            "first_name": forms.TextInput(attrs={"placeholder": "First Name"}),
+            "last_name": forms.TextInput(attrs={"placeholder": "Last Name"}),
+            "email": forms.EmailInput(attrs={"placeholder": "Email Address"}),
+        }
+
+
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = [
+            "personal_contact_number",
+            "whatsapp_number",
+            "residential_address",
+            "office_address",
+            "city",
+            "occupation",
+            "preferred_property_interest",
+            "short_bio",
+        ]
+        widgets = {
+            "residential_address": forms.Textarea(attrs={"rows": 2}),
+            "office_address": forms.Textarea(attrs={"rows": 2}),
+            "short_bio": forms.Textarea(attrs={"rows": 3}),
+        }
