@@ -18,11 +18,13 @@ The platform allows users to search, view, and list properties for sale or rent,
 - Submit property for selling (approval required) 
 
 ### Admin Features
-- Manage users and authentication 
-- Add, edit, and delete property listings 
-- Approve/reject user-submitted properties 
-- View and manage inquiries 
-- Monitor platform activity through admin dashboard
+- Managing property listings (add, edit, delete)
+- Approving / rejecting sell requests
+- Viewing and managing user inquiries
+- Managing registered users
+- Managing agents
+- Viewing wishlist of users
+- Monitoring overall system data
 
 ### Technologies Used
 - Backend: Python, Django 
@@ -75,7 +77,41 @@ The platform allows users to search, view, and list properties for sale or rent,
 
 ### Compare Properties
 
-<img width="1903" height="872" alt="image" src="https://github.com/user-attachments/assets/6c31daf6-ad05-4bf4-acdf-f856aef49177" />    
+<img width="1903" height="872" alt="image" src="https://github.com/user-attachments/assets/6c31daf6-ad05-4bf4-acdf-f856aef49177" /> 
+
+## Installation & Setup Guide
+
+# Follow these steps to run the project locally:
+git clone https://github.com/pemajo-sudo/real-estate-project.git
+cd real-estate-project
+
+# Create virtual environment (optional but recommended)
+python -m venv env
+env\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Apply migrations
+python manage.py migrate
+
+# Run the server
+python manage.py runserver
+
+# Open in browser
+http://127.0.0.1:8000/
+
+## Admin Panel & Database Management
+
+This application uses Django’s built-in administration panel to manage the database efficiently.
+
+Admin panel can be accessed at:
+http://127.0.0.1:8000/admin
+
+Login using superuser credentials:
+Username: user1
+Password: 1234admin
+email: admin@gmail.com
 
 This project demonstrates a fully functional real estate management system with user interaction, admin control, and modern UI design, fulfilling the requirements of the assignment.
 
