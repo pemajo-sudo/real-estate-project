@@ -81,24 +81,24 @@ The platform allows users to search, view, and list properties for sale or rent,
 
 ## Installation & Setup Guide
 
-# Follow these steps to run the project locally:
+### Follow these steps to run the project locally:
 git clone https://github.com/pemajo-sudo/real-estate-project.git
 cd real-estate-project
 
-# Create virtual environment (optional but recommended)
+### Create virtual environment (optional but recommended)
 python -m venv env
 env\Scripts\activate
 
-# Install dependencies
+### Install dependencies
 pip install -r requirements.txt
 
-# Apply migrations
+### Apply migrations
 python manage.py migrate
 
-# Run the server
+### Run the server
 python manage.py runserver
 
-# Open in browser
+### Open in browser
 http://127.0.0.1:8000/
 
 ## Admin Panel & Database Management
