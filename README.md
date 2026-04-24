@@ -8,7 +8,7 @@ The platform allows users to search, view, and list properties for sale or rent,
 Key Features
 
 User Features
-•	User Registration and Login 
+- User Registration and Login 
 •	Browse and Search Properties 
 •	Filter Properties  
 •	View detailed property information with images 
